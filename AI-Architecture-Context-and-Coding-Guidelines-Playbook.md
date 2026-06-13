@@ -1,0 +1,571 @@
+# AI Architecture Context & AI Coding Guidelines — A Generation & Maintenance Playbook
+
+**Version:** 0.9 (draft) · **Audience:** Architects, tech leads, developers, QA, platform engineers, engineering managers
+
+---
+
+## The one idea to remember
+
+> **Make approved architecture usable by AI agents — and let each story leave the guidance a little better than it found it.**
+
+We do this with two thin, AI-facing files (plus optional helpers). They don't replace your architecture docs. They sit on top and tell the AI *how to apply* them safely.
+
+This guide borrows one principle from compound engineering: **each unit of work should make the next one easier.** Context and learnings compound. You set up the context once, use it on every story, and capture the few learnings worth keeping. Over time the AI gets safer and you write less, not more.
+
+---
+
+## The loop
+
+Everything in this guide is one loop with three steps:
+
+```
+                ┌─────────────────────────────────────┐
+                │                                       │
+                ▼                                       │
+   ┌────────────────────┐                              │
+   │ 1. BOOTSTRAP        │  Set up the thin context     │
+   │   (once per repo)   │  the AI will read.           │
+   └─────────┬──────────┘                              │
+             │                                          │
+             ▼                                          │
+   ┌────────────────────┐                              │
+   │ 2. CHECK            │  Before/while you build,     │
+   │   (every story)     │  check the work against it.  │
+   └─────────┬──────────┘                              │
+             │                                          │
+             ▼                                          │
+   ┌────────────────────┐                              │
+   │ 3. UPDATE           │  When a lesson repeats,      │
+   │   (only when needed)│  fold it back in.  ──────────┘
+   └────────────────────┘
+```
+
+The day-to-day cycle is **Check ↔ Update** — you bootstrap once, then keep checking stories and occasionally folding a learning back in. Re-bootstrap only for a new service or a major reset.
+
+| Step | Skill | When |
+|---|---|---|
+| Bootstrap | `ai-context-bootstrap` | Once per repo/service, then rarely |
+| Check | `ai-context-check` | Every story, plan, or PR |
+| Update | `ai-guidance-update` | Only when a learning will change future AI behavior |
+
+Optional reviewer agents (architecture, engineering, brownfield, and — for regulated/contract-heavy work — contract & compliance) plug into the Check and Update steps when reviews get broad. Start without them.
+
+---
+
+## 1. Why these two files exist
+
+Brownfield code is a mix of approved patterns, tolerated legacy, half-finished migrations, and local exceptions. An AI can't tell which is which by reading the code. So we tell it.
+
+**AI Architecture Context** tells the AI:
+
+- which architecture docs to read, and what has authority
+- which constraints are non-negotiable
+- which current patterns must **not** be copied
+- where current code differs from the target direction
+- when to ask instead of guessing
+
+**AI Coding Guidelines** turn those constraints into concrete coding behavior.
+
+### Where each thing lives
+
+| Artifact | Audience | Job |
+|---|---|---|
+| SAD | Humans | Explain the architecture |
+| ADRs | Humans + AI | Record decisions and rationale |
+| Formal specs (OpenAPI, AsyncAPI, data, security…) | Humans + AI | Define contract truth |
+| **AI Architecture Context** | **AI + reviewers** | **Tell AI how to apply architecture safely** |
+| **AI Coding Guidelines** | **AI + developers** | **Tell AI how to implement consistently** |
+| Code | Humans + AI | Evidence of what was built — not proof it was approved |
+
+### When multiple teams are involved
+
+This is the situation the toolkit is really built for. With **one team**, ownership is mostly a formality — the AI can touch anything and a human who knows the whole system reviews it. With **multiple teams**, ownership becomes a hard boundary that decides *what the AI may change, whom it must ask, and what it must not copy.*
+
+Why it raises the stakes:
+
+- The code the AI reads may be owned by a **different team** than the one doing the work. It must not silently change another team's service, read its database, or alter a shared contract — even when that's the locally easiest path.
+- Every cross-team line becomes an **ask-first** case — so the Context has to say *who* owns each thing and *whom to ask*. "Ask first" is useless if the AI doesn't know the owner.
+- A **shared contract** owned by another team can't be changed unilaterally; the change must route to that team's approval, not just pass tests.
+- Different teams have different conventions, maturity, and legacy — so *"code is evidence, not authority"* bites harder: the AI is more likely to copy the **wrong team's** pattern.
+- **Architects can't review every story across every team** — which is exactly why the constraints must be visible to the AI *before* it plans, not only at PR time.
+
+**Example —** a story on `order-service` (Orders team) needs customer data:
+
+| Asset | Owner | How others use it |
+|---|---|---|
+| order-service, orders DB | Orders team | Others read via `GET /orders` or the `OrderPlaced` event |
+| customers DB, customer PII | Customers team | Others read via `GET /customers/{id}` or the `CustomerUpdated` event; PII is never duplicated |
+| payment.events (AsyncAPI) | Payments team | Contract changes need Payments-team approval |
+
+- ❌ **Without this**, the AI reads the `customers` table directly because the connection is reachable — silently coupling Orders to the Customers database.
+- ✅ **With this**, the Context tells it customer data is owned by the Customers team, so Orders gets it via `GET /customers/{id}` or the `CustomerUpdated` event. If neither exists, it **asks the Customers team** instead of reaching into their store.
+
+**Capture rule:** in a multi-team repo, every ownership row should name the **owning team** *and* **how others get the data / whom to ask**. That one addition is what turns "ask first" from advice into something the AI can actually act on.
+
+### What the Context must cover — and at what level
+
+**"Thin" does not mean "narrow."** The Context must **cover every dimension where the AI could misinterpret** and that is relevant to the work — architecture style, ownership, data, integration, contracts, security, privacy, audit, compliance, and any brownfield divergence. What keeps it thin is *how* it covers each one, decided against your existing artifacts (SAD, ADRs, LLD, security/privacy requirements, specs):
+
+| If an existing artifact… | …then the Context |
+|---|---|
+| covers the dimension **at a level the AI can act on** | **points** to it (must-read + a one-line operational pointer) — don't restate |
+| covers it but **too abstractly / buried** to act on | adds a **thin operational rule** that makes it actionable, and links back |
+| **doesn't cover it** (or it lives only in code) | **captures** the operational rule **and flags a gap** — the SAD/ADR/requirement may need to be created or updated (a governance item, never silent) |
+
+So the Context is an **index + gap-filler**: where your artifacts are strong it shrinks to pointers; where they're silent it carries the operational rule and surfaces the gap. Its size is set by *what's already covered well* — not by a short topic list.
+
+**Dimensions to sweep** (include any that are relevant **and** could be misinterpreted):
+
+- **architecture style & modularity** — and the boundary rules each implies (see below)
+- ownership & boundaries · data ownership & access
+- integration (sync/async; allowed/forbidden) · API & event contracts
+- **security · data privacy / PII · audit · compliance**
+- error handling / resilience, logging / observability — *only where architecturally constrained*
+- current-vs-target (brownfield) divergences
+
+For each: decide **point / restate-actionably / fill-and-flag**. Skip a dimension only when it's genuinely irrelevant to the system — never because it's "not architecture."
+
+### Boundaries depend on your architecture style
+
+Ownership says *who*. The architecture **style** says *what kind of line exists and how strict it is* — and this matters **even with a single team**. Modularity is a boundary the AI must respect, and the looser the *physical* enforcement, the more the boundary has to be written down.
+
+The sharpest case is the **modular monolith**: everything compiles together, so the AI can `import` across module lines and it will build *and pass tests* — nothing physically stops it. The boundary is invisible in the code, which makes it exactly the place you must state it, or the AI quietly turns a modular monolith into a big ball of mud.
+
+| Style | The boundary that matters | Capture in the Context | The AI must **not** |
+|---|---|---|---|
+| **Modular monolith** | Module isolation inside one deployable | The module list; each module's public API; the data each module owns | import another module's internals; call across modules except through the public API; read another module's tables |
+| **Microservices / distributed** | Network/service line + independent data stores | Which services talk, and sync vs async; per-service data ownership; contract owners | add a new synchronous dependency by default; read another service's DB; change a shared contract unilaterally |
+| **Layered** | Dependency direction between layers | The layers and the allowed direction (e.g. `api → application → domain → infrastructure`) | introduce a reverse or skip dependency; import a framework into the domain layer |
+
+Most real systems **combine** these — layered modules inside a service, services inside a distributed system. Don't write an exhaustive taxonomy; capture only the rules that constrain the work at hand (usually layering plus the module or service boundary). State the style once, then list the lines the AI must not cross.
+
+---
+
+## 2. Six principles
+
+1. **Architecture Context constrains Coding Guidelines.** Guidelines apply architecture; they never redefine it. *Example: Context says "no service reads another service's DB." Guidelines show how repositories, clients, DTOs, events, and tests respect that.*
+
+2. **Existing code is evidence, not authority.** A pattern existing in the repo does not make it valid for new work.
+
+3. **Keep the Context thin — but not narrow.** It must *cover* every dimension the AI could misinterpret (see §1 "What the Context must cover"), but where an artifact already covers one well, shrink to a pointer instead of restating it. *Rule of thumb: if the SAD changes but AI behavior doesn't, the Context doesn't change.*
+
+4. **The Context is a planning-time fitness function.** It forces the AI to check boundaries (ownership, data access, allowed coupling, API/event impact, current-vs-target, security/privacy/audit/compliance, ask-first cases) *before* proposing a solution. Some rules can later become real checks (ArchUnit, dependency/contract tests, lint, CI).
+
+5. **Humans still review.** This improves what reaches review; it doesn't remove review. A solution can pass tests, look clean, and still expand coupling or violate intent. Make key constraints visible *before* the plan, not only at PR time.
+
+6. **No silent governance.** AI may *propose* classifications, Rule Cards, or updates. AI must never silently approve architecture, security, privacy, audit, compliance, contract, or coding-standard decisions. Those need human approval.
+
+---
+
+## 3. Read order vs. authority order
+
+The AI **reads** AI-facing files first — but they are **not** the highest authority.
+
+**Read order** (start cheap, go deep as needed):
+
+1. Root instruction file (`AGENTS.md` / `CLAUDE.md` / `.github/copilot-instructions.md`)
+2. Context manifest, if present
+3. AI Architecture Context
+4. AI Coding Guidelines
+5. The SAD, ADRs, specs, diagrams, and code those files point to
+6. Relevant implementation code and tests
+7. Solution notes (supporting memory only)
+
+**Authority order** (this is the canonical list — referenced everywhere else as "the authority order"):
+
+1. Approved story / requirement / acceptance criteria / Story Artifact decisions
+2. Formal specs (OpenAPI, AsyncAPI, Figma, data, security, privacy, audit, compliance)
+3. Approved ADRs
+4. SAD and approved architecture docs
+5. AI Architecture Context + approved Brownfield Rule Cards
+6. AI Coding Guidelines
+7. Approved reference implementations
+8. Local code and tests (implementation evidence)
+9. Solution notes (supporting memory only)
+
+**When sources conflict, the AI does not resolve it silently — it raises a context conflict.** The team then decides what's stale (Context? SAD? code?) and whether a Rule Card, ADR, spec, or guidance update is needed.
+
+---
+
+## 4. What goes where
+
+| File | Put in it | Keep out of it |
+|---|---|---|
+| **SAD / ADRs** | Narrative, diagrams, decisions, rationale, trade-offs, deployment & context views | — |
+| **Formal specs** | API/event/UI/data contracts; security, privacy, audit, compliance rules | — |
+| **AI Architecture Context** | Only what changes AI behavior: authority order, must-read sources, non-negotiable constraints, ownership & data rules, allowed/forbidden integration, current-vs-target, "do not copy" rules, ask-first triggers, links back | Full SAD content, long rationale, big diagrams, coding conventions, plans, story details, generic engineering advice |
+| **AI Coding Guidelines** | Coding behavior, scope control, repo/layering conventions, testing, naming, DTO/mapping/validation/error-handling, contract-change workflow, logging/observability, AI-specific prohibitions, ask-first triggers | Architecture rationale — link to the Context instead |
+
+---
+
+## 5. The minimum set
+
+Start with the smallest useful set. Don't add area-specific guidance until repeated use proves you need it.
+
+```
+docs/architecture/ai-context.md
+docs/engineering/ai-coding-guidelines.md
+AGENTS.md  (or CLAUDE.md / .github/copilot-instructions.md)
+
+# optional but recommended
+ai-enablement/context-manifest.yaml
+```
+
+### Context manifest (optional)
+
+A small, stable map so skills can *discover* sources instead of asking you to paste them. It's a map, not another architecture doc — keep it tiny. Use real discovered paths; mark unknowns `TBD`.
+
+```yaml
+ai_guidance:
+  architecture_context: docs/architecture/ai-context.md
+  coding_guidelines: docs/engineering/ai-coding-guidelines.md
+
+root_instructions: [AGENTS.md, CLAUDE.md, .github/copilot-instructions.md]
+
+architecture_sources:
+  sad: [docs/architecture/sad.md]
+  adrs: [docs/architecture/adrs/]
+  diagrams: [docs/architecture/diagrams/]
+
+formal_specs:
+  api: [docs/contracts/openapi/]
+  events: [docs/contracts/asyncapi/]
+  ui: [docs/ui/]
+  data: [docs/data/]
+  security: [docs/security/]
+  privacy: [docs/privacy/]
+  audit: [docs/audit/]
+  compliance: [docs/compliance/]
+
+brownfield:
+  representative_code: [TBD]
+  known_legacy_areas: [TBD]
+  known_target_examples: [TBD]
+
+solution_memory:
+  supporting_only: [docs/solutions/]
+
+review_rules:
+  ask_one_question_at_a_time: true
+  non_blocking_questions_go_to_report: true
+  no_silent_governance_decisions: true
+  current_code_is_evidence_not_authority: true
+```
+
+### Root instruction file (template)
+
+Keep it small. It mostly points at the other files and states the core rules (authority, brownfield, conflict, questions, governance, memory).
+
+```markdown
+# AI Working Instructions
+
+## Read order
+Before analysis, planning, coding, or review, read:
+1. ai-enablement/context-manifest.yaml
+2. docs/architecture/ai-context.md
+3. docs/engineering/ai-coding-guidelines.md
+Then read the SAD, ADRs, specs, diagrams, code, and tests they reference.
+
+## Source authority
+Use the authority order (see the guide). Approved requirements win; solution notes are memory only.
+
+## Brownfield rule
+Existing code is evidence, not approved architecture. Don't copy patterns the
+Context or a Brownfield Rule Card marks as current-but-not-target. If current and
+target differ and no Rule Card covers it — and it touches architecture, ownership,
+data, contracts, security, privacy, audit, or compliance — ask first.
+
+## Conflict rule
+If sources conflict, don't decide silently. Raise a context conflict.
+
+## Question rule
+Ask one blocking question at a time. Put non-blocking questions in the report.
+
+## Governance rule
+Human approval is required for changes to: architecture, ownership, data ownership,
+API/event contracts, security, privacy, audit, compliance, coding standards, or
+Brownfield Rule Card status.
+
+## Solution memory rule
+docs/solutions/ is supporting memory only. It never overrides requirements, specs,
+SAD, ADRs, the Context, the Guidelines, or Rule Cards.
+```
+
+---
+
+## 6. House rules for every skill
+
+These apply to all three skills — defined once here, referenced by each.
+
+1. **Discover first.** Inspect the repo for the root file, manifest, Context, Guidelines, relevant SAD/ADRs/specs, code/tests, and solution notes. Never ask the user to paste something that's discoverable.
+2. **One blocking question at a time.** Classify each gap as *blocking / non-blocking / clarify-later*. Only blocking gaps may interrupt. Prefer multiple-choice. Non-blocking questions go in the report.
+   > *Example:* "Which source is the authority for cross-service communication? **A)** SAD §4.3 · **B)** ADR-012 · **C)** current code · **D)** no safe default — mark Ask first."
+3. **Use safe defaults.** If a missing decision touches architecture, ownership, data, contracts, or security/privacy/audit/compliance, never invent the answer. Instead: ask one blocking question, mark it `TBD` or `Ask first`, recommend a decision, stop with a blocking finding, or produce an analyze-only report.
+4. **Support modes** (default to the safest):
+   - `interactive` — ask one blocking question at a time
+   - `headless` — never ask; mark unresolved items, produce a report
+   - `analyze-only` — change no files; produce findings
+   - `apply-approved-update` — update only explicitly approved sections
+5. **Classify evidence.** Tag every source: approved requirement / Story Artifact / formal spec / approved ADR / SAD / Context / Guidelines / Rule Card / approved reference impl / current code / known legacy / suspected drift / candidate learning / supporting memory. **Current code is never "approved architecture" unless an approved source confirms it.**
+6. **Produce durable output.** Always emit a file or report — an updated/draft artifact, a validation/alignment/analysis report, a blocking question, or a stopped state with reason. **Chat history is never the source of truth.**
+7. **Right-size the work.** Match the amount of ceremony to the size, clarity, and risk of the work. A small repo or an aligned, low-risk change gets a compact pass — skip phases that add nothing and prefer a short report (or "no change needed"). Reserve the full multi-phase treatment for large, ambiguous, or high-risk work. Don't manufacture Rule Cards, reports, or questions the situation doesn't need. *(This is the principle that keeps the approach lightweight — it comes straight from compound engineering's "match ceremony to the work.")*
+
+---
+
+## 7. Brownfield Rule Cards
+
+Use a Rule Card **only** when current code and target direction differ in a way that could mislead the AI. Don't make them for aligned situations.
+
+**Statuses:** `Use current` (current is approved) · `Use target` (new work follows target even if code differs) · `Target not ready` (target exists, don't move there unless scoped) · `Ask first` (AI must not decide alone).
+
+**Template:**
+
+```markdown
+## Brownfield Rule: <Topic>
+Status: <Use current | Use target | Target not ready | Ask first>
+Source:           <SAD / ADR / spec / decision>
+Current state:    <what exists today>
+Target direction: <what new work should use, if known>
+Rule for new work:    <what AI should do>
+Rule for existing code:<what AI may keep or must not change>
+Do not copy:      <misleading legacy pattern>
+Ask when:         <conditions needing clarification>
+```
+
+**Example:**
+
+```markdown
+## Brownfield Rule: Cross-service communication
+Status: Use target
+Source: SAD §4.3, ADR-012
+Current state:    Some services still call each other directly over REST.
+Target direction: New cross-service business comms use async events.
+Rule for new work:    Use async events unless sync is explicitly approved.
+Rule for existing code:Existing REST calls may stay; don't migrate unless in scope.
+Do not copy:      Don't add a new sync service-to-service call just because similar ones exist.
+Ask when:         A story seems to need a new sync dependency; eventual consistency
+                  isn't acceptable; data ownership is unclear.
+```
+
+---
+
+## 8. Using the guidance during delivery (the Check step)
+
+1. Read root file → manifest → Context → Guidelines → relevant SAD/ADRs/specs/diagrams
+2. Analyze the story; identify affected architecture areas and relevant Rule Cards
+3. Produce a plan **constrained by the guidance**
+4. Implement only after the plan is accepted
+5. Review the implementation against the plan and guidance
+6. Capture a reusable learning **only if it's actually reusable**
+
+---
+
+## 9. Evolving the guidance (the Update / "compound" step)
+
+This is where the compounding happens — but deliberately, not on every story.
+
+**Update only when a learning will change future AI behavior**, e.g.: the AI keeps making the same wrong assumption; reviewers keep correcting the same issue; a brownfield exception keeps misleading the AI; the target direction becomes clear; an ADR or spec changes; a new reference implementation is approved.
+
+**Not every learning belongs in the Context.** Route it to the right home:
+
+| Learning | Home |
+|---|---|
+| Story-specific decision | Story Artifact / Jira |
+| Implementation detail | PR / plan |
+| Reusable coding convention | AI Coding Guidelines |
+| Architecture rule (changes AI behavior) | AI Architecture Context |
+| Decision rationale | ADR |
+| Contract change | Formal spec |
+| Candidate / unproven learning | Solution note |
+| Repeated brownfield ambiguity | Brownfield Rule Card |
+
+**If a learning conflicts with current guidance:** don't update silently. Classify the conflict, name the affected source of truth, recommend one action (no update / update Context / update Guidelines / Rule Card / ADR / spec / raise decision), and **apply only approved updates.**
+
+### Candidate patterns and the promotion gate
+
+A learning — a recurring review finding, an approved ADR or spec change, or a **solution note** (including one written by compound engineering's `/ce-compound`) — is a **candidate, not approved guidance.** `ai-guidance-update` is the gate that decides whether, and where, a candidate becomes guidance:
+
+- **Analyze first.** Its default is `analyze-only`: it classifies the candidate, routes it (table above), checks for conflicts, and produces a proposal with a **"human approval required"** flag. It never auto-promotes — a solution note does not silently become a rule.
+- **Most candidates don't enter the Context.** A reusable coding convention belongs in the **AI Coding Guidelines**; rationale in an ADR; contract truth in a spec; a story-specific or unproven idea stays where it is (or "no update needed"). Only a *behavior-changing architecture rule* enters the **AI Architecture Context**. The toolkit is general across **both** AI-facing artifacts — promotion targets either, not just the Context.
+- **Human approves, then it writes.** Only `apply-approved-update`, with explicit approval, makes the smallest change and preserves the link to the approved source.
+
+This is exactly what makes the toolkit safe to pair with a knowledge-capture loop like compound engineering: that loop *generates* candidate patterns freely (solution notes), and this gate ensures only human-approved ones become governance. `ai-context-check` is the proactive counterpart — it *detects* violations before they ship; `ai-guidance-update` is what turns a repeated finding into an approved rule.
+
+---
+
+## 10. The three skills (templates)
+
+The ready-to-use files live in `.ai/skills/<name>/SKILL.md`; the summaries below are the same content in shorter form for readers. If you edit one, treat the file in `.ai/` as canonical. Each skill follows the house rules in §6, so those aren't repeated below.
+
+### 10.1 `ai-context-bootstrap` — set up the context
+
+**Purpose:** Create or refresh the minimum AI-facing guidance (Context, Guidelines, Rule Cards where needed, manifest/root-file proposals if missing, a validation report, and a list of decisions needed).
+
+**Use when:** starting AI delivery in a repo; onboarding a new service/module/context/team; creating the first Context or Guidelines; checking whether existing guidance is usable. **Not** for story-specific planning (use `ai-context-check`) or guidance evolution (use `ai-guidance-update`).
+
+**Invoke:** `/ai-context-bootstrap scope=<repository|service|module|bounded-context> mode=<interactive|headless>` (default `interactive`). Optional: `source_override`, `representative_code_override`, `target_output_dir`.
+
+**Phases:**
+
+1. **Discover** the repo (root file, manifest, existing guidance, SAD/ADRs/diagrams, specs, representative code/tests/CI, solution notes). Classify each source.
+2. **Assess sufficiency:** *sufficient to draft / draft-with-TBDs / blocked by gaps.* Blocking gaps include unclear: service/context/data ownership, cross-service comms rule, API/event authority, security/privacy/audit/compliance constraints, a visible current-vs-target conflict, or a source-of-truth conflict. In `interactive`, ask one question; in `headless`, stop with a Blocking Context Report.
+3. **Propose the manifest** (if missing) from discovered paths; mark unknowns `TBD`.
+4. **Draft the AI Architecture Context** → `docs/architecture/ai-context.md`. First run the **coverage sweep** (see §1 "What the Context must cover"): for each relevant dimension decide *point / restate-actionably / fill-and-flag* against the existing artifacts, and record fill-and-flag items under "Contributor decisions needed." Include: purpose/scope, read order, authority order, must-read sources, minimal system overview, **architecture style & modularity rules**, ownership/boundary rules, data ownership, integration rules, API/event rules, security/privacy/audit/compliance constraints, current-vs-target, Rule Cards (only where needed), prohibited shortcuts, ask-first triggers, links. Thin ≠ narrow — cover every relevant dimension but shrink to a pointer where an artifact already covers it. Exclude full SAD, long rationale, big diagrams, coding conventions, plans, story details, unapproved decisions, generic advice.
+5. **Draft the AI Coding Guidelines** → `docs/engineering/ai-coding-guidelines.md`. Include: scope control, repo structure, layering, how to apply the Context in code, DTO/mapping/validation/error-handling, contract-change workflow, testing, logging/observability, security/privacy/audit/compliance coding rules, prohibited behaviors, ask-first triggers, brownfield rules (where needed), reference impls. Don't redefine architecture — link to the Context.
+6. **Validate against representative code.** Classify each pattern (aligned / current-approved / target-ready / target-not-ready / brownfield exception / known legacy / suspected drift / ask-first). Make Rule Cards only for misleading current-vs-target gaps.
+7. **Output:** the two files, manifest/root-file proposals if missing, a Validation Report, any Rule Cards, and a "Contributor Decisions Needed" list.
+
+**Output format:**
+
+```markdown
+# ai-context-bootstrap Result
+## Decision        (Completed | Completed with TBDs | Blocked | Analyze-only)
+## Files created or updated
+## Context sources discovered   | Source | Path | Evidence type | Authority |
+## Blocking question            (one question, or "None.")
+## Contributor decisions needed | Decision | Reason | Blocking? | Owner |
+## Brownfield Rule Cards created | Topic | Status | Reason |
+## Validation summary
+## Recommended next step
+```
+
+**Stop and ask one blocking question (or, in headless, report) when:** authority conflict is unresolvable; ownership or data ownership is unclear; security/privacy/audit/compliance impact is unclear; current code and target conflict; or the AI would have to make an architecture decision.
+
+---
+
+### 10.2 `ai-context-check` — use the context on real work
+
+**Purpose:** Check whether a story, analysis, plan, PR, diff, or solution note aligns with the approved Context and Guidelines. A planning-time and review-time governance check that catches *locally reasonable but directionally wrong* solutions.
+
+**Use when:** reviewing a Jira story, Story Artifact, AI analysis, plan, PR, diff, solution note, or proposed learning — ideally **before** implementation.
+
+**Invoke:** `/ai-context-check work=<story|artifact|plan|pr|diff|solution-note> mode=<interactive|headless|analyze-only>` (default `analyze-only`). Optional: `scope`, `focus=<architecture|coding|brownfield|contracts|security|all>`.
+
+**Phases:**
+
+1. **Discover** context (same sources as bootstrap) and classify each.
+2. **Understand the work:** intent, affected service/module/context, data ownership, API/event/UI contracts, security/privacy/audit/compliance behavior, changed files, the pattern being used, current-vs-target implications, relevant Rule Cards. If intent is unclear and risk is material, ask one blocking question (interactive).
+3. **Architecture check** against ownership/boundaries, data rules, integration rules, allowed coupling, prohibited shortcuts, current-vs-target, Rule Cards, ask-first triggers. Flag locally-reasonable-but-wrong moves — e.g. adding a sync call because similar ones exist; reading another service's DB because legacy does; duplicating domain logic in the frontend; bypassing an event contract; writing audit data directly.
+4. **Coding-guideline check** against structure, layering, naming, DTO/mapping/validation/error-handling, testing, logging/observability, security/privacy/audit/compliance coding rules, contract workflow, and scope control. Flag changes broader than the reviewed scope.
+5. **Contract & compliance check.** If a spec should change but the work doesn't mention it, flag the gap. If the work changes a contract with no approved source, flag a governance issue.
+6. **Brownfield risk check.** If the solution copies/extends known legacy, a tolerated workaround, a partial migration, a local exception, suspected drift, or current-but-not-target code, classify the risk (acceptable preservation / risky expansion / migration-needed-not-scoped / target-not-ready / ask-first / architecture-decision-required).
+7. **Coverage-gap check (cross-cutting).** Flag any dimension the work depends on that the Context is silent on and no source artifact covers actionably — note what's missing and where it belongs (Context / SAD / ADR / requirement / spec), and recommend `ai-guidance-update`. Don't silently fill it.
+8. **Output:** a Context Alignment Report (now also listing coverage gaps).
+
+**Output format:**
+
+```markdown
+# Context Alignment Report
+## Decision   (Ready | Ready with risks | Needs clarification | Blocked by architecture decision
+              | Requires guidance update | Requires formal spec update | Requires ADR/SAD update)
+## Reviewed input        (type / reference / scope / mode)
+## Summary
+## Architecture alignment      | Area | Status | Finding | Evidence |   (status: aligned/risk/conflict/unclear/n-a)
+## Coding guideline alignment  | Area | Status | Finding | Evidence |
+## Brownfield risks            | Pattern | Classification | Risk | Recommendation |
+## Contract & compliance impact| Area | Impact | Finding | Action |
+## Source conflicts            | Conflict | Sources | Risk | Recommendation |
+## Coverage gaps               | Dimension | Missing guidance | Where it belongs (Context/SAD/ADR/req/spec) |
+## Blocking question     (one, or "None.")
+## Non-blocking open points
+## Recommended next action  (proceed | proceed with risks | clarify | update plan/PR
+                            | run ai-guidance-update analyze-only | raise architecture decision
+                            | update spec | create/update Rule Card)
+```
+
+**Stop and ask one question (interactive) — otherwise report it (headless/analyze-only) — when:** the solution needs an architecture decision; ownership, data ownership, or contract authority is unclear; security/privacy/audit/compliance impact is unclear; current and target conflict; or the work hits an ask-first trigger.
+
+---
+
+### 10.3 `ai-guidance-update` — capture the learning (compound)
+
+**Purpose:** Analyze and apply controlled updates to the Context, Guidelines, and Rule Cards — so useful learnings don't die in chat/PRs, and unapproved ones don't silently become rules.
+
+**Use when:** the AI keeps making the same wrong assumption; reviewers keep correcting the same issue; a brownfield pattern keeps misleading the AI; the target becomes clear; an ADR/spec changes; a reference impl is approved; a solution note holds a reusable lesson; a pattern should no longer be copied; or a conflict is detected.
+
+**Invoke:**
+- Analyze: `/ai-guidance-update source=<learning|solution-note|pr-finding|review-issue|adr|spec-change> mode=analyze-only` (default)
+- Apply: `/ai-guidance-update source=<approved-update> mode=apply-approved-update`
+
+**Required behavior:** never apply governance-impacting updates without explicit approval; never auto-promote solution notes to guidance; keep changes minimal; touch one thing; preserve links to approved sources; flag conflicts rather than resolving them.
+
+**Phases:**
+
+1. **Discover** current guidance and the source learning.
+2. **Classify the learning:** story-specific / impl detail / reusable convention / architecture rule / brownfield ambiguity / contract change / security|privacy|audit|compliance rule / reference impl / candidate memory / suspected drift / conflict.
+3. **Decide the target** using the routing table in §9. (Rationale → SAD/ADR. Contract truth → spec. Conventions → Guidelines. Behavior-changing architecture → Context. Current-vs-target → Rule Card. Story-specific → Jira. Unproven → solution note.)
+4. **Conflict check** against requirements, Story Artifact, specs, ADRs, SAD, Context, Guidelines, Rule Cards, reference impl, current code, solution notes. If it conflicts, don't apply — produce a conflict finding.
+5. **Analyze-only output:** a Guidance Update Analysis (change no files).
+6. **Apply-approved-update:** verify explicit approval + target + text → apply the smallest change → don't touch unrelated sections → preserve/add source links → flag any conflict found → produce an Applied Update Report. If approval is missing, stop with an Approval Missing Report.
+
+**Analyze-only output:**
+
+```markdown
+# Guidance Update Analysis
+## Decision  (No update needed | Candidate update | Human approval required
+             | Conflict detected | Apply-ready, approval already explicit)
+## Source                (type / reference / summary)
+## Learning classification
+## Recommended target
+## Reason
+## Existing guidance affected
+## Conflict check        | Source | Conflict? | Finding |
+## Human approval required  (Yes/No; owner: Architect/Tech Lead/PO/Security/Privacy/Compliance/QA)
+## Suggested minimal update  (smallest possible text change)
+## Not included          (related changes intentionally excluded)
+## Recommended next action
+```
+
+**Applied-update output:**
+
+```markdown
+# Applied Guidance Update Report
+## Decision   (Applied | Not applied | Partially applied | Blocked)
+## Files changed         | File | Section | Change |
+## Approval source
+## Summary of applied change
+## Conflicts detected during application
+## Follow-up recommended
+```
+
+**Stop when:** approval is missing; the target is unclear; the update conflicts with specs/SAD/ADRs; it would require an architecture decision or security/privacy/audit/compliance approval; it would change contract truth; or it's broader than what was approved.
+
+---
+
+## 11. The optional reviewer agents
+
+The ready-to-use files live in `.ai/agents/<name>.md` (canonical); the table below summarizes them. Add them **only when reviews get too broad or repetitive** — for a pilot, use the skills alone. Each agent takes inputs from the orchestrating skill, identifies missing context, and asks **at most one** blocking question.
+
+| Agent | Reviews | Don't use for |
+|---|---|---|
+| `architecture-boundary-reviewer` | Service/context/module boundaries, ownership, data ownership, sync-vs-async, API/event ownership, dependency direction, shared-SDK use, architecture-sensitive refactors | Style, test naming, formatting, low-risk local details, story/AC writing |
+| `engineering-convention-reviewer` | Repo structure, placement, layering, naming, DTO/mapping/validation/error-handling, logging/observability, tests, shared utils, scope control, AI-generated code | Architecture/data-ownership/scope/security/compliance/contract approvals (escalate those) |
+| `brownfield-governance-reviewer` | Current-vs-target gaps **and** source conflicts together; decides if a Rule Card / guidance update / ADR / spec update / human decision is needed | Normal aligned work, simple style, product priorities, isolated low-risk details |
+| `contract-compliance-reviewer` *(add only for regulated/contract-heavy work)* | API/event/data/UI contract changes & backward compatibility; security, privacy, audit, compliance behavior; flags governance-significant changes lacking an approved source | Architecture/ownership decisions, code style, work touching no contract and no sensitive data |
+
+**Shared output shape:** Decision · what was reviewed · findings table (`Area | Status | Finding | Evidence`) · the relevant impact (coupling / ownership / scope / brownfield interpretation) · one blocking question or "None." · one recommendation. Every agent must **cite the rule/source each finding violates and the offending location** (file:line or contract field) — no vague "seems off" — and **anchor on what already exists** (the approved pattern/module/contract) before flagging an invented parallel structure.
+
+The brownfield agent also uses the **statuses** and **conflict types** below, and includes a draft Rule Card only when one is needed:
+
+- *Statuses:* Use current · Use target · Target not ready · Ask first
+- *Conflict types:* no conflict · terminology mismatch · stale AI guidance · stale SAD/ADR · formal-spec mismatch · implementation drift · brownfield ambiguity · coding-guideline overreach · solution-note overreach · missing architecture decision · missing contract update · governance approval required
+
+It ends with a short **"Do not do"** list (e.g. *don't implement the proposed coupling; don't update guidance; don't treat current code as approved*) until the issue is resolved.
+
+---
+
+## 12. Adoption path
+
+1. **Create the minimum files** — `ai-context.md`, `ai-coding-guidelines.md`, a root instruction file. (Manifest optional.)
+2. **Add the three skills** under `.ai/skills/`.
+3. **Add agents only if useful.** Skip for a pilot; add when reviews get broad.
+4. **Bootstrap:** `/ai-context-bootstrap scope=repository mode=interactive`
+5. **Use on stories:** `/ai-context-check work=<story-or-plan> mode=analyze-only`
+6. **Analyze repeated findings:** `/ai-guidance-update source=<finding> mode=analyze-only`
+7. **Apply only approved updates:** `/ai-guidance-update source=<approved-update> mode=apply-approved-update`
+
+---
+
+## 13. In one paragraph
+
+The SAD and ADRs stay the source of architecture knowledge. The **AI Architecture Context** is a thin operational layer that tells AI how to apply that knowledge safely; the **AI Coding Guidelines** tell AI how to implement within it; **Brownfield Rule Cards** stop current-but-wrong patterns from becoming future architecture. Three small skills — **bootstrap, check, update** — form a loop that discovers context from the repo, checks every story against it, and folds back only the learnings that change future behavior. Skills ask one blocking question at a time, and humans approve every governance decision. It stays lightweight on purpose: leverage over ceremony, and each story leaving the guidance a little better than it found it.
