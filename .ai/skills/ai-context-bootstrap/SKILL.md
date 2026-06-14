@@ -85,7 +85,28 @@ Coding Guidelines apply the Architecture Context and must read it either way.
 
 Additional constraints: do not create a second SAD; do not copy long architecture
 rationale; keep the AI-facing guidance thin. Use repo-relative paths everywhere; never
-absolute paths.
+absolute paths. Write only the AI-facing layer (Context, Guidelines, Guardrails,
+manifest/root-file, candidate solution notes); never write SAD/ADRs/specs/tracker items —
+flag or draft those for a human.
+
+## Refresh mode — re-running where guidance already exists
+
+If Phase 1 finds existing `ai-context.md` / `ai-coding-guidelines.md` (or approved
+Guardrails), switch to **refresh mode** — a health-check and re-baseline, **never a
+regeneration**:
+
+- **Treat the existing files as the approved baseline.** Never overwrite or regenerate
+  them wholesale; preserve all human edits, filled-in TBDs, and approved entries.
+- **Validate them against the current repo** and report changes as approval-gated proposals:
+  - **drift** — code or an approved source has moved away from a stated rule
+  - **new gaps** — a relevant dimension or area is now uncovered
+  - **stale entries** — a rule whose source changed or was removed
+  - **new sources** — newly-found SAD/ADRs/specs/code to link
+- **Apply only minimal, approved additions** (same human gate as a first run). Never delete
+  or rewrite an existing rule without explicit approval; if a rule looks wrong, **flag it,
+  don't silently change it.**
+- **Boundary:** refresh is for re-baselining, large drift, or onboarding a new area.
+  Incremental, per-learning evolution belongs to `ai-guidance-update`.
 
 ## Phase 1 — Discover context
 
@@ -230,6 +251,9 @@ Choose one: Completed | Completed with TBDs | Blocked | Analyze-only report prod
 
 ## Files created or updated
 - <file>
+
+## Refresh summary (refresh runs only)
+- Kept / Added / Drift / Stale / Gaps
 
 ## Context sources discovered
 | Source | Path | Evidence type | Authority |

@@ -295,6 +295,7 @@ These apply to all three skills — defined once here, referenced by each.
 5. **Classify evidence.** Tag every source: approved requirement / Story Artifact / formal spec / approved ADR / SAD / Context / Guidelines / Guardrail / approved reference impl / current code / known legacy / suspected drift / candidate learning / supporting memory. **Current code is never "approved architecture" unless an approved source confirms it.**
 6. **Produce durable output.** Always emit a file or report — an updated/draft artifact, a validation/alignment/analysis report, a blocking question, or a stopped state with reason. **Chat history is never the source of truth.**
 7. **Right-size the work.** Match the amount of ceremony to the size, clarity, and risk of the work. A small repo or an aligned, low-risk change gets a compact pass — skip phases that add nothing and prefer a short report (or "no change needed"). Reserve the full multi-phase treatment for large, ambiguous, or high-risk work. Don't manufacture Guardrails, reports, or questions the situation doesn't need. *(This is the principle that keeps the whole approach lightweight: match ceremony to the work.)*
+8. **Write only the AI-facing layer.** Skills write the Context, Coding Guidelines, Guardrails, the manifest/root-file, and candidate solution notes (supporting memory) — governance-affecting changes always gated by human approval. They **never write SAD, ADRs, formal specs, or tracker items** (Jira / Story Artifacts); for those they only *flag* that a change is needed or *draft* proposed text for a human to review and commit.
 
 ---
 
@@ -404,9 +405,31 @@ This is **two-speed governance**: a fast AI-facing lane (Context / Guidelines / 
 
 The ready-to-use files live in `.ai/skills/<name>/SKILL.md`; the summaries below are the same content in shorter form for readers. If you edit one, treat the file in `.ai/` as canonical. Each skill follows the house rules in §6, so those aren't repeated below.
 
+### Invoking the skills — parameters & modes
+
+The knobs below are the whole surface. **Complexity is not a knob** — every skill *right-sizes automatically* (§6.7): a small or low-risk job gets a compact pass.
+
+| Knob | Values | Meaning | Used by |
+|---|---|---|---|
+| `scope` | `repository` / `service` / `module` / `bounded-context` | how much to look at and act on | bootstrap (required), check (optional) |
+| `mode` — **Ask?** | `interactive` / `headless` | `interactive` asks one blocking question when needed; `headless` never asks and records gaps in the report | bootstrap, check |
+| `mode` — **Write?** | `analyze-only` / `apply-approved-update` | `analyze-only` reports without writing; `apply-approved-update` writes only explicitly approved changes | check (read-only), update |
+| `produce` | `context` / `guidelines` / `both` *(default `both`)* | which artifact bootstrap drafts | bootstrap |
+| `focus` | `architecture` / `coding` / `brownfield` / `contracts` / `security` / `all` | narrows what check examines | check |
+| `work` | `story` / `artifact` / `plan` / `pr` / `diff` / `solution-note` | what check is reviewing | check |
+| `source` | `learning` / `solution-note` / `pr-finding` / `review-issue` / `adr` / `spec-change` / `approved-update` | the learning update evaluates | update |
+
+**Choosing values:**
+- **scope** — start at `service`/`module` for a pilot or a large repo; `repository` for a small, cohesive one.
+- **interactivity** — `interactive` when a human is present to answer; `headless` for CI/automation (it never blocks).
+- **write** — default to the read-only option; only `apply-approved-update` writes, and only what a human approved.
+- **which skill, when** — see *The loop* (top) and §12: bootstrap once, check per story, update only to promote a confirmed learning.
+
 ### 10.1 `ai-context-bootstrap` — set up the context
 
 **Purpose:** Create or refresh the minimum AI-facing guidance (Context, Guidelines, Guardrails where needed, manifest/root-file proposals if missing, a validation report, and a list of decisions needed).
+
+**Re-runs are safe.** Where guidance already exists it enters **refresh mode** — it validates the existing files against the repo and proposes drift/gap fixes as approval-gated changes, **never overwriting human-approved content**. (Incremental per-learning evolution is `ai-guidance-update`'s job.)
 
 **Use when:** starting AI delivery in a repo; onboarding a new service/module/context/team; creating the first Context or Guidelines; checking whether existing guidance is usable. **Not** for story-specific planning (use `ai-context-check`) or guidance evolution (use `ai-guidance-update`).
 
@@ -489,6 +512,8 @@ The ready-to-use files live in `.ai/skills/<name>/SKILL.md`; the summaries below
 **Purpose:** Analyze and apply controlled updates to the Context, Guidelines, and Guardrails — so useful learnings don't die in chat/PRs, and unapproved ones don't silently become rules.
 
 **Use when:** a candidate learning could change future AI behavior — a target direction becomes clear; an ADR or spec changes; a reference implementation is approved; a brownfield pattern is misleading the AI; a solution note is worth promoting; a pattern should no longer be copied; or a conflict is detected. Run it to decide *whether* and *where* a learning becomes a rule — not because something recurred a set number of times.
+
+**No baseline yet?** If no Context/Guidelines exist, it recommends `ai-context-bootstrap` first and parks the learning as a candidate note — it never fabricates a baseline. (Like all skills, it never writes SAD/ADRs/specs — only flags or drafts them.)
 
 **Invoke:**
 - Analyze: `/ai-guidance-update source=<learning|solution-note|pr-finding|review-issue|adr|spec-change> mode=analyze-only` (default)

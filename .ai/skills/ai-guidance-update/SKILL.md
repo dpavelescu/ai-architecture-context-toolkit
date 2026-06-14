@@ -67,16 +67,30 @@ If no mode is given, use `analyze-only`.
 - promote thin, by reference: write a one-line operational rule that links to its source;
   never copy the source's detail into the Context or Guidelines (the detail stays in the
   note/ADR/spec; governance holds only the binding rule)
-- never write SAD / ADRs / specs yourself — those are human-owned; only flag or draft them.
-  The Context never originates a decision: for a new direction with no approved source,
-  propose ADR-first, or a provisional Brownfield Guardrail marked `pending ADR` with an
-  owner and review date
+- never write SAD / ADRs / specs — or tracker items (Jira / Story Artifacts) — yourself;
+  those are human-owned, only flag or draft them. This skill writes only the AI-facing
+  layer (Context, Guidelines, Guardrails, candidate solution notes). The Context never
+  originates a decision: for a new direction with no approved source, propose ADR-first, or
+  a provisional Brownfield Guardrail marked `pending ADR` with an owner and review date
 
 ## Phase 1 — Discover current guidance
 
 Read: root file; context manifest; AI Architecture Context; AI Coding Guidelines;
 Brownfield Guardrails; relevant SAD sections, ADRs, formal specs; the source learning;
 relevant code evidence; relevant solution notes (supporting memory only).
+
+### When no baseline exists (bootstrap not yet run)
+
+If no AI Architecture Context or Coding Guidelines are found:
+
+- A learning whose home is an **ADR / formal spec / Jira / Story Artifact** → proceed
+  normally: **recommend (and optionally draft)** that target. (This skill never *writes*
+  those, baseline or not.)
+- A learning whose home is the **Context / Guidelines / Guardrails** → **stop and recommend
+  running `ai-context-bootstrap` first**; don't fabricate a single-rule Context. Optionally
+  record the learning as a **candidate solution note** so it isn't lost.
+
+This adds no new write powers — it only changes which recommendation is produced.
 
 ## Phase 2 — Classify the learning
 
@@ -197,4 +211,5 @@ Choose one: Applied | Not applied | Partially applied | Blocked
 Stop when: approval is missing; the target artifact is unclear; the update conflicts
 with formal specs, SAD, or ADRs; it would require an architecture decision; it would
 require security / privacy / audit / compliance approval; it would change contract
-truth; or it is broader than the approved change.
+truth; it is broader than the approved change; or the target is the Context/Guidelines
+but no baseline exists — recommend `ai-context-bootstrap` first.
