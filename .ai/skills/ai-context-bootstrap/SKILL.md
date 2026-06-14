@@ -134,21 +134,21 @@ artifacts (SAD, ADRs, LLD, security/privacy requirements, specs):
   operational rule here, and record a gap in *Contributor decisions needed* (the
   SAD/ADR/requirement may need creating or updating; never decide it silently).
 
-Dimensions to sweep:
+Dimensions to sweep (all equal — don't over-weight any one):
 
-- **architecture style & modularity** (modular monolith / microservices-distributed /
-  layered) and the boundary rules each implies — e.g. in a modular monolith, state
-  module isolation explicitly because nothing physically enforces it
 - ownership & boundaries; data ownership & access
 - integration (sync/async; allowed/forbidden); API & event contracts
 - security; data privacy / PII; audit; compliance
+- architecture style & modularity (modular monolith / microservices-distributed /
+  layered) — e.g. in a modular monolith, state module isolation explicitly because
+  nothing physically enforces it
 - error handling / resilience, logging / observability — only where architecturally
   constrained
 - current-vs-target (brownfield) divergences
 
 **The Context must include:** purpose & scope; read order; authority order; must-read
-sources; minimal system overview; **architecture style & modularity rules**; ownership
-& boundary rules; data ownership; integration rules; API & event rules; security /
+sources; minimal system overview; ownership & boundary rules; data ownership;
+integration rules; API & event rules; architecture style & modularity rules; security /
 privacy / audit / compliance constraints; current-vs-target guidance; Brownfield Guardrails
 (only where needed); prohibited shortcuts; ask-first triggers; links to SAD /
 ADRs / specs / diagrams.

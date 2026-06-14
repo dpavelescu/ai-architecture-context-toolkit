@@ -54,7 +54,7 @@ Optional reviewer agents (architecture, engineering, brownfield, and — for reg
 
 ## 1. Why these two files exist
 
-Brownfield code is a mix of approved patterns, tolerated legacy, half-finished migrations, and local exceptions. An AI can't tell which is which by reading the code. So we tell it.
+To act, an AI agent reads what's in the repo — the SAD, ADRs, specs, and code — and fills the gaps with assumptions. When guidance is thin it **(a) misinterprets** an artifact, **(b) silently resolves a conflict** between two sources, or **(c) invents a missing constraint** instead of asking. Brownfield code is the sharpest case — approved patterns, tolerated legacy, half-finished migrations, and shortcuts all look alike — but the same happens with stale docs, draft ADRs, and partial specs. So we tell the AI what it can't safely infer.
 
 **AI Architecture Context** tells the AI:
 
@@ -77,34 +77,9 @@ Brownfield code is a mix of approved patterns, tolerated legacy, half-finished m
 | **AI Coding Guidelines** | **AI + developers** | **Tell AI how to implement consistently** |
 | Code | Humans + AI | Evidence of what was built — not proof it was approved |
 
-### When multiple teams are involved
-
-This is the situation the toolkit is really built for. With **one team**, ownership is mostly a formality — the AI can touch anything and a human who knows the whole system reviews it. With **multiple teams**, ownership becomes a hard boundary that decides *what the AI may change, whom it must ask, and what it must not copy.*
-
-Why it raises the stakes:
-
-- The code the AI reads may be owned by a **different team** than the one doing the work. It must not silently change another team's service, read its database, or alter a shared contract — even when that's the locally easiest path.
-- Every cross-team line becomes an **ask-first** case — so the Context has to say *who* owns each thing and *whom to ask*. "Ask first" is useless if the AI doesn't know the owner.
-- A **shared contract** owned by another team can't be changed unilaterally; the change must route to that team's approval, not just pass tests.
-- Different teams have different conventions, maturity, and legacy — so *"code is evidence, not authority"* bites harder: the AI is more likely to copy the **wrong team's** pattern.
-- **Architects can't review every story across every team** — which is exactly why the constraints must be visible to the AI *before* it plans, not only at PR time.
-
-**Example —** a story on `order-service` (Orders team) needs customer data:
-
-| Asset | Owner | How others use it |
-|---|---|---|
-| order-service, orders DB | Orders team | Others read via `GET /orders` or the `OrderPlaced` event |
-| customers DB, customer PII | Customers team | Others read via `GET /customers/{id}` or the `CustomerUpdated` event; PII is never duplicated |
-| payment.events (AsyncAPI) | Payments team | Contract changes need Payments-team approval |
-
-- ❌ **Without this**, the AI reads the `customers` table directly because the connection is reachable — silently coupling Orders to the Customers database.
-- ✅ **With this**, the Context tells it customer data is owned by the Customers team, so Orders gets it via `GET /customers/{id}` or the `CustomerUpdated` event. If neither exists, it **asks the Customers team** instead of reaching into their store.
-
-**Capture rule:** in a multi-team repo, every ownership row should name the **owning team** *and* **how others get the data / whom to ask**. That one addition is what turns "ask first" from advice into something the AI can actually act on.
-
 ### What the Context must cover — and at what level
 
-**"Thin" does not mean "narrow."** The Context must **cover every dimension where the AI could misinterpret** and that is relevant to the work — architecture style, ownership, data, integration, contracts, security, privacy, audit, compliance, and any brownfield divergence. What keeps it thin is *how* it covers each one, decided against your existing artifacts (SAD, ADRs, LLD, security/privacy requirements, specs):
+This is the Context's actual job. **"Thin" does not mean "narrow":** it must **cover every dimension where the AI could misinterpret** and that's relevant to the work — ownership, data, integration, contracts, security, privacy, audit, compliance, architecture style, and any brownfield divergence. What keeps it thin is *how* it covers each one, decided against your existing artifacts (SAD, ADRs, LLD, security/privacy requirements, specs):
 
 | If an existing artifact… | …then the Context |
 |---|---|
@@ -112,32 +87,47 @@ Why it raises the stakes:
 | covers it but **too abstractly / buried** to act on | adds a **thin operational rule** that makes it actionable, and links back |
 | **doesn't cover it** (or it lives only in code) | **captures** the operational rule **and flags a gap** — the SAD/ADR/requirement may need to be created or updated (a governance item, never silent) |
 
-So the Context is an **index + gap-filler**: where your artifacts are strong it shrinks to pointers; where they're silent it carries the operational rule and surfaces the gap. Its size is set by *what's already covered well* — not by a short topic list.
+So the Context is an **index + gap-filler**: where your artifacts are strong it shrinks to pointers; where they're silent it carries the operational rule and surfaces the gap.
 
-**Dimensions to sweep** (include any that are relevant **and** could be misinterpreted):
+**Dimensions to sweep** (any that are relevant **and** could be misinterpreted):
 
-- **architecture style & modularity** — and the boundary rules each implies (see below)
 - ownership & boundaries · data ownership & access
 - integration (sync/async; allowed/forbidden) · API & event contracts
 - **security · data privacy / PII · audit · compliance**
+- architecture style & modularity
 - error handling / resilience, logging / observability — *only where architecturally constrained*
 - current-vs-target (brownfield) divergences
 
-For each: decide **point / restate-actionably / fill-and-flag**. Skip a dimension only when it's genuinely irrelevant to the system — never because it's "not architecture."
+For each: decide **point / restate-actionably / fill-and-flag**. **Every dimension is equal** — security, privacy, and contracts deserve the same care as ownership or architecture style. Skip one only when it's genuinely irrelevant — never because it's "not architecture."
 
-### Boundaries depend on your architecture style
+The two examples below just show *how* a dimension becomes an actionable rule. They're illustrations, not the focus.
 
-Ownership says *who*. The architecture **style** says *what kind of line exists and how strict it is* — and this matters **even with a single team**. Modularity is a boundary the AI must respect, and the looser the *physical* enforcement, the more the boundary has to be written down.
+#### Example: ownership across teams
 
-The sharpest case is the **modular monolith**: everything compiles together, so the AI can `import` across module lines and it will build *and pass tests* — nothing physically stops it. The boundary is invisible in the code, which makes it exactly the place you must state it, or the AI quietly turns a modular monolith into a big ball of mud.
+With a single team, ownership is mostly a formality. With **multiple teams** it becomes a hard boundary: the code the AI reads may belong to another team, so it must not silently change their service, read their database, or alter a shared contract — even when that's the easy path (and an architect can't catch every such case across every team at PR time). The Context states **who owns each thing and how others get to it**:
 
-| Style | The boundary that matters | Capture in the Context | The AI must **not** |
-|---|---|---|---|
-| **Modular monolith** | Module isolation inside one deployable | The module list; each module's public API; the data each module owns | import another module's internals; call across modules except through the public API; read another module's tables |
-| **Microservices / distributed** | Network/service line + independent data stores | Which services talk, and sync vs async; per-service data ownership; contract owners | add a new synchronous dependency by default; read another service's DB; change a shared contract unilaterally |
-| **Layered** | Dependency direction between layers | The layers and the allowed direction (e.g. `api → application → domain → infrastructure`) | introduce a reverse or skip dependency; import a framework into the domain layer |
+| Asset | Owner | How others use it |
+|---|---|---|
+| order-service, orders DB | Orders team | Others read via `GET /orders` or the `OrderPlaced` event |
+| customers DB, customer PII | Customers team | Others read via `GET /customers/{id}` or the `CustomerUpdated` event; PII is never duplicated |
+| payment.events (AsyncAPI) | Payments team | Contract changes need Payments-team approval |
 
-Most real systems **combine** these — layered modules inside a service, services inside a distributed system. Don't write an exhaustive taxonomy; capture only the rules that constrain the work at hand (usually layering plus the module or service boundary). State the style once, then list the lines the AI must not cross.
+- ❌ **Without it**, the AI reads the `customers` table directly because the connection is reachable — silently coupling Orders to Customers.
+- ✅ **With it**, the AI uses `GET /customers/{id}` or the `CustomerUpdated` event — and if neither exists, it **asks the Customers team** instead of reaching in.
+
+*Capture rule:* name the **owning team** and **how others get the data / whom to ask** — that's what turns "ask first" into something the AI can act on.
+
+#### Example: boundaries by architecture style
+
+The architecture **style** decides what kind of boundary exists and how strict it is — and it matters even with one team. The sharpest case is the **modular monolith**: everything compiles together, so the AI can `import` across module lines and it will build *and pass tests*. Nothing physically stops it, which is exactly why the boundary must be written down.
+
+| Style | The boundary that matters | The AI must **not** |
+|---|---|---|
+| **Modular monolith** | Module isolation inside one deployable | import another module's internals; call across modules except through the public API; read its tables |
+| **Microservices / distributed** | Network/service line + independent data stores | add a new synchronous dependency by default; read another service's DB; change a shared contract unilaterally |
+| **Layered** | Dependency direction (e.g. `api → application → domain → infrastructure`) | introduce a reverse or skip dependency; import a framework into the domain layer |
+
+Most systems combine these; capture only the lines that constrain the work at hand — usually layering plus the module or service boundary.
 
 ---
 
@@ -145,7 +135,7 @@ Most real systems **combine** these — layered modules inside a service, servic
 
 1. **Architecture Context constrains Coding Guidelines.** Guidelines apply architecture; they never redefine it. *Example: Context says "no service reads another service's DB." Guidelines show how repositories, clients, DTOs, events, and tests respect that.*
 
-2. **Existing code is evidence, not authority.** A pattern existing in the repo does not make it valid for new work.
+2. **What's in the repo is evidence, not authority.** A pattern in the code — or a statement in a stale or draft doc — doesn't make it valid for new work; only an approved source does.
 
 3. **Keep the Context thin — but not narrow.** It must *cover* every dimension the AI could misinterpret (see §1 "What the Context must cover"), but where an artifact already covers one well, shrink to a pointer instead of restating it. *Rule of thumb: if the SAD changes but AI behavior doesn't, the Context doesn't change.*
 
@@ -427,7 +417,7 @@ The ready-to-use files live in `.ai/skills/<name>/SKILL.md`; the summaries below
 1. **Discover** the repo (root file, manifest, existing guidance, SAD/ADRs/diagrams, specs, representative code/tests/CI, solution notes). Classify each source.
 2. **Assess sufficiency:** *sufficient to draft / draft-with-TBDs / blocked by gaps.* Blocking gaps include unclear: service/context/data ownership, cross-service comms rule, API/event authority, security/privacy/audit/compliance constraints, a visible current-vs-target conflict, or a source-of-truth conflict. In `interactive`, ask one question; in `headless`, stop with a Blocking Context Report.
 3. **Propose the manifest** (if missing) from discovered paths; mark unknowns `TBD`.
-4. **Draft the AI Architecture Context** → `docs/architecture/ai-context.md`. First run the **coverage sweep** (see §1 "What the Context must cover"): for each relevant dimension decide *point / restate-actionably / fill-and-flag* against the existing artifacts, and record fill-and-flag items under "Contributor decisions needed." Include: purpose/scope, read order, authority order, must-read sources, minimal system overview, **architecture style & modularity rules**, ownership/boundary rules, data ownership, integration rules, API/event rules, security/privacy/audit/compliance constraints, current-vs-target, Guardrails (only where needed), prohibited shortcuts, ask-first triggers, links. Thin ≠ narrow — cover every relevant dimension but shrink to a pointer where an artifact already covers it. Exclude full SAD, long rationale, big diagrams, coding conventions, plans, story details, unapproved decisions, generic advice.
+4. **Draft the AI Architecture Context** → `docs/architecture/ai-context.md`. First run the **coverage sweep** (see §1 "What the Context must cover"): for each relevant dimension decide *point / restate-actionably / fill-and-flag* against the existing artifacts, and record fill-and-flag items under "Contributor decisions needed." Include: purpose/scope, read order, authority order, must-read sources, minimal system overview, ownership/boundary rules, data ownership, integration rules, API/event rules, security/privacy/audit/compliance constraints, architecture style & modularity rules, current-vs-target, Guardrails (only where needed), prohibited shortcuts, ask-first triggers, links. Thin ≠ narrow — cover every relevant dimension but shrink to a pointer where an artifact already covers it. Exclude full SAD, long rationale, big diagrams, coding conventions, plans, story details, unapproved decisions, generic advice.
 5. **Draft the AI Coding Guidelines** → `docs/engineering/ai-coding-guidelines.md`. Include: scope control, repo structure, layering, how to apply the Context in code, DTO/mapping/validation/error-handling, contract-change workflow, testing, logging/observability, security/privacy/audit/compliance coding rules, prohibited behaviors, ask-first triggers, brownfield rules (where needed), reference impls. Don't redefine architecture — link to the Context.
 6. **Validate against representative code.** Classify each pattern (aligned / current-approved / target-ready / target-not-ready / brownfield exception / known legacy / suspected drift / ask-first). Make Guardrails only for misleading current-vs-target gaps.
 7. **Output:** the two files, manifest/root-file proposals if missing, a Validation Report, any Guardrails, and a "Contributor Decisions Needed" list.

@@ -1,6 +1,6 @@
 # AI Architecture Context & Coding Guidelines
 
-**Make AI coding agents respect your architecture — especially in messy, real-world (brownfield) codebases.**
+**Make AI coding agents respect your approved architecture and decisions — especially in messy, real-world (brownfield) projects.**
 
 This repo gives you two thin files, three skills, and four optional reviewer agents that tell an AI agent *how to apply your approved architecture* before it plans or writes code. No new architecture document. No heavy process. It's designed to drop into an existing project.
 
@@ -8,23 +8,20 @@ This repo gives you two thin files, three skills, and four optional reviewer age
 
 ## The problem
 
-You point an AI agent at your existing codebase and ask it to build a feature. The agent reads the code, finds a pattern, and copies it — confidently.
+You point an AI agent at your project and ask it to build something. To act, it reads whatever it can find — the SAD, ADRs, specs, and code — and **fills the gaps with assumptions.** When the guidance is thin, it goes wrong in three quiet ways:
 
-But your codebase is **brownfield**. The code it copied might be:
+- **Misinterpretation** — it draws the wrong operational conclusion from an artifact (treats a draft ADR as decided, a diagram as binding, or a stale doc as current).
+- **Silent conflict resolution** — two sources disagree (code vs the SAD, an ADR vs a spec) and it just picks one — usually whatever the code already does — without flagging it.
+- **Silent gap-filling** — a critical constraint isn't written down anywhere, so it invents an answer instead of asking.
 
-- a pattern you *approve of* ✅
-- tolerated legacy you're trying to move away from ⚠️
-- a half-finished migration 🚧
-- a one-off shortcut someone added under deadline 🩹
+The sharpest case is **brownfield code**: the agent finds a pattern and copies it confidently — but it might be approved ✅, tolerated legacy ⚠️, a half-finished migration 🚧, or a deadline shortcut 🩹, and code looks like code.
 
-**The AI can't tell the difference.** Code looks like code. So it does things like:
+> "Other services call each other directly over REST, so I added another REST call."
+> *(…but your target is async events — it just expanded the coupling you're removing, and it passed tests.)*
 
-> "I see other services call each other directly over REST, so I added another direct REST call."
-> *(…but your target architecture is async events. The AI just expanded the exact coupling you're trying to remove — and it passed tests and looked clean in the PR.)*
+A senior engineer would have known — which source wins, what's stale, what's missing, whom to ask. The AI doesn't, because nobody told it. And an architect can't review every story across every team to catch it.
 
-A senior engineer would have *known* not to copy that. The AI doesn't, because nobody told it. And an architect can't review every story across every team to catch it.
-
-**The fix:** write down — once, thinly — what the AI should know before it acts. What has authority. What not to copy. When to ask instead of guess.
+**The fix:** write down — once, thinly — what the AI needs before it acts: **what has authority, what conflicts to surface, what's missing (ask, don't guess), and what not to copy.**
 
 ---
 
@@ -161,7 +158,7 @@ That's the whole loop. **You don't need steps 6 or the agents to start** — boo
 - Greenfield project with a tiny team and one clear style → probably overkill; a short `CLAUDE.md` may be enough.
 - You only want code formatting/linting rules → use a linter, not this.
 
-This earns its keep when **existing code might mislead an AI about your real architecture** — i.e. most brownfield systems.
+This earns its keep when an AI must apply **approved architecture and decisions across artifacts that can mislead it** — stale docs, conflicting sources, or brownfield code — i.e. most brownfield systems.
 
 ---
 
