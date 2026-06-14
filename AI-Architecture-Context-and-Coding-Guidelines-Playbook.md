@@ -629,13 +629,24 @@ platform-ai-context  (central, owned by architects)
 ```
 
 ### Set up the central repo (once)
-Run `ai-context-bootstrap` in `platform-ai-context` to create the cross-repo Context + Coding Guidelines + Guardrails, pointing at the org SAD/ADRs/shared specs. Evolve them later with `ai-guidance-update` — this is the cross-team governance seat.
+Run `ai-context-bootstrap` in `platform-ai-context` to create the cross-repo Context + Coding Guidelines + Guardrails, pointing at the org SAD/ADRs/shared specs. Evolve them later with `ai-guidance-update` — the cross-team governance seat (see below).
+
+### Updating the system-wide context
+
+The skills are **per-repo**: running them in a repo affects *only that repo's* context. There is **no special "global" mode and no automatic cross-repo promotion** — "central" is just a normal repo whose context many repos consume. So the central context is updated the same way any repo's is: by running the skills **in the central repo**, against its own artifacts.
+
+1. **Trigger** — a change in the central repo's authoritative artifacts (a cross-repo ADR / spec / SAD change), **or** a learning a **human** judges to have org-wide merit and **raises in the central repo** (usually as a proposed ADR/spec). Carrying a local learning up is a human act; a local `ai-guidance-update` never reaches global on its own.
+2. `ai-guidance-update mode=analyze-only` (in the central repo) classifies it, conflict-checks it against the full org rules, and proposes the smallest change — flagged **human approval required**.
+3. An architect / platform / security owner approves.
+4. `ai-guidance-update mode=apply-approved-update` applies the minimal edit to the central Context / Guidelines / Guardrails (links preserved). It still **never writes the SAD/ADRs/specs** — those it flags or drafts for a human.
+5. Commit (and, if repos pin, tag a release). Propagation to the repos follows your distribution choice below.
 
 ### Wire one repo to it (each team, a few minutes)
 
-1. **Vendor the central layer** (pin a version):
+1. **Link the central layer** (auto-consume the latest, by default):
    ```bash
-   git submodule add git@github.com:org/platform-ai-context .ai/central
+   git submodule add -b main git@github.com:org/platform-ai-context .ai/central
+   # CI (or before a run) pulls the latest:  git submodule update --remote .ai/central
    ```
 2. **Point the agent at it** — `AGENTS.md`:
    ```markdown
@@ -656,11 +667,14 @@ Run `ai-context-bootstrap` in `platform-ai-context` to create the cross-repo Con
 4. **Draft local specifics:** `/ai-context-bootstrap mode=interactive` — it reads central first and writes only this repo's local Context (cross-repo dimensions just link back to central).
 5. **Use it:** `/ai-context-check work=<PR>` — enforces central + local together.
 
-### Keep current
-Bump the pinned central version (a fleet bot can open these PRs across all repos):
-```bash
-git -C .ai/central checkout v1.5.0
-```
-That bump is when a repo picks up the latest cross-repo rules — reproducible, because `ai-context-check` reads the pinned version.
+### Staying current — auto-consume by default; pin only when it gates
 
-**Toolkit vs. your plumbing:** the toolkit gives the model, the skills, and the linking; you supply ordinary dependency distribution (submodule or package) and the fleet-bump bot — the same rails you already use for shared libraries.
+By default the link above **tracks latest**, so central rule changes are picked up automatically (next CI run / `git submodule update --remote`). That's the right choice when the context is **advisory** — the agent reads it, nothing hard-blocks on it.
+
+**Pin a version instead** only when `ai-context-check` gates CI or reviews must be reproducible — so an edit in the central repo can't change whether your *unchanged* code passes:
+```bash
+git -C .ai/central checkout v1.5.0   # pin; adopt later versions via a reviewable bump PR
+```
+Hybrid: auto-consume the bulk, and have the central repo declare a **minimum version** that CI enforces — so urgent rules (e.g. a security fix) still land immediately.
+
+**Toolkit vs. your plumbing:** the toolkit gives the model, the skills, and the linking; you supply ordinary dependency distribution (submodule or package) — and, *if you pin*, a fleet-bump bot — the same rails you already use for shared libraries.

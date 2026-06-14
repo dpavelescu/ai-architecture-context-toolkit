@@ -50,7 +50,7 @@ The two files are **thin**: they don't repeat your architecture, they *point* to
 
 | Step | Skill | When | What it does |
 |---|---|---|---|
-| **1. Bootstrap** | `ai-context-bootstrap` | Once per repo | Reads your repo and drafts the two thin files (+ a manifest and rule cards if needed) |
+| **1. Bootstrap** | `ai-context-bootstrap` | Once per repo | Reads your repo and drafts the two thin files (+ a manifest and Guardrails if needed) |
 | **2. Check** | `ai-context-check` | Every story / plan / PR | Checks the proposed work against the files — catches "locally reasonable but architecturally wrong" before it ships |
 | **3. Update** | `ai-guidance-update` | Only when a learning should become a rule | Folds an approved learning into the files, with human approval |
 
