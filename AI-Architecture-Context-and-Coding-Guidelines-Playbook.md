@@ -281,6 +281,15 @@ docs/solutions/ is supporting memory only. It never overrides requirements, spec
 SAD, ADRs, the Context, the Guidelines, or Guardrails.
 ```
 
+### One repo or many
+
+This works the same whether you have one repo or many — it isn't built around either.
+
+- **Single repo (the default):** the files above live at the repo root and point to your local SAD/ADRs/specs.
+- **Multiple repos:** keep one **central, system-level Context** (in a platform/architecture repo) that governs cross-repo concerns and points to the cross-repo SAD/ADRs; each repo runs the same toolkit, and its manifest simply **links up** to that central Context as a must-read source, adding only repo-local specifics.
+
+Same mechanism, one level up — **no special multi-repo mode**, and you add the central layer only if cross-repo governance actually needs it.
+
 ---
 
 ## 6. House rules for every skill
@@ -411,7 +420,7 @@ The knobs below are the whole surface. **Complexity is not a knob** — every sk
 
 | Knob | Values | Meaning | Used by |
 |---|---|---|---|
-| `scope` | `repository` / `service` / `module` / `bounded-context` | how much to look at and act on | bootstrap (required), check (optional) |
+| `scope` | a path (optional; omit = whole repo) | focuses the run on a sub-path; output is still the single repo-level set | bootstrap, check |
 | `mode` — **Ask?** | `interactive` / `headless` | `interactive` asks one blocking question when needed; `headless` never asks and records gaps in the report | bootstrap, check |
 | `mode` — **Write?** | `analyze-only` / `apply-approved-update` | `analyze-only` reports without writing; `apply-approved-update` writes only explicitly approved changes | check (read-only), update |
 | `produce` | `context` / `guidelines` / `both` *(default `both`)* | which artifact bootstrap drafts | bootstrap |
@@ -433,7 +442,7 @@ The knobs below are the whole surface. **Complexity is not a knob** — every sk
 
 **Use when:** starting AI delivery in a repo; onboarding a new service/module/context/team; creating the first Context or Guidelines; checking whether existing guidance is usable. **Not** for story-specific planning (use `ai-context-check`) or guidance evolution (use `ai-guidance-update`).
 
-**Invoke:** `/ai-context-bootstrap scope=<repository|service|module|bounded-context> mode=<interactive|headless>` (default `interactive`). Optional: `produce=<context|guidelines|both>` (default `both`), `source_override`, `representative_code_override`, `target_output_dir`. (`produce` runs Phase 4, Phase 5, or both; discovery always runs.)
+**Invoke:** `/ai-context-bootstrap [scope=<path>] mode=<interactive|headless>` (default `interactive`; omit `scope` for the whole repo, or give a path to focus one area). Optional: `produce=<context|guidelines|both>` (default `both`), `source_override`, `representative_code_override`, `target_output_dir`. (`produce` runs Phase 4, Phase 5, or both; discovery always runs.)
 
 **Phases:**
 
@@ -469,7 +478,7 @@ The knobs below are the whole surface. **Complexity is not a knob** — every sk
 
 **Use when:** reviewing a Jira story, Story Artifact, AI analysis, plan, PR, diff, solution note, or proposed learning — ideally **before** implementation.
 
-**Invoke:** `/ai-context-check work=<story|artifact|plan|pr|diff|solution-note> mode=<interactive|analyze-only>` (default `analyze-only`). Optional: `scope`, `focus=<architecture|coding|brownfield|contracts|security|all>`.
+**Invoke:** `/ai-context-check work=<story|artifact|plan|pr|diff|solution-note> mode=<interactive|analyze-only>` (default `analyze-only`). Optional: `scope=<path>`, `focus=<architecture|coding|brownfield|contracts|security|all>`.
 
 **Phases:**
 
@@ -591,7 +600,7 @@ It ends with a short **"Do not do"** list (e.g. *don't implement the proposed co
 1. **Create the minimum files** — `ai-context.md`, `ai-coding-guidelines.md`, a root instruction file. (Manifest optional.)
 2. **Add the three skills** under `.ai/skills/`.
 3. **Add agents only if useful.** Skip for a pilot; add when reviews get broad.
-4. **Bootstrap:** `/ai-context-bootstrap scope=repository mode=interactive`
+4. **Bootstrap:** `/ai-context-bootstrap mode=interactive` (whole repo; add `scope=<path>` to pilot one area)
 5. **Use on stories:** `/ai-context-check work=<story-or-plan> mode=analyze-only`
 6. **Analyze a candidate learning:** `/ai-guidance-update source=<finding-or-note> mode=analyze-only`
 7. **Apply only approved updates:** `/ai-guidance-update source=<approved-update> mode=apply-approved-update`

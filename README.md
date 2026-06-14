@@ -101,7 +101,9 @@ Copy the `.ai/` folder into your project's root. (Using Claude Code? You can als
 ### Step 2 — Run bootstrap
 
 ```
-/ai-context-bootstrap scope=repository mode=interactive
+/ai-context-bootstrap mode=interactive            # whole repo
+# or focus one area first:
+/ai-context-bootstrap scope=services/order-service mode=interactive
 ```
 
 It will:
@@ -110,7 +112,7 @@ It will:
 - ask you **one question at a time**, only when a real gap blocks it (e.g. *"Which is the authority for cross-service comms — SAD §4.3, ADR-012, or current code?"*)
 - flag anything it can't safely decide as `TBD` or "ask first" instead of guessing
 
-Start small: pick one service or bounded context if the whole repo is too big.
+Start small: add `scope=<path>` to focus one service or area if the whole repo is too big.
 
 ### Step 3 — Review and approve the drafts
 

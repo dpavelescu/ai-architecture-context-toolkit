@@ -39,7 +39,7 @@ Examples:
 /ai-context-check work=PR-456 mode=analyze-only
 ```
 
-Optional: `scope=<repository|service|module|bounded-context>`,
+Optional: `scope=<path>` (focus on a sub-path; omit for the whole repo),
 `focus=<architecture|coding|brownfield|contracts|security|all>`. If no mode is given,
 use `analyze-only`.
 

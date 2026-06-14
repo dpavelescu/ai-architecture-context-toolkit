@@ -42,15 +42,15 @@ or for approved guidance evolution (use `ai-guidance-update`).
 ## Invocation
 
 ```
-/ai-context-bootstrap scope=<repository|service|module|bounded-context> mode=<interactive|headless>
+/ai-context-bootstrap [scope=<path>] mode=<interactive|headless>
 ```
 
 Examples:
 
 ```
-/ai-context-bootstrap scope=repository mode=interactive
-/ai-context-bootstrap scope=services/order-service mode=interactive
-/ai-context-bootstrap scope=bounded-context:payments mode=headless
+/ai-context-bootstrap mode=interactive                              # whole repo
+/ai-context-bootstrap scope=services/order-service mode=interactive # focus one service
+/ai-context-bootstrap scope=libs/payments mode=headless            # focus an area
 ```
 
 Optional: `produce=<context|guidelines|both>` (default `both`),
@@ -60,6 +60,23 @@ Optional: `produce=<context|guidelines|both>` (default `both`),
 `produce` selects which artifact(s) to draft: `context` runs Phase 4, `guidelines` runs
 Phase 5, `both` runs both. Discovery and assessment (Phases 1–2) always run, because the
 Coding Guidelines apply the Architecture Context and must read it either way.
+
+## Scope — focusing a run
+
+`scope=<path>` focuses a run on a sub-path (a service, module, or area); **omit it to
+cover the whole repo.** It bounds what the run **examines and drafts** — not the output
+path. Output is always the single repo-level set (`docs/architecture/ai-context.md`,
+`docs/engineering/ai-coding-guidelines.md`), and the Context's *Purpose & scope* section
+**records what it currently covers**. So you can adopt incrementally: focus one service
+first, then re-run for the whole repo — **refresh mode** keeps the earlier content as the
+approved baseline and proposes coverage for the rest. Coverage only ever **grows**; a
+broader run never discards a narrower one's approved content.
+
+**Multiple repos:** the toolkit is per-repo — run it in each repo. Cross-repo architecture
+(the SAD/ADRs usually span repos) is governed *above* the repo: keep a shared
+**system-level Context** alongside the cross-repo SAD/ADRs, and have each repo's
+Context/manifest **link up** to it and add only repo-local specifics — point, don't
+duplicate.
 
 ## House rules (apply throughout)
 
