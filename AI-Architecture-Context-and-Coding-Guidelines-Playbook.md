@@ -288,7 +288,7 @@ This works the same whether you have one repo or many — it isn't built around 
 - **Single repo (the default):** the files above live at the repo root and point to your local SAD/ADRs/specs.
 - **Multiple repos:** keep one **central, system-level Context** (in a platform/architecture repo) that governs cross-repo concerns and points to the cross-repo SAD/ADRs; each repo runs the same toolkit, and its manifest simply **links up** to that central Context as a must-read source, adding only repo-local specifics.
 
-Same mechanism, one level up — **no special multi-repo mode**, and you add the central layer only if cross-repo governance actually needs it.
+Same mechanism, one level up — **no special multi-repo mode**, and you add the central layer only if cross-repo governance actually needs it. (See the *Appendix — Scaling to many repos* for a worked example.)
 
 ---
 
@@ -610,3 +610,57 @@ It ends with a short **"Do not do"** list (e.g. *don't implement the proposed co
 ## 13. In one paragraph
 
 The SAD and ADRs stay the source of architecture knowledge. The **AI Architecture Context** is a thin operational layer that tells AI how to apply that knowledge safely; the **AI Coding Guidelines** tell AI how to implement within it; **Brownfield Guardrails** stop current-but-wrong patterns from becoming future architecture. Three small skills — **bootstrap, check, update** — form a loop that discovers context from the repo, checks every story against it, and folds back only the learnings that change future behavior. Skills ask one blocking question at a time, and humans approve every governance decision. It stays lightweight on purpose: leverage over ceremony, and each story leaving the guidance a little better than it found it.
+
+---
+
+## Appendix — Scaling to many repos (a worked example)
+
+*The toolkit is single-repo by default. Use this only when your architecture and coding rules are genuinely cross-repo (e.g. many microservice / microfrontend repos). It's the same mechanism, one level up — no special mode.*
+
+**The idea:** write the cross-repo rules **once** in a central repo; every repo **links** to it and adds only its own specifics. Rules live in one place → no drift; change them once → every repo gets it on a version bump.
+
+```
+platform-ai-context  (central, owned by architects)
+   ├─ docs/architecture/ai-context.md          ← cross-repo rules
+   ├─ docs/engineering/ai-coding-guidelines.md
+   └─ guardrails/
+        ▲  vendored & version-pinned
+   svc-orders    svc-payments    mfe-checkout    … (×N)
+```
+
+### Set up the central repo (once)
+Run `ai-context-bootstrap` in `platform-ai-context` to create the cross-repo Context + Coding Guidelines + Guardrails, pointing at the org SAD/ADRs/shared specs. Evolve them later with `ai-guidance-update` — this is the cross-team governance seat.
+
+### Wire one repo to it (each team, a few minutes)
+
+1. **Vendor the central layer** (pin a version):
+   ```bash
+   git submodule add git@github.com:org/platform-ai-context .ai/central
+   ```
+2. **Point the agent at it** — `AGENTS.md`:
+   ```markdown
+   ## Read order
+   1. .ai/central/docs/architecture/ai-context.md          # cross-repo (authoritative)
+   2. .ai/central/docs/engineering/ai-coding-guidelines.md
+   3. .ai/central/guardrails/
+   4. docs/architecture/ai-context.md                      # this repo's specifics
+   ## Authority: central wins for cross-repo concerns; local governs local-only; on conflict, raise it.
+   ```
+3. **Point the skills at it** — `ai-enablement/context-manifest.yaml`:
+   ```yaml
+   ai_guidance:
+     architecture_context: [.ai/central/docs/architecture/ai-context.md, docs/architecture/ai-context.md]
+     coding_guidelines:    [.ai/central/docs/engineering/ai-coding-guidelines.md]
+     guardrails:           [.ai/central/guardrails/]
+   ```
+4. **Draft local specifics:** `/ai-context-bootstrap mode=interactive` — it reads central first and writes only this repo's local Context (cross-repo dimensions just link back to central).
+5. **Use it:** `/ai-context-check work=<PR>` — enforces central + local together.
+
+### Keep current
+Bump the pinned central version (a fleet bot can open these PRs across all repos):
+```bash
+git -C .ai/central checkout v1.5.0
+```
+That bump is when a repo picks up the latest cross-repo rules — reproducible, because `ai-context-check` reads the pinned version.
+
+**Toolkit vs. your plumbing:** the toolkit gives the model, the skills, and the linking; you supply ordinary dependency distribution (submodule or package) and the fleet-bump bot — the same rails you already use for shared libraries.
