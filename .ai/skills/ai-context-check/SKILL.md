@@ -28,7 +28,7 @@ analysis when a repeated issue appears.
 ## Invocation
 
 ```
-/ai-context-check work=<story|artifact|plan|pr|diff|solution-note> mode=<interactive|headless|analyze-only>
+/ai-context-check work=<story|artifact|plan|pr|diff|solution-note> mode=<interactive|analyze-only>
 ```
 
 Examples:
@@ -63,7 +63,7 @@ use `analyze-only`.
 ## Phase 1 — Discover context
 
 Read and classify: root AI instruction file; context manifest; AI Architecture
-Context; AI Coding Guidelines; Brownfield Rule Cards; relevant SAD sections; relevant
+Context; AI Coding Guidelines; Brownfield Guardrails; relevant SAD sections; relevant
 ADRs; relevant formal specs; relevant code and tests; relevant solution notes
 (supporting memory only).
 
@@ -73,14 +73,14 @@ Identify: the work item; business intent; affected service / module / bounded co
 affected data ownership; affected API / event / UI contracts; affected security /
 privacy / audit / compliance behavior; changed or proposed files; the implementation
 pattern being used or proposed; current-vs-target implications; relevant Brownfield
-Rule Cards. If intent is unclear and risk is material, ask one blocking question
+Guardrails. If intent is unclear and risk is material, ask one blocking question
 (interactive only).
 
 ## Phase 3 — Architecture alignment check
 
 Check against: ownership / service / module / bounded-context boundaries; data
 ownership rules; integration rules; allowed coupling; prohibited shortcuts;
-current-vs-target guidance; Brownfield Rule Cards; ask-first triggers.
+current-vs-target guidance; Brownfield Guardrails; ask-first triggers.
 
 Flag **locally reasonable but directionally wrong** solutions, e.g.:
 
@@ -181,7 +181,7 @@ Ask exactly one question only if needed, or write: None.
 ## Recommended next action
 Choose one: proceed | proceed with noted risks | clarify one blocking question |
 update plan | update PR | run ai-guidance-update in analyze-only mode | raise
-architecture decision | update formal spec | create or update Brownfield Rule Card
+architecture decision | update formal spec | create or update Brownfield Guardrail
 ```
 
 ## Stop conditions

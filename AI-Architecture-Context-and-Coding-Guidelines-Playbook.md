@@ -10,7 +10,7 @@
 
 We do this with two thin, AI-facing files (plus optional helpers). They don't replace your architecture docs. They sit on top and tell the AI *how to apply* them safely.
 
-This guide borrows one principle from compound engineering: **each unit of work should make the next one easier.** Context and learnings compound. You set up the context once, use it on every story, and capture the few learnings worth keeping. Over time the AI gets safer and you write less, not more.
+One principle underpins it: **each unit of work should make the next one easier.** Context and guidance accumulate — you set the context up once, use it on every story, and fold back only the few learnings worth keeping. Over time the AI gets safer and you write less, not more.
 
 ---
 
@@ -35,7 +35,7 @@ Everything in this guide is one loop with three steps:
              │                                          │
              ▼                                          │
    ┌────────────────────┐                              │
-   │ 3. UPDATE           │  When a lesson repeats,      │
+   │ 3. UPDATE           │  When a learning lands,      │
    │   (only when needed)│  fold it back in.  ──────────┘
    └────────────────────┘
 ```
@@ -153,7 +153,7 @@ Most real systems **combine** these — layered modules inside a service, servic
 
 5. **Humans still review.** This improves what reaches review; it doesn't remove review. A solution can pass tests, look clean, and still expand coupling or violate intent. Make key constraints visible *before* the plan, not only at PR time.
 
-6. **No silent governance.** AI may *propose* classifications, Rule Cards, or updates. AI must never silently approve architecture, security, privacy, audit, compliance, contract, or coding-standard decisions. Those need human approval.
+6. **No silent governance.** AI may *propose* classifications, Guardrails, or updates. AI must never silently approve architecture, security, privacy, audit, compliance, contract, or coding-standard decisions. Those need human approval.
 
 ---
 
@@ -177,13 +177,13 @@ The AI **reads** AI-facing files first — but they are **not** the highest auth
 2. Formal specs (OpenAPI, AsyncAPI, Figma, data, security, privacy, audit, compliance)
 3. Approved ADRs
 4. SAD and approved architecture docs
-5. AI Architecture Context + approved Brownfield Rule Cards
+5. AI Architecture Context + approved Brownfield Guardrails
 6. AI Coding Guidelines
 7. Approved reference implementations
 8. Local code and tests (implementation evidence)
 9. Solution notes (supporting memory only)
 
-**When sources conflict, the AI does not resolve it silently — it raises a context conflict.** The team then decides what's stale (Context? SAD? code?) and whether a Rule Card, ADR, spec, or guidance update is needed.
+**When sources conflict, the AI does not resolve it silently — it raises a context conflict.** The team then decides what's stale (Context? SAD? code?) and whether a Guardrail, ADR, spec, or guidance update is needed.
 
 ---
 
@@ -271,8 +271,8 @@ Use the authority order (see the guide). Approved requirements win; solution not
 
 ## Brownfield rule
 Existing code is evidence, not approved architecture. Don't copy patterns the
-Context or a Brownfield Rule Card marks as current-but-not-target. If current and
-target differ and no Rule Card covers it — and it touches architecture, ownership,
+Context or a Brownfield Guardrail marks as current-but-not-target. If current and
+target differ and no Guardrail covers it — and it touches architecture, ownership,
 data, contracts, security, privacy, audit, or compliance — ask first.
 
 ## Conflict rule
@@ -284,11 +284,11 @@ Ask one blocking question at a time. Put non-blocking questions in the report.
 ## Governance rule
 Human approval is required for changes to: architecture, ownership, data ownership,
 API/event contracts, security, privacy, audit, compliance, coding standards, or
-Brownfield Rule Card status.
+Brownfield Guardrail status.
 
 ## Solution memory rule
 docs/solutions/ is supporting memory only. It never overrides requirements, specs,
-SAD, ADRs, the Context, the Guidelines, or Rule Cards.
+SAD, ADRs, the Context, the Guidelines, or Guardrails.
 ```
 
 ---
@@ -301,27 +301,23 @@ These apply to all three skills — defined once here, referenced by each.
 2. **One blocking question at a time.** Classify each gap as *blocking / non-blocking / clarify-later*. Only blocking gaps may interrupt. Prefer multiple-choice. Non-blocking questions go in the report.
    > *Example:* "Which source is the authority for cross-service communication? **A)** SAD §4.3 · **B)** ADR-012 · **C)** current code · **D)** no safe default — mark Ask first."
 3. **Use safe defaults.** If a missing decision touches architecture, ownership, data, contracts, or security/privacy/audit/compliance, never invent the answer. Instead: ask one blocking question, mark it `TBD` or `Ask first`, recommend a decision, stop with a blocking finding, or produce an analyze-only report.
-4. **Support modes** (default to the safest):
-   - `interactive` — ask one blocking question at a time
-   - `headless` — never ask; mark unresolved items, produce a report
-   - `analyze-only` — change no files; produce findings
-   - `apply-approved-update` — update only explicitly approved sections
-5. **Classify evidence.** Tag every source: approved requirement / Story Artifact / formal spec / approved ADR / SAD / Context / Guidelines / Rule Card / approved reference impl / current code / known legacy / suspected drift / candidate learning / supporting memory. **Current code is never "approved architecture" unless an approved source confirms it.**
+4. **Modes — two dials.** Each run sets **Ask?** (`interactive` = ask one blocking question when needed; otherwise never ask and record gaps in the report) and **Write?** (read-only vs writing files). Each skill exposes only what it needs: `ai-context-bootstrap` writes drafts (`interactive` / `headless`); `ai-context-check` is **always read-only** (`interactive` / `analyze-only`); `ai-guidance-update` is read-only in `analyze-only` (default) and writes only in `apply-approved-update`. Default to the safest option.
+5. **Classify evidence.** Tag every source: approved requirement / Story Artifact / formal spec / approved ADR / SAD / Context / Guidelines / Guardrail / approved reference impl / current code / known legacy / suspected drift / candidate learning / supporting memory. **Current code is never "approved architecture" unless an approved source confirms it.**
 6. **Produce durable output.** Always emit a file or report — an updated/draft artifact, a validation/alignment/analysis report, a blocking question, or a stopped state with reason. **Chat history is never the source of truth.**
-7. **Right-size the work.** Match the amount of ceremony to the size, clarity, and risk of the work. A small repo or an aligned, low-risk change gets a compact pass — skip phases that add nothing and prefer a short report (or "no change needed"). Reserve the full multi-phase treatment for large, ambiguous, or high-risk work. Don't manufacture Rule Cards, reports, or questions the situation doesn't need. *(This is the principle that keeps the approach lightweight — it comes straight from compound engineering's "match ceremony to the work.")*
+7. **Right-size the work.** Match the amount of ceremony to the size, clarity, and risk of the work. A small repo or an aligned, low-risk change gets a compact pass — skip phases that add nothing and prefer a short report (or "no change needed"). Reserve the full multi-phase treatment for large, ambiguous, or high-risk work. Don't manufacture Guardrails, reports, or questions the situation doesn't need. *(This is the principle that keeps the whole approach lightweight: match ceremony to the work.)*
 
 ---
 
-## 7. Brownfield Rule Cards
+## 7. Brownfield Guardrails
 
-Use a Rule Card **only** when current code and target direction differ in a way that could mislead the AI. Don't make them for aligned situations.
+Use a Guardrail **only** when current code and target direction differ in a way that could mislead the AI. Don't make them for aligned situations.
 
 **Statuses:** `Use current` (current is approved) · `Use target` (new work follows target even if code differs) · `Target not ready` (target exists, don't move there unless scoped) · `Ask first` (AI must not decide alone).
 
 **Template:**
 
 ```markdown
-## Brownfield Rule: <Topic>
+## Brownfield Guardrail: <Topic>
 Status: <Use current | Use target | Target not ready | Ask first>
 Source:           <SAD / ADR / spec / decision>
 Current state:    <what exists today>
@@ -335,7 +331,7 @@ Ask when:         <conditions needing clarification>
 **Example:**
 
 ```markdown
-## Brownfield Rule: Cross-service communication
+## Brownfield Guardrail: Cross-service communication
 Status: Use target
 Source: SAD §4.3, ADR-012
 Current state:    Some services still call each other directly over REST.
@@ -352,7 +348,7 @@ Ask when:         A story seems to need a new sync dependency; eventual consiste
 ## 8. Using the guidance during delivery (the Check step)
 
 1. Read root file → manifest → Context → Guidelines → relevant SAD/ADRs/specs/diagrams
-2. Analyze the story; identify affected architecture areas and relevant Rule Cards
+2. Analyze the story; identify affected architecture areas and relevant Guardrails
 3. Produce a plan **constrained by the guidance**
 4. Implement only after the plan is accepted
 5. Review the implementation against the plan and guidance
@@ -360,36 +356,57 @@ Ask when:         A story seems to need a new sync dependency; eventual consiste
 
 ---
 
-## 9. Evolving the guidance (the Update / "compound" step)
+## 9. Evolving the guidance (the Update step)
 
-This is where the compounding happens — but deliberately, not on every story.
+This is where guidance evolves — deliberately, not on every story.
 
-**Update only when a learning will change future AI behavior**, e.g.: the AI keeps making the same wrong assumption; reviewers keep correcting the same issue; a brownfield exception keeps misleading the AI; the target direction becomes clear; an ADR or spec changes; a new reference implementation is approved.
+When a candidate learning appears — a review finding, an approved ADR or spec change, or a captured solution note — `update` asks **two questions**. (Note: it does **not** depend on counting how often a pattern occurred — you usually can't know that.)
 
-**Not every learning belongs in the Context.** Route it to the right home:
+1. **Altitude — does it belong at governance level?** Place the learning on the ladder below. Most learnings sit *below* the line and need no change to the AI-facing guidance.
+2. **Conflict / drift — does it clash with approved direction?** If it contradicts the Context, Guidelines, ADRs, or specs, that's drift to be **mediated**, not a pattern to bless.
 
-| Learning | Home |
-|---|---|
-| Story-specific decision | Story Artifact / Jira |
-| Implementation detail | PR / plan |
-| Reusable coding convention | AI Coding Guidelines |
-| Architecture rule (changes AI behavior) | AI Architecture Context |
-| Decision rationale | ADR |
-| Contract change | Formal spec |
-| Candidate / unproven learning | Solution note |
-| Repeated brownfield ambiguity | Brownfield Rule Card |
+**The altitude ladder** — route each learning to its home:
 
-**If a learning conflicts with current guidance:** don't update silently. Classify the conflict, name the affected source of truth, recommend one action (no update / update Context / update Guidelines / Rule Card / ADR / spec / raise decision), and **apply only approved updates.**
+| Learning | Home | Governance level? |
+|---|---|---|
+| Story-specific decision | Story Artifact / Jira | below |
+| Implementation detail | PR / plan / solution note | below |
+| Candidate / unproven learning | Solution note | below |
+| Reusable coding convention | AI Coding Guidelines | **yes** |
+| Architecture rule (changes AI behavior) | AI Architecture Context | **yes** |
+| Repeated brownfield ambiguity | Brownfield Guardrail | **yes** |
+| Decision rationale | ADR | yes — human-owned |
+| Contract change | Formal spec | yes — human-owned |
 
-### Candidate patterns and the promotion gate
+Only the **yes** rows touch governance, and only the first three of those are AI-facing files this toolkit writes; ADR/SAD/spec are human-owned (see *Two-speed governance* below).
 
-A learning — a recurring review finding, an approved ADR or spec change, or a **solution note** (including one written by compound engineering's `/ce-compound`) — is a **candidate, not approved guidance.** `ai-guidance-update` is the gate that decides whether, and where, a candidate becomes guidance:
+**When a learning conflicts with current guidance:** don't update silently. Classify the conflict, name the affected source of truth, recommend one action (no update / update Context / update Guidelines / Guardrail / raise ADR / update spec), and **apply only approved updates.**
 
-- **Analyze first.** Its default is `analyze-only`: it classifies the candidate, routes it (table above), checks for conflicts, and produces a proposal with a **"human approval required"** flag. It never auto-promotes — a solution note does not silently become a rule.
-- **Most candidates don't enter the Context.** A reusable coding convention belongs in the **AI Coding Guidelines**; rationale in an ADR; contract truth in a spec; a story-specific or unproven idea stays where it is (or "no update needed"). Only a *behavior-changing architecture rule* enters the **AI Architecture Context**. The toolkit is general across **both** AI-facing artifacts — promotion targets either, not just the Context.
+### The promotion gate
+
+A candidate is **not approved guidance.** `ai-guidance-update` is the gate that decides whether, and where, a candidate becomes a rule:
+
+- **Analyze first.** Its default is `analyze-only`: it classifies the candidate by altitude, checks for conflict/drift, and produces a proposal with a **"human approval required"** flag. It never auto-promotes — a captured note does not silently become a rule.
+- **Most candidates don't enter the Context.** Route by the altitude ladder above: only a *behavior-changing architecture rule* reaches the Context, a reusable convention reaches the Guidelines, and most learnings reach neither (or "no update needed").
+- **Promote thin, by reference.** When a learning is promoted, write a **one-line operational rule that links back to its source** — never copy the source's detail into governance. The detailed memory stays in the note; the Context/Guidelines holds only the binding rule. This is what keeps governance from becoming a second, bloated copy of your notes.
 - **Human approves, then it writes.** Only `apply-approved-update`, with explicit approval, makes the smallest change and preserves the link to the approved source.
 
-This is exactly what makes the toolkit safe to pair with a knowledge-capture loop like compound engineering: that loop *generates* candidate patterns freely (solution notes), and this gate ensures only human-approved ones become governance. `ai-context-check` is the proactive counterpart — it *detects* violations before they ship; `ai-guidance-update` is what turns a repeated finding into an approved rule.
+`ai-context-check` is the proactive counterpart — it *detects* violations before they ship; `ai-guidance-update` is what turns a confirmed learning into an approved rule.
+
+### Two-speed governance: the Context vs SAD/ADRs
+
+A new direction must never be *decided* in the AI Context — the authority order ranks ADRs and the SAD **above** it. Truth flows one way: **decision (ADR / SAD / spec / approved story) → AI Context (an operational mirror that links back).** The Context is a fast reflection of approved architecture, not the system of record for a decision.
+
+That splits an update into two cases:
+
+- **The decision already exists upstream** (an ADR/spec changed, or an approved story set the direction). `update` simply *propagates* it into the Context — safe to apply immediately (through the human gate), because it decides nothing; it mirrors the source and links to it.
+- **The new pattern has no approved home yet.** The Context must not silently become the decision. Choose by stakes:
+  - *High-stakes / irreversible / cross-team / contract / security* → **raise an ADR first**; the Context stays "ask first / pending" until the decision exists.
+  - *Low-stakes, operational* → a **human-approved Brownfield Guardrail marked `pending ADR`, with an owner and a review date**, guides the AI now; the ADR/SAD is formalized later, then the card is reconciled and linked.
+
+This is **two-speed governance**: a fast AI-facing lane (Context / Guidelines / Guardrails) that `update` writes *with approval* and may mark provisional, and a slow authoritative lane (ADR / SAD / specs) that **humans own** — `update` only *flags or drafts* those, never writes them. A `pending ADR` marker is **tracked debt**: `ai-context-check`'s coverage-gap surfaces it on every run until the upstream artifact catches up, so the fast lane never permanently outruns the SAD.
+
+> **Keep it light.** The provisional-card path (with owners and review dates) is *optional* — it's for teams that already track debt. Until then, just use **ADR-first** (or plain "ask first") and accept a slower cadence. Adopt the lifecycle only once the tracking earns its keep.
 
 ---
 
@@ -399,7 +416,7 @@ The ready-to-use files live in `.ai/skills/<name>/SKILL.md`; the summaries below
 
 ### 10.1 `ai-context-bootstrap` — set up the context
 
-**Purpose:** Create or refresh the minimum AI-facing guidance (Context, Guidelines, Rule Cards where needed, manifest/root-file proposals if missing, a validation report, and a list of decisions needed).
+**Purpose:** Create or refresh the minimum AI-facing guidance (Context, Guidelines, Guardrails where needed, manifest/root-file proposals if missing, a validation report, and a list of decisions needed).
 
 **Use when:** starting AI delivery in a repo; onboarding a new service/module/context/team; creating the first Context or Guidelines; checking whether existing guidance is usable. **Not** for story-specific planning (use `ai-context-check`) or guidance evolution (use `ai-guidance-update`).
 
@@ -410,10 +427,10 @@ The ready-to-use files live in `.ai/skills/<name>/SKILL.md`; the summaries below
 1. **Discover** the repo (root file, manifest, existing guidance, SAD/ADRs/diagrams, specs, representative code/tests/CI, solution notes). Classify each source.
 2. **Assess sufficiency:** *sufficient to draft / draft-with-TBDs / blocked by gaps.* Blocking gaps include unclear: service/context/data ownership, cross-service comms rule, API/event authority, security/privacy/audit/compliance constraints, a visible current-vs-target conflict, or a source-of-truth conflict. In `interactive`, ask one question; in `headless`, stop with a Blocking Context Report.
 3. **Propose the manifest** (if missing) from discovered paths; mark unknowns `TBD`.
-4. **Draft the AI Architecture Context** → `docs/architecture/ai-context.md`. First run the **coverage sweep** (see §1 "What the Context must cover"): for each relevant dimension decide *point / restate-actionably / fill-and-flag* against the existing artifacts, and record fill-and-flag items under "Contributor decisions needed." Include: purpose/scope, read order, authority order, must-read sources, minimal system overview, **architecture style & modularity rules**, ownership/boundary rules, data ownership, integration rules, API/event rules, security/privacy/audit/compliance constraints, current-vs-target, Rule Cards (only where needed), prohibited shortcuts, ask-first triggers, links. Thin ≠ narrow — cover every relevant dimension but shrink to a pointer where an artifact already covers it. Exclude full SAD, long rationale, big diagrams, coding conventions, plans, story details, unapproved decisions, generic advice.
+4. **Draft the AI Architecture Context** → `docs/architecture/ai-context.md`. First run the **coverage sweep** (see §1 "What the Context must cover"): for each relevant dimension decide *point / restate-actionably / fill-and-flag* against the existing artifacts, and record fill-and-flag items under "Contributor decisions needed." Include: purpose/scope, read order, authority order, must-read sources, minimal system overview, **architecture style & modularity rules**, ownership/boundary rules, data ownership, integration rules, API/event rules, security/privacy/audit/compliance constraints, current-vs-target, Guardrails (only where needed), prohibited shortcuts, ask-first triggers, links. Thin ≠ narrow — cover every relevant dimension but shrink to a pointer where an artifact already covers it. Exclude full SAD, long rationale, big diagrams, coding conventions, plans, story details, unapproved decisions, generic advice.
 5. **Draft the AI Coding Guidelines** → `docs/engineering/ai-coding-guidelines.md`. Include: scope control, repo structure, layering, how to apply the Context in code, DTO/mapping/validation/error-handling, contract-change workflow, testing, logging/observability, security/privacy/audit/compliance coding rules, prohibited behaviors, ask-first triggers, brownfield rules (where needed), reference impls. Don't redefine architecture — link to the Context.
-6. **Validate against representative code.** Classify each pattern (aligned / current-approved / target-ready / target-not-ready / brownfield exception / known legacy / suspected drift / ask-first). Make Rule Cards only for misleading current-vs-target gaps.
-7. **Output:** the two files, manifest/root-file proposals if missing, a Validation Report, any Rule Cards, and a "Contributor Decisions Needed" list.
+6. **Validate against representative code.** Classify each pattern (aligned / current-approved / target-ready / target-not-ready / brownfield exception / known legacy / suspected drift / ask-first). Make Guardrails only for misleading current-vs-target gaps.
+7. **Output:** the two files, manifest/root-file proposals if missing, a Validation Report, any Guardrails, and a "Contributor Decisions Needed" list.
 
 **Output format:**
 
@@ -424,7 +441,7 @@ The ready-to-use files live in `.ai/skills/<name>/SKILL.md`; the summaries below
 ## Context sources discovered   | Source | Path | Evidence type | Authority |
 ## Blocking question            (one question, or "None.")
 ## Contributor decisions needed | Decision | Reason | Blocking? | Owner |
-## Brownfield Rule Cards created | Topic | Status | Reason |
+## Brownfield Guardrails created | Topic | Status | Reason |
 ## Validation summary
 ## Recommended next step
 ```
@@ -439,13 +456,13 @@ The ready-to-use files live in `.ai/skills/<name>/SKILL.md`; the summaries below
 
 **Use when:** reviewing a Jira story, Story Artifact, AI analysis, plan, PR, diff, solution note, or proposed learning — ideally **before** implementation.
 
-**Invoke:** `/ai-context-check work=<story|artifact|plan|pr|diff|solution-note> mode=<interactive|headless|analyze-only>` (default `analyze-only`). Optional: `scope`, `focus=<architecture|coding|brownfield|contracts|security|all>`.
+**Invoke:** `/ai-context-check work=<story|artifact|plan|pr|diff|solution-note> mode=<interactive|analyze-only>` (default `analyze-only`). Optional: `scope`, `focus=<architecture|coding|brownfield|contracts|security|all>`.
 
 **Phases:**
 
 1. **Discover** context (same sources as bootstrap) and classify each.
-2. **Understand the work:** intent, affected service/module/context, data ownership, API/event/UI contracts, security/privacy/audit/compliance behavior, changed files, the pattern being used, current-vs-target implications, relevant Rule Cards. If intent is unclear and risk is material, ask one blocking question (interactive).
-3. **Architecture check** against ownership/boundaries, data rules, integration rules, allowed coupling, prohibited shortcuts, current-vs-target, Rule Cards, ask-first triggers. Flag locally-reasonable-but-wrong moves — e.g. adding a sync call because similar ones exist; reading another service's DB because legacy does; duplicating domain logic in the frontend; bypassing an event contract; writing audit data directly.
+2. **Understand the work:** intent, affected service/module/context, data ownership, API/event/UI contracts, security/privacy/audit/compliance behavior, changed files, the pattern being used, current-vs-target implications, relevant Guardrails. If intent is unclear and risk is material, ask one blocking question (interactive).
+3. **Architecture check** against ownership/boundaries, data rules, integration rules, allowed coupling, prohibited shortcuts, current-vs-target, Guardrails, ask-first triggers. Flag locally-reasonable-but-wrong moves — e.g. adding a sync call because similar ones exist; reading another service's DB because legacy does; duplicating domain logic in the frontend; bypassing an event contract; writing audit data directly.
 4. **Coding-guideline check** against structure, layering, naming, DTO/mapping/validation/error-handling, testing, logging/observability, security/privacy/audit/compliance coding rules, contract workflow, and scope control. Flag changes broader than the reviewed scope.
 5. **Contract & compliance check.** If a spec should change but the work doesn't mention it, flag the gap. If the work changes a contract with no approved source, flag a governance issue.
 6. **Brownfield risk check.** If the solution copies/extends known legacy, a tolerated workaround, a partial migration, a local exception, suspected drift, or current-but-not-target code, classify the risk (acceptable preservation / risky expansion / migration-needed-not-scoped / target-not-ready / ask-first / architecture-decision-required).
@@ -470,18 +487,18 @@ The ready-to-use files live in `.ai/skills/<name>/SKILL.md`; the summaries below
 ## Non-blocking open points
 ## Recommended next action  (proceed | proceed with risks | clarify | update plan/PR
                             | run ai-guidance-update analyze-only | raise architecture decision
-                            | update spec | create/update Rule Card)
+                            | update spec | create/update Guardrail)
 ```
 
-**Stop and ask one question (interactive) — otherwise report it (headless/analyze-only) — when:** the solution needs an architecture decision; ownership, data ownership, or contract authority is unclear; security/privacy/audit/compliance impact is unclear; current and target conflict; or the work hits an ask-first trigger.
+**Stop and ask one question (interactive) — otherwise report it (analyze-only) — when:** the solution needs an architecture decision; ownership, data ownership, or contract authority is unclear; security/privacy/audit/compliance impact is unclear; current and target conflict; or the work hits an ask-first trigger.
 
 ---
 
-### 10.3 `ai-guidance-update` — capture the learning (compound)
+### 10.3 `ai-guidance-update` — capture the learning
 
-**Purpose:** Analyze and apply controlled updates to the Context, Guidelines, and Rule Cards — so useful learnings don't die in chat/PRs, and unapproved ones don't silently become rules.
+**Purpose:** Analyze and apply controlled updates to the Context, Guidelines, and Guardrails — so useful learnings don't die in chat/PRs, and unapproved ones don't silently become rules.
 
-**Use when:** the AI keeps making the same wrong assumption; reviewers keep correcting the same issue; a brownfield pattern keeps misleading the AI; the target becomes clear; an ADR/spec changes; a reference impl is approved; a solution note holds a reusable lesson; a pattern should no longer be copied; or a conflict is detected.
+**Use when:** a candidate learning could change future AI behavior — a target direction becomes clear; an ADR or spec changes; a reference implementation is approved; a brownfield pattern is misleading the AI; a solution note is worth promoting; a pattern should no longer be copied; or a conflict is detected. Run it to decide *whether* and *where* a learning becomes a rule — not because something recurred a set number of times.
 
 **Invoke:**
 - Analyze: `/ai-guidance-update source=<learning|solution-note|pr-finding|review-issue|adr|spec-change> mode=analyze-only` (default)
@@ -493,8 +510,8 @@ The ready-to-use files live in `.ai/skills/<name>/SKILL.md`; the summaries below
 
 1. **Discover** current guidance and the source learning.
 2. **Classify the learning:** story-specific / impl detail / reusable convention / architecture rule / brownfield ambiguity / contract change / security|privacy|audit|compliance rule / reference impl / candidate memory / suspected drift / conflict.
-3. **Decide the target** using the routing table in §9. (Rationale → SAD/ADR. Contract truth → spec. Conventions → Guidelines. Behavior-changing architecture → Context. Current-vs-target → Rule Card. Story-specific → Jira. Unproven → solution note.)
-4. **Conflict check** against requirements, Story Artifact, specs, ADRs, SAD, Context, Guidelines, Rule Cards, reference impl, current code, solution notes. If it conflicts, don't apply — produce a conflict finding.
+3. **Decide the target** using the routing table in §9. (Rationale → SAD/ADR. Contract truth → spec. Conventions → Guidelines. Behavior-changing architecture → Context. Current-vs-target → Guardrail. Story-specific → Jira. Unproven → solution note.)
+4. **Conflict check** against requirements, Story Artifact, specs, ADRs, SAD, Context, Guidelines, Guardrails, reference impl, current code, solution notes. If it conflicts, don't apply — produce a conflict finding.
 5. **Analyze-only output:** a Guidance Update Analysis (change no files).
 6. **Apply-approved-update:** verify explicit approval + target + text → apply the smallest change → don't touch unrelated sections → preserve/add source links → flag any conflict found → produce an Applied Update Report. If approval is missing, stop with an Approval Missing Report.
 
@@ -540,12 +557,12 @@ The ready-to-use files live in `.ai/agents/<name>.md` (canonical); the table bel
 |---|---|---|
 | `architecture-boundary-reviewer` | Service/context/module boundaries, ownership, data ownership, sync-vs-async, API/event ownership, dependency direction, shared-SDK use, architecture-sensitive refactors | Style, test naming, formatting, low-risk local details, story/AC writing |
 | `engineering-convention-reviewer` | Repo structure, placement, layering, naming, DTO/mapping/validation/error-handling, logging/observability, tests, shared utils, scope control, AI-generated code | Architecture/data-ownership/scope/security/compliance/contract approvals (escalate those) |
-| `brownfield-governance-reviewer` | Current-vs-target gaps **and** source conflicts together; decides if a Rule Card / guidance update / ADR / spec update / human decision is needed | Normal aligned work, simple style, product priorities, isolated low-risk details |
+| `brownfield-governance-reviewer` | Current-vs-target gaps **and** source conflicts together; decides if a Guardrail / guidance update / ADR / spec update / human decision is needed | Normal aligned work, simple style, product priorities, isolated low-risk details |
 | `contract-compliance-reviewer` *(add only for regulated/contract-heavy work)* | API/event/data/UI contract changes & backward compatibility; security, privacy, audit, compliance behavior; flags governance-significant changes lacking an approved source | Architecture/ownership decisions, code style, work touching no contract and no sensitive data |
 
 **Shared output shape:** Decision · what was reviewed · findings table (`Area | Status | Finding | Evidence`) · the relevant impact (coupling / ownership / scope / brownfield interpretation) · one blocking question or "None." · one recommendation. Every agent must **cite the rule/source each finding violates and the offending location** (file:line or contract field) — no vague "seems off" — and **anchor on what already exists** (the approved pattern/module/contract) before flagging an invented parallel structure.
 
-The brownfield agent also uses the **statuses** and **conflict types** below, and includes a draft Rule Card only when one is needed:
+The brownfield agent also uses the **statuses** and **conflict types** below, and includes a draft Guardrail only when one is needed:
 
 - *Statuses:* Use current · Use target · Target not ready · Ask first
 - *Conflict types:* no conflict · terminology mismatch · stale AI guidance · stale SAD/ADR · formal-spec mismatch · implementation drift · brownfield ambiguity · coding-guideline overreach · solution-note overreach · missing architecture decision · missing contract update · governance approval required
@@ -561,11 +578,11 @@ It ends with a short **"Do not do"** list (e.g. *don't implement the proposed co
 3. **Add agents only if useful.** Skip for a pilot; add when reviews get broad.
 4. **Bootstrap:** `/ai-context-bootstrap scope=repository mode=interactive`
 5. **Use on stories:** `/ai-context-check work=<story-or-plan> mode=analyze-only`
-6. **Analyze repeated findings:** `/ai-guidance-update source=<finding> mode=analyze-only`
+6. **Analyze a candidate learning:** `/ai-guidance-update source=<finding-or-note> mode=analyze-only`
 7. **Apply only approved updates:** `/ai-guidance-update source=<approved-update> mode=apply-approved-update`
 
 ---
 
 ## 13. In one paragraph
 
-The SAD and ADRs stay the source of architecture knowledge. The **AI Architecture Context** is a thin operational layer that tells AI how to apply that knowledge safely; the **AI Coding Guidelines** tell AI how to implement within it; **Brownfield Rule Cards** stop current-but-wrong patterns from becoming future architecture. Three small skills — **bootstrap, check, update** — form a loop that discovers context from the repo, checks every story against it, and folds back only the learnings that change future behavior. Skills ask one blocking question at a time, and humans approve every governance decision. It stays lightweight on purpose: leverage over ceremony, and each story leaving the guidance a little better than it found it.
+The SAD and ADRs stay the source of architecture knowledge. The **AI Architecture Context** is a thin operational layer that tells AI how to apply that knowledge safely; the **AI Coding Guidelines** tell AI how to implement within it; **Brownfield Guardrails** stop current-but-wrong patterns from becoming future architecture. Three small skills — **bootstrap, check, update** — form a loop that discovers context from the repo, checks every story against it, and folds back only the learnings that change future behavior. Skills ask one blocking question at a time, and humans approve every governance decision. It stays lightweight on purpose: leverage over ceremony, and each story leaving the guidance a little better than it found it.

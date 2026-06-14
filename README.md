@@ -55,7 +55,7 @@ The two files are **thin**: they don't repeat your architecture, they *point* to
 |---|---|---|---|
 | **1. Bootstrap** | `ai-context-bootstrap` | Once per repo | Reads your repo and drafts the two thin files (+ a manifest and rule cards if needed) |
 | **2. Check** | `ai-context-check` | Every story / plan / PR | Checks the proposed work against the files — catches "locally reasonable but architecturally wrong" before it ships |
-| **3. Update** | `ai-guidance-update` | Only when a lesson repeats | Folds a recurring learning back into the files, with human approval |
+| **3. Update** | `ai-guidance-update` | Only when a learning should become a rule | Folds an approved learning into the files, with human approval |
 
 Day to day it's **Check ↔ Update**: bootstrap once, then check each story, and occasionally capture a learning. Each story leaves the guidance a little better than it found it.
 
@@ -133,7 +133,7 @@ Before building a story, check the plan against your guidance:
 
 You get an alignment report: what's fine, what's risky, and any "this copies legacy you're moving away from" warnings.
 
-### Step 6 — Capture repeated lessons (later, not now)
+### Step 6 — Capture lessons worth keeping (later, not now)
 
 When you notice the AI making the *same* mistake across stories, fold the lesson in:
 
@@ -167,6 +167,6 @@ This earns its keep when **existing code might mislead an AI about your real arc
 
 ## Learn more
 
-The full reference — principles, authority order, "what goes where," Brownfield Rule Cards, and the complete skill/agent specs — is in **[the playbook](AI-Architecture-Context-and-Coding-Guidelines-Playbook.md)**.
+The full reference — principles, authority order, "what goes where," Brownfield Guardrails, and the complete skill/agent specs — is in **[the playbook](AI-Architecture-Context-and-Coding-Guidelines-Playbook.md)**.
 
 > **In one line:** your SAD and ADRs stay the source of truth; these thin files make that truth *usable by AI* — so the agent applies your architecture instead of copying whatever it finds.

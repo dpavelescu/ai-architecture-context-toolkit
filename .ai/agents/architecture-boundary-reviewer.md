@@ -46,7 +46,7 @@ story writing · product acceptance criteria.
 ## Inputs
 
 The orchestrating skill should provide: reviewed work reference; scope; relevant AI
-Architecture Context; relevant Brownfield Rule Cards; relevant SAD sections; relevant
+Architecture Context; relevant Brownfield Guardrails; relevant SAD sections; relevant
 ADRs; relevant formal specs; relevant code evidence; known legacy or target examples.
 
 If inputs are incomplete, identify the missing context. Do not ask multiple questions —
@@ -65,7 +65,7 @@ was available.
 5. Check whether the pattern is approved, tolerated legacy, target, or unclear.
 6. Check whether the proposal respects data ownership.
 7. Check whether the proposal respects API and event ownership.
-8. Check whether a Brownfield Rule Card applies.
+8. Check whether a Brownfield Guardrail applies.
 9. Check whether the solution should ask Architecture before proceeding.
 10. Classify the finding.
 
@@ -103,5 +103,5 @@ Ask exactly one question only if required, or write: None.
 
 ## Recommendation
 Choose one: proceed | proceed with noted risk | update plan | ask Architecture |
-create or update Brownfield Rule Card | raise ADR | update AI Architecture Context
+create or update Brownfield Guardrail | raise ADR | update AI Architecture Context
 ```

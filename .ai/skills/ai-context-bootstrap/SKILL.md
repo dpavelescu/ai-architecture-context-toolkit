@@ -2,7 +2,7 @@
 name: ai-context-bootstrap
 description: >-
   Create or refresh the minimum AI-facing guidance (AI Architecture Context, AI
-  Coding Guidelines, Brownfield Rule Cards, manifest/root-file proposals) for safe
+  Coding Guidelines, Brownfield Guardrails, manifest/root-file proposals) for safe
   AI-assisted delivery in a repository. Use when starting AI delivery in a repo,
   onboarding a new service/module/bounded-context/team, creating the first Context
   or Guidelines, or checking whether existing guidance is usable. Not for
@@ -19,7 +19,7 @@ delivery. This skill produces or updates:
 
 - AI Architecture Context (`docs/architecture/ai-context.md`)
 - AI Coding Guidelines (`docs/engineering/ai-coding-guidelines.md`)
-- Brownfield Rule Cards — only where needed
+- Brownfield Guardrails — only where needed
 - a context manifest proposal, if missing
 - a root AI instruction file proposal, if missing
 - a validation report
@@ -74,8 +74,8 @@ Optional: `source_override=<path-or-reference>`, `representative_code_override=<
    of truth.
 7. **Right-size the work** — match ceremony to the size and clarity of the repo. A small
    or already-aligned codebase gets a compact pass: a short Context, a short Guidelines,
-   and few or no Rule Cards. Reserve the full multi-phase treatment for large, ambiguous,
-   or high-risk repos. Don't manufacture Rule Cards, sections, or questions the situation
+   and few or no Guardrails. Reserve the full multi-phase treatment for large, ambiguous,
+   or high-risk repos. Don't manufacture Guardrails, sections, or questions the situation
    doesn't need.
 
 Additional constraints: do not create a second SAD; do not copy long architecture
@@ -149,8 +149,8 @@ Dimensions to sweep:
 **The Context must include:** purpose & scope; read order; authority order; must-read
 sources; minimal system overview; **architecture style & modularity rules**; ownership
 & boundary rules; data ownership; integration rules; API & event rules; security /
-privacy / audit / compliance constraints; current-vs-target guidance; Brownfield Rule
-Cards (only where needed); prohibited shortcuts; ask-first triggers; links to SAD /
+privacy / audit / compliance constraints; current-vs-target guidance; Brownfield Guardrails
+(only where needed); prohibited shortcuts; ask-first triggers; links to SAD /
 ADRs / specs / diagrams.
 
 **Thin ≠ narrow:** cover every relevant dimension, but where an artifact already covers
@@ -174,7 +174,7 @@ Do not redefine architecture — reference the Architecture Context instead.
 
 Inspect representative code and tests. Classify each relevant pattern as: aligned /
 current-approved practice / target-ready / target-not-ready / brownfield exception /
-known legacy / suspected drift / ask-first. Create Brownfield Rule Cards **only** when
+known legacy / suspected drift / ask-first. Create Brownfield Guardrails **only** when
 current implementation and target direction differ in a way that could mislead AI.
 
 ## Phase 7 — Produce output
@@ -184,7 +184,7 @@ current implementation and target direction differ in a way that could mislead A
 3. `ai-enablement/context-manifest.yaml`, if missing or incomplete
 4. root AI instruction proposal, if missing or incomplete
 5. Validation Report
-6. Brownfield Rule Cards, only where needed
+6. Brownfield Guardrails, only where needed
 7. Contributor Decisions Needed
 
 ## Output format
@@ -209,7 +209,7 @@ Ask exactly one question, or write: None.
 | Decision | Reason | Blocking? | Suggested owner |
 |---|---|---|---|
 
-## Brownfield Rule Cards created
+## Brownfield Guardrails created
 | Topic | Status | Reason |
 |---|---|---|
 

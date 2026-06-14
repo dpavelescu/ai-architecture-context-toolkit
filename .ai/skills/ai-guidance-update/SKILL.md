@@ -2,12 +2,13 @@
 name: ai-guidance-update
 description: >-
   Analyze and apply controlled, approved updates to the AI Architecture Context, AI
-  Coding Guidelines, and Brownfield Rule Cards — so useful learnings don't die in chat,
+  Coding Guidelines, and Brownfield Guardrails — so useful learnings don't die in chat,
   PRs, or solution notes, and unapproved learnings don't silently become governance
-  rules. Use when the AI repeatedly makes the same wrong assumption, reviewers keep
-  correcting the same issue, a brownfield pattern misleads AI, a target direction
-  becomes clear, an ADR/spec changes, or a reusable learning is found. Default mode is
-  analyze-only; never applies governance-impacting updates without explicit approval.
+  rules. Use when a candidate learning could change future AI behavior — the AI makes a
+  wrong assumption the guidance should prevent, a review surfaces an uncovered issue, a
+  brownfield pattern misleads AI, a target direction becomes clear, an ADR/spec changes,
+  or a reusable learning is found. Default mode is analyze-only; never applies
+  governance-impacting updates without explicit approval.
 ---
 
 # Skill: ai-guidance-update
@@ -15,14 +16,14 @@ description: >-
 ## Purpose
 
 Analyze and apply controlled updates to the AI Architecture Context, AI Coding
-Guidelines, and Brownfield Rule Cards. Prevents useful learnings from staying only in
+Guidelines, and Brownfield Guardrails. Prevents useful learnings from staying only in
 chat history, PR comments, or solution notes — and prevents unapproved learnings from
 silently becoming governance rules.
 
 ## When to use
 
-- the AI repeatedly makes the same wrong assumption
-- reviewers repeatedly correct the same issue
+- the AI makes a wrong assumption the guidance should have prevented
+- a review surfaces an issue the guidance doesn't yet cover
 - a brownfield pattern misleads AI
 - a target direction becomes clear
 - an ADR changes implementation behavior, or a formal spec changes
@@ -63,11 +64,18 @@ If no mode is given, use `analyze-only`.
 - always produce a durable report; chat history is never the source of truth
 - right-size the change: prefer the smallest edit that captures the learning, and prefer
   "no update needed" over adding guidance that won't change future AI behavior
+- promote thin, by reference: write a one-line operational rule that links to its source;
+  never copy the source's detail into the Context or Guidelines (the detail stays in the
+  note/ADR/spec; governance holds only the binding rule)
+- never write SAD / ADRs / specs yourself — those are human-owned; only flag or draft them.
+  The Context never originates a decision: for a new direction with no approved source,
+  propose ADR-first, or a provisional Brownfield Guardrail marked `pending ADR` with an
+  owner and review date
 
 ## Phase 1 — Discover current guidance
 
 Read: root file; context manifest; AI Architecture Context; AI Coding Guidelines;
-Brownfield Rule Cards; relevant SAD sections, ADRs, formal specs; the source learning;
+Brownfield Guardrails; relevant SAD sections, ADRs, formal specs; the source learning;
 relevant code evidence; relevant solution notes (supporting memory only).
 
 ## Phase 2 — Classify the learning
@@ -90,12 +98,12 @@ Recommend one target and follow these routing rules:
 | Decision rationale | ADR |
 | Contract change | Formal spec |
 | Candidate / unproven learning | Solution note only |
-| Repeated brownfield ambiguity | Brownfield Rule Card |
+| Repeated brownfield ambiguity | Brownfield Guardrail |
 
 ## Phase 4 — Conflict check
 
 Check the proposed update against: requirements; Story Artifact; formal specs; ADRs;
-SAD; AI Architecture Context; AI Coding Guidelines; Brownfield Rule Cards; approved
+SAD; AI Architecture Context; AI Coding Guidelines; Brownfield Guardrails; approved
 reference implementation; current code; solution notes. If a conflict exists, do not
 apply — produce a conflict finding.
 
@@ -142,7 +150,7 @@ Compliance | QA | Other
 ## Recommended next action
 Choose one: no action | keep as solution note only | request human approval |
 create ADR | update SAD | update formal spec | apply approved update |
-create or update Brownfield Rule Card
+create or update Brownfield Guardrail
 ```
 
 ## Phase 6 — Apply-approved-update behavior
