@@ -53,8 +53,13 @@ Examples:
 /ai-context-bootstrap scope=bounded-context:payments mode=headless
 ```
 
-Optional: `source_override=<path-or-reference>`, `representative_code_override=<path>`,
+Optional: `produce=<context|guidelines|both>` (default `both`),
+`source_override=<path-or-reference>`, `representative_code_override=<path>`,
 `target_output_dir=<path>`. If no mode is given, use `interactive`.
+
+`produce` selects which artifact(s) to draft: `context` runs Phase 4, `guidelines` runs
+Phase 5, `both` runs both. Discovery and assessment (Phases 1–2) always run, because the
+Coding Guidelines apply the Architecture Context and must read it either way.
 
 ## House rules (apply throughout)
 
@@ -84,6 +89,24 @@ absolute paths.
 
 ## Phase 1 — Discover context
 
+**Discovery strategy (don't blind-scan the whole repo):**
+
+1. If a **context manifest** exists, treat it as the authoritative map of inputs — read
+   what it lists; don't go hunting.
+2. Else, if `source_override` / `representative_code_override` are given, use those.
+3. Else **discover by convention, bounded by `scope`** — the standard locations listed
+   below, plus the code under the scope path.
+
+**Sampling representative code** (you can't read everything): prefer the manifest's
+`representative_code`; otherwise sample within `scope` — entry points and public APIs, the
+modules/services in scope, the largest or most recently-changed areas, and their tests.
+Read excerpts, not whole trees.
+
+**If discovery comes up thin** — few or no architecture sources, specs, or recognizable
+representative code — **do not silently produce a thin draft.** State what's missing and
+either ask the user to point at sources (interactive) or record an insufficiency note and
+proceed in no-source mode with proposals + TBDs (headless).
+
 Inspect the repository for, and classify each, as approved source / formal spec / AI
 guidance / implementation evidence / known legacy / supporting memory / unknown
 authority:
@@ -110,6 +133,16 @@ Decide: **sufficient to draft** / **sufficient to draft with TBDs** / **insuffic
 
 In `interactive` mode, ask exactly one blocking question. In `headless` mode, do not
 ask — stop and produce a **Blocking Context Report**.
+
+### When approved sources are absent (no SAD / ADRs / specs)
+
+With no authoritative source to point to, don't block outright. **Infer candidate rules
+from representative code and conventions, and mark every one as *proposed / unapproved*** —
+existing code is evidence, not authority. Lean on `TBD`, ask-first, and the *Contributor
+decisions needed* list; ask only the few genuinely blocking questions. Expect a Decision
+of **Completed with TBDs**, with each inferred entry tagged *(proposed — needs approval)*
+until a human confirms it or an ADR/SAD is created. Never present an inferred rule as
+approved architecture.
 
 ## Phase 3 — Propose or update the context manifest
 
