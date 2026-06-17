@@ -187,8 +187,8 @@ tolerant — use whatever keys are present and fall back to conventional locatio
 
 Create or update `docs/architecture/ai-context.md`.
 
-**Run a coverage sweep.** For each dimension below that is relevant to this repo and
-could be misinterpreted by an AI, choose one of three — sized against the existing
+**Run a coverage sweep.** For each *content* concern in the list below that is relevant and
+could be misinterpreted by an AI, decide how to cover it — sized against the existing
 artifacts (SAD, ADRs, LLD, security/privacy requirements, specs):
 
 - **Point** — an artifact covers it at an actionable level → reference it (must-read +
@@ -199,24 +199,16 @@ artifacts (SAD, ADRs, LLD, security/privacy requirements, specs):
   operational rule here, and record a gap in *Contributor decisions needed* (the
   SAD/ADR/requirement may need creating or updating; never decide it silently).
 
-Dimensions to sweep (all equal — don't over-weight any one):
-
-- ownership & boundaries; data ownership & access
-- integration (sync/async; allowed/forbidden); API & event contracts
-- security; data privacy / PII; audit; compliance
-- architecture style & modularity (modular monolith / microservices-distributed /
-  layered) — e.g. in a modular monolith, state module isolation explicitly because
-  nothing physically enforces it
-- error handling / resilience, logging / observability — only where architecturally
-  constrained
-- current-vs-target (brownfield) divergences
-
-**Cover the concerns below that apply** — this is guidance for a sensible, consistent order,
-**not a rigid template.** Write a section only when you have something real to say; **omit
-concerns that don't apply, and never add an empty or padded section to fill the structure.**
-Adapt the headings to the repo. Open the file with a one-line provenance header — *generated &
-maintained by the toolkit; mirrors, never overrides, the SAD/ADRs/specs; drafts pending
-approval; evolve via `ai-guidance-update`.*
+**Structure the file as the concerns below that apply** — guidance for a sensible, consistent
+order, **not a rigid template.** Write a section only when you have something real to say;
+**omit concerns that don't apply, and never add an empty or padded section to fill the
+structure.** Adapt to the repo. **Write for AI consumption and easy review:** conventional,
+stable headings (don't reinvent the structure); short declarative bullets, not prose; each
+rule a **pointer to its source** (link the SAD/ADR/spec that owns the detail — the thin rule is
+never the whole truth); **prefer a canonical in-repo example** ("mirror this") over prose when
+one exists. Open the file with a one-line provenance header — *generated & maintained by the
+toolkit; mirrors, never overrides, the SAD/ADRs/specs; drafts pending approval; evolve via
+`ai-guidance-update`.*
 
 - Purpose & scope — covered areas vs `TBD`
 - Read order & authority order
@@ -234,14 +226,7 @@ approval; evolve via `ai-guidance-update`.*
 - Prohibited shortcuts & ask-first triggers
 - Open gaps / TBDs
 
-**Write both files for AI consumption and easy review:** use these conventional, stable
-headings — **don't reinvent the structure**; express rules as short declarative bullets, not
-prose; link to sources instead of copying; keep the ordering consistent across repos so they
-stay skimmable. Write each rule as a **pointer to its source** — link the SAD/ADR/spec that
-owns the full detail; the thin rule is never the complete or authoritative statement. And
-**prefer pointing to a canonical in-repo example** ("mirror this") over prose whenever one exists.
-
-**Thin ≠ narrow:** cover every relevant dimension, but where an artifact already covers
+**Thin ≠ narrow:** cover every relevant concern, but where an artifact already covers
 one well, shrink to a pointer. **Exclude:** full SAD content, long ADR rationale, large
 copied diagrams, detailed coding conventions, implementation plans, story-specific
 details, unapproved decisions, generic software-engineering advice.

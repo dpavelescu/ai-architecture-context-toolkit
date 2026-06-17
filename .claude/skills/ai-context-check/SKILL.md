@@ -81,9 +81,9 @@ inline — the reviewer file is the single source for the dimension's checks eit
 While running the checks above, watch for **coverage gaps**: the reviewed work depends on
 a dimension the Context is **silent on**, and no source artifact (SAD, ADR, LLD,
 security/privacy requirement, spec) covers it at an actionable level. Sweep the same
-dimensions bootstrap uses — architecture style & modularity, ownership & boundaries, data
-ownership, integration, API/event contracts, security, privacy, audit, compliance,
-current-vs-target.
+concerns bootstrap covers — boundaries & ownership, data ownership, integration, API/event
+contracts, security, privacy, audit, compliance, technology & platform, architecture style &
+modularity, resilience & error handling, logging & observability, current-vs-target.
 
 A coverage gap means the AI had to guess because the guidance was missing — not that the
 work is wrong. For each gap, note **what guidance is missing** and **where it belongs**

@@ -14,13 +14,15 @@ requirements, specs):
 - **Restate actionably** — covered but too abstract or buried → add a thin operational rule and link back.
 - **Fill and flag** — not covered anywhere (or only in code) → capture the operational rule and record a gap (the SAD/ADR/requirement may need creating or updating; never decide it silently).
 
-Dimensions (all equal — don't over-weight any one):
+Concerns (all equal — don't over-weight any one):
 
 - ownership & boundaries; data ownership & access
 - integration (sync/async; allowed/forbidden); API & event contracts
 - security; data privacy / PII; audit; compliance
+- technology & platform (languages/frameworks/runtimes/datastores; allowed/forbidden)
 - architecture style & modularity (modular monolith / microservices-distributed / layered)
-- error handling / resilience, logging / observability — only where architecturally constrained
+- resilience & error handling
+- logging & observability — only where architecturally constrained
 - current-vs-target (brownfield) divergences
 
 **Thin ≠ narrow:** cover every relevant dimension, but where an artifact already covers one

@@ -89,16 +89,17 @@ This is the Context's actual job. **"Thin" does not mean "narrow":** it must **c
 
 So the Context is an **index + gap-filler**: where your artifacts are strong it shrinks to pointers; where they're silent it carries the operational rule and surfaces the gap.
 
-**Dimensions to sweep** (any that are relevant **and** could be misinterpreted):
+**Concerns to sweep** (any that are relevant **and** could be misinterpreted):
 
 - ownership & boundaries · data ownership & access
 - integration (sync/async; allowed/forbidden) · API & event contracts
 - **security · data privacy / PII · audit · compliance**
+- technology & platform (languages/frameworks/runtimes/datastores; allowed/forbidden)
 - architecture style & modularity
-- error handling / resilience, logging / observability — *only where architecturally constrained*
+- resilience & error handling · logging & observability — *only where architecturally constrained*
 - current-vs-target (brownfield) divergences
 
-For each: decide **point / restate-actionably / fill-and-flag**. **Every dimension is equal** — security, privacy, and contracts deserve the same care as ownership or architecture style. Skip one only when it's genuinely irrelevant — never because it's "not architecture."
+For each: decide **point / restate-actionably / fill-and-flag**. **Every concern is equal** — security, privacy, and contracts deserve the same care as ownership or architecture style. Skip one only when it's genuinely irrelevant — never because it's "not architecture."
 
 The two examples below just show *how* a dimension becomes an actionable rule. They're illustrations, not the focus.
 
