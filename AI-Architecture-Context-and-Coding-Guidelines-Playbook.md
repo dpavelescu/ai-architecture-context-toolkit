@@ -285,6 +285,14 @@ This works the same whether you have one repo or many — it isn't built around 
 
 Same mechanism, one level up — **no special multi-repo mode**, and you add the central layer only if cross-repo governance actually needs it. (See the *Appendix — Scaling to many repos* for a worked example.)
 
+### Generated file structure (the two files)
+
+Both files are **optimized for AI consumption and easy to review** — conventional, stable headings (don't reinvent the structure), short declarative bullet rules (not prose), links to sources instead of copies. The concern lists below are **guidance for a sensible, consistent order — not a rigid template:** include only sections with real content, **omit concerns that don't apply, never pad to fill the structure,** and adapt to the repo. Each file opens with a one-line provenance header (*generated & maintained by the toolkit; the Context mirrors — never overrides — the SAD/ADRs/specs, the Guidelines apply it in code; drafts pending approval; evolve via the update skill*), then the applicable concerns:
+
+**`docs/architecture/ai-context.md`** — Purpose & scope · Read order & authority order · Must-read sources (SAD/ADRs/specs/diagrams) · System overview · Technology & platform (languages, frameworks, runtimes, datastores; allowed/forbidden) · Architecture style & modularity · Boundaries & ownership · Data ownership & access · Integration & communication (sync/async; allowed/forbidden; API & event ownership) · Security, privacy, audit & compliance · Resilience & error handling · Logging & observability · Current-vs-target & Brownfield Guardrails · Prohibited shortcuts & ask-first triggers · Open gaps / TBDs
+
+**`docs/engineering/ai-coding-guidelines.md`** — Scope control · Technology & libraries (approved stack; adding a dependency) · Repository structure & placement · Layering & module conventions · Naming · DTOs, mapping & validation · Error handling · Contract-change workflow (API/event/data/UI) · Testing · Logging & observability · Security & privacy coding rules · Brownfield implementation rules · Prohibited behaviors & ask-first triggers · Reference implementations & links · Open gaps / TBDs
+
 ---
 
 ## 6. House rules for every skill

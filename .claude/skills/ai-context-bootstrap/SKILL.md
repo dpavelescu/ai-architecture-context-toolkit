@@ -211,12 +211,33 @@ Dimensions to sweep (all equal — don't over-weight any one):
   constrained
 - current-vs-target (brownfield) divergences
 
-**The Context must include:** purpose & scope; read order; authority order; must-read
-sources; minimal system overview; ownership & boundary rules; data ownership;
-integration rules; API & event rules; architecture style & modularity rules; security /
-privacy / audit / compliance constraints; current-vs-target guidance; Brownfield Guardrails
-(only where needed); prohibited shortcuts; ask-first triggers; links to SAD /
-ADRs / specs / diagrams.
+**Cover the concerns below that apply** — this is guidance for a sensible, consistent order,
+**not a rigid template.** Write a section only when you have something real to say; **omit
+concerns that don't apply, and never add an empty or padded section to fill the structure.**
+Adapt the headings to the repo. Open the file with a one-line provenance header — *generated &
+maintained by the toolkit; mirrors, never overrides, the SAD/ADRs/specs; drafts pending
+approval; evolve via `ai-guidance-update`.*
+
+- Purpose & scope — covered areas vs `TBD`
+- Read order & authority order
+- Must-read sources — links to SAD / ADRs / specs / diagrams
+- System overview (minimal)
+- Technology & platform — languages, frameworks, runtimes, datastores; allowed/forbidden tech
+- Architecture style & modularity
+- Boundaries & ownership
+- Data ownership & access
+- Integration & communication — sync/async; allowed/forbidden; API & event ownership
+- Security, privacy, audit & compliance
+- Resilience & error handling
+- Logging & observability
+- Current-vs-target & Brownfield Guardrails
+- Prohibited shortcuts & ask-first triggers
+- Open gaps / TBDs
+
+**Write both files for AI consumption and easy review:** use these conventional, stable
+headings — **don't reinvent the structure**; express rules as short declarative bullets, not
+prose; link to sources instead of copying; keep the ordering consistent across repos so they
+stay skimmable.
 
 **Thin ≠ narrow:** cover every relevant dimension, but where an artifact already covers
 one well, shrink to a pointer. **Exclude:** full SAD content, long ADR rationale, large
@@ -225,13 +246,27 @@ details, unapproved decisions, generic software-engineering advice.
 
 ## Phase 5 — Draft the AI Coding Guidelines
 
-Create or update `docs/engineering/ai-coding-guidelines.md`. **Include:** scope
-control; repository structure; layering & module conventions; how to apply the
-Architecture Context in code; DTO / mapping / validation / error-handling; API & event
-contract-change workflow; testing expectations; logging & observability; security /
-privacy / audit / compliance coding rules; prohibited implementation behaviors;
-ask-first triggers; brownfield implementation rules (only where needed); reference
-implementations.
+Create or update `docs/engineering/ai-coding-guidelines.md`. Open with a one-line provenance
+header — *generated & maintained by the toolkit; applies the Architecture Context in code
+(doesn't redefine it); drafts pending approval; evolve via `ai-guidance-update`.*
+**Cover the concerns below that apply** (guidance for a consistent order, **not a rigid
+template** — write only sections with real content; omit the rest; never pad):
+
+- Scope control — minimal change; reuse before adding
+- Technology & libraries — approved languages/frameworks/libraries; how to add a dependency
+- Repository structure & placement
+- Layering & module conventions
+- Naming conventions
+- DTOs, mapping & validation
+- Error handling
+- Contract-change workflow — API / event / data / UI
+- Testing expectations
+- Logging & observability
+- Security & privacy coding rules
+- Brownfield implementation rules
+- Prohibited behaviors & ask-first triggers
+- Reference implementations & links
+- Open gaps / TBDs
 
 Do not redefine architecture — reference the Architecture Context instead.
 

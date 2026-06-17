@@ -18,10 +18,24 @@ Uses your configured Copilot tools.
 ## Process
 1. **Discover** — manifest-first; else conventional locations bounded by `scope`; **sample** representative code (don't read whole trees). If discovery is thin, state what's missing and ask for sources, or proceed with proposals + TBDs.
 2. **Assess sufficiency** — sufficient / draft-with-TBDs / blocked. With no SAD/ADRs/specs, infer candidate rules from code as *proposed / unapproved*; expect "Completed with TBDs."
-3. **Draft the Context** (`docs/architecture/ai-context.md`) — apply the **assess-coverage** skill; include architecture style & modularity, ownership/boundaries, data ownership, integration, API/event, security/privacy/audit/compliance, current-vs-target, and links. Add a Guardrail (**write-brownfield-guardrail** skill) only where current≠target could mislead.
-4. **Draft the Coding Guidelines** (`docs/engineering/ai-coding-guidelines.md`) — scope control, structure/layering, DTO/mapping/validation/error-handling, contract-change workflow, testing, logging/observability, security/privacy coding rules. Don't redefine architecture — link to the Context.
+3. **Draft the Context** (`docs/architecture/ai-context.md`) — apply the **assess-coverage** skill; lay it out in the standard ordered sections (see *Generated file structure*). Add a Guardrail (**write-brownfield-guardrail** skill) only where current≠target could mislead.
+4. **Draft the Coding Guidelines** (`docs/engineering/ai-coding-guidelines.md`) — lay it out in the standard ordered sections (see *Generated file structure*). Don't redefine architecture — link to the Context.
 5. **Propose** the manifest and root-instruction file if missing.
 6. **Produce the result** — see **Output** below.
+
+## Generated file structure
+Write both files for **AI consumption and easy review**: conventional, stable headings
+(**don't reinvent the structure**), short declarative bullet rules (not prose), links to
+sources instead of copies. The concern lists below are **guidance for a sensible, consistent
+order — not a rigid template: write only sections with real content, omit concerns that don't
+apply, never pad to fill the structure, and adapt to the repo.** Open each file with a one-line
+provenance header — *generated & maintained by this toolkit; the Context mirrors (never
+overrides) the SAD/ADRs/specs and the Guidelines apply it in code; drafts pending approval;
+evolve via `ai-guidance-update`.*
+
+**ai-context.md:** Purpose & scope · Read order & authority order · Must-read sources (SAD/ADRs/specs/diagrams) · System overview · Technology & platform (languages/frameworks/runtimes/datastores; allowed/forbidden) · Architecture style & modularity · Boundaries & ownership · Data ownership & access · Integration & communication (sync/async; API & event ownership) · Security, privacy, audit & compliance · Resilience & error handling · Logging & observability · Current-vs-target & Brownfield Guardrails · Prohibited shortcuts & ask-first triggers · Open gaps / TBDs
+
+**ai-coding-guidelines.md:** Scope control · Technology & libraries (approved stack; adding a dependency) · Repository structure & placement · Layering & module conventions · Naming · DTOs, mapping & validation · Error handling · Contract-change workflow (API/event/data/UI) · Testing · Logging & observability · Security & privacy coding rules · Brownfield implementation rules · Prohibited behaviors & ask-first triggers · Reference implementations & links · Open gaps / TBDs
 
 ## Refresh (re-running where guidance exists)
 Treat existing files as the approved baseline — never overwrite or regenerate. Validate
