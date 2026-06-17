@@ -76,7 +76,7 @@ AI-Architecture-Context-and-               ← the full playbook (all the detail
 .github/                                   ← GitHub Copilot build (drop in the agents + skills folders)
   agents/    ai-context-bootstrap | ai-context-check | ai-guidance-update   (orchestrators = custom agents)
              + the 4 reviewers             (reviewers = custom agents, delegated by check via agents:)
-  skills/    coverage-sweep | brownfield-guardrail   (shared capabilities, auto-loaded)
+  skills/    assess-coverage | write-brownfield-guardrail   (shared capabilities, auto-loaded)
 ```
 > No global `copilot-instructions.md` is shipped — the short behavioral house rules are inlined in each agent, and the authority/read order lives in the generated Context — so dropping these folders into a project won't touch its own instructions. Agents omit `tools:` (they use your configured Copilot tools); reviewers are read-only by instruction.
 

@@ -1,5 +1,5 @@
 ---
-name: brownfield-guardrail
+name: write-brownfield-guardrail
 description: >-
   The Brownfield Guardrail format and rules — for when current code and target direction
   differ in a way that could mislead the AI. Use when creating, updating, or applying a

@@ -18,7 +18,7 @@ Uses your configured Copilot tools.
 ## Process
 1. **Discover** — manifest-first; else conventional locations bounded by `scope`; **sample** representative code (don't read whole trees). If discovery is thin, state what's missing and ask for sources, or proceed with proposals + TBDs.
 2. **Assess sufficiency** — sufficient / draft-with-TBDs / blocked. With no SAD/ADRs/specs, infer candidate rules from code as *proposed / unapproved*; expect "Completed with TBDs."
-3. **Draft the Context** (`docs/architecture/ai-context.md`) — apply the **coverage-sweep** skill; include architecture style & modularity, ownership/boundaries, data ownership, integration, API/event, security/privacy/audit/compliance, current-vs-target, and links. Add a Guardrail (**brownfield-guardrail** skill) only where current≠target could mislead.
+3. **Draft the Context** (`docs/architecture/ai-context.md`) — apply the **assess-coverage** skill; include architecture style & modularity, ownership/boundaries, data ownership, integration, API/event, security/privacy/audit/compliance, current-vs-target, and links. Add a Guardrail (**write-brownfield-guardrail** skill) only where current≠target could mislead.
 4. **Draft the Coding Guidelines** (`docs/engineering/ai-coding-guidelines.md`) — scope control, structure/layering, DTO/mapping/validation/error-handling, contract-change workflow, testing, logging/observability, security/privacy coding rules. Don't redefine architecture — link to the Context.
 5. **Propose** the manifest and root-instruction file if missing.
 6. **Produce the result** — see **Output** below.

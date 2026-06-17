@@ -1,5 +1,5 @@
 ---
-name: coverage-sweep
+name: assess-coverage
 description: >-
   Decide, per dimension, how the AI Architecture Context covers it — point to an existing
   artifact, restate it actionably, or fill-and-flag a gap. Use when drafting or refreshing

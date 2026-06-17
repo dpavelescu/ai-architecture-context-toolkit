@@ -24,7 +24,7 @@ your Copilot's subagent tool (`agent`) — ensure it's enabled.
    - structure, layering, naming, DTO/mapping/validation/error-handling, tests, logging, scope → `engineering-convention-reviewer`
    - contract changes + backward-compat, security, privacy, audit, compliance → `contract-compliance-reviewer`
    - current-vs-target, copying legacy, source conflicts → `brownfield-governance-reviewer`
-4. **Coverage-gap check** — apply the **coverage-sweep** skill; flag any dimension the guidance is silent on (note where it belongs: Context / SAD / ADR / requirement / spec) and recommend `ai-guidance-update`. Don't silently fill it.
+4. **Coverage-gap check** — apply the **assess-coverage** skill; flag any dimension the guidance is silent on (note where it belongs: Context / SAD / ADR / requirement / spec) and recommend `ai-guidance-update`. Don't silently fill it.
 5. **Synthesize** the reviewers' findings into one **Context Alignment Report** (see **Output**). When the work needs an undecided architecture call, surface `Decision = Blocked by architecture decision` with `where it belongs: ADR`.
 
 ## Output format

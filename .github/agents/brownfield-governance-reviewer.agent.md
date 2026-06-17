@@ -24,7 +24,7 @@ First, identify the current pattern and whether an approved target or Guardrail 
 4. Decide: Guardrail needed? guidance update? ADR/SAD/spec update? human decision?
 
 Statuses: `Use current` · `Use target` · `Target not ready` · `Ask first`.
-When a Guardrail is needed, draft it with the **brownfield-guardrail** skill.
+When a Guardrail is needed, draft it with the **write-brownfield-guardrail** skill.
 
 ## Output format
 

@@ -18,7 +18,7 @@ or draft)**; promote thin by reference; right-size; one blocking question at a t
 2. **Classify by altitude + conflict/drift** and route (most learnings don't reach the Context):
    - reusable coding convention → **AI Coding Guidelines**
    - behavior-changing architecture rule → **AI Architecture Context**
-   - repeated brownfield ambiguity → **Brownfield Guardrail** (use the **brownfield-guardrail** skill)
+   - repeated brownfield ambiguity → **Brownfield Guardrail** (use the **write-brownfield-guardrail** skill)
    - decision rationale → ADR · contract truth → spec · story-specific → Jira · unproven → solution note
 3. **Conflict-check** against requirements / specs / ADRs / SAD / Context / Guidelines / Guardrails / code. If it conflicts, don't apply — produce a conflict finding.
 4. **Analyze (default)** — produce the Guidance Update Analysis (see **Output**); modify nothing.
