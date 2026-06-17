@@ -206,41 +206,36 @@ ai-enablement/context-manifest.yaml
 A small, stable map so skills can *discover* sources instead of asking you to paste them. It's a map, not another architecture doc — keep it tiny. Use real discovered paths; mark unknowns `TBD`.
 
 ```yaml
-ai_guidance:
-  architecture_context: docs/architecture/ai-context.md
-  coding_guidelines: docs/engineering/ai-coding-guidelines.md
+# context-manifest.yaml — a thin map of where this repo's AI-context lives, so the agents
+# don't hardcode paths. Every value is a path or list of paths/globs. Fill in real paths;
+# mark unknowns TBD; omit what doesn't apply. A map, not another doc.
 
-root_instructions: [AGENTS.md, CLAUDE.md, .github/copilot-instructions.md]
+# OUTPUTS — the AI-facing files the toolkit produces and maintains:
+guidance:
+  context:    docs/architecture/ai-context.md
+  guidelines: docs/engineering/ai-coding-guidelines.md
 
-architecture_sources:
-  sad: [docs/architecture/sad.md]
-  adrs: [docs/architecture/adrs/]
+# INPUTS — read-only; the toolkit reads these, never writes them:
+sources:                               # authoritative, human-owned artifacts
+  sad:      [docs/architecture/sad.md]
+  adrs:     [docs/architecture/adrs/]
+  specs:    [docs/contracts/openapi/, docs/contracts/asyncapi/]   # API/event/data/UI/security/privacy/audit/compliance
   diagrams: [docs/architecture/diagrams/]
+code:                                  # what the agents sample to ground on (not the whole repo)
+  representative: [services/, libs/]   # entry points / key modules
+  known_legacy:   []                   # patterns the AI must NOT copy
+  known_target:   []                   # exemplary "do it like this" code
+solution_notes: [docs/solutions/]      # supporting memory (lowest authority)
 
-formal_specs:
-  api: [docs/contracts/openapi/]
-  events: [docs/contracts/asyncapi/]
-  ui: [docs/ui/]
-  data: [docs/data/]
-  security: [docs/security/]
-  privacy: [docs/privacy/]
-  audit: [docs/audit/]
-  compliance: [docs/compliance/]
-
-brownfield:
-  representative_code: [TBD]
-  known_legacy_areas: [TBD]
-  known_target_examples: [TBD]
-
-solution_memory:
-  supporting_only: [docs/solutions/]
-
-review_rules:
-  ask_one_question_at_a_time: true
-  non_blocking_questions_go_to_report: true
-  no_silent_governance_decisions: true
-  current_code_is_evidence_not_authority: true
+# Named scopes for bootstrap/check, so a bounded context that spans dirs is selectable:
+areas:
+  # payments: [services/payments, libs/payments-sdk]
+  # eventing: [services/*/events, libs/event-bus]
 ```
+
+Two parts only: **`guidance`** (the OUTPUTS the toolkit writes) and the INPUTS it reads (`sources` / `code` / `solution_notes`), plus optional `areas` for named scopes. Nothing else — house rules and the authority order are **not** here (they live in the Context).
+
+This is the shape **`ai-context-bootstrap` proposes and maintains** — a *recommended thin map, not an enforced schema*. Agents **produce** it (bootstrap) or **read** it tolerantly (check/update/reviewers use whatever keys exist and fall back to conventional locations when it's absent or partial).
 
 ### Root instruction file (template)
 
@@ -312,7 +307,7 @@ These apply to all three skills — defined once here, referenced by each.
 
 Use a Guardrail **only** when current code and target direction differ in a way that could mislead the AI. Don't make them for aligned situations.
 
-**Statuses:** `Use current` (current is approved) · `Use target` (new work follows target even if code differs) · `Target not ready` (target exists, don't move there unless scoped) · `Ask first` (AI must not decide alone).
+**Statuses:** `Use current` (current is approved) · `Use target` (new work follows target even if code differs) · `Target not ready` (target exists, don't move there unless scoped) · `Ask first` (don't decide alone — needs human clarification).
 
 **Template:**
 
@@ -322,8 +317,8 @@ Status: <Use current | Use target | Target not ready | Ask first>
 Source:           <SAD / ADR / spec / decision>
 Current state:    <what exists today>
 Target direction: <what new work should use, if known>
-Rule for new work:    <what AI should do>
-Rule for existing code:<what AI may keep or must not change>
+Rule for new work:    <what to do for new work>
+Rule for existing code:<what to keep or must not change>
 Do not copy:      <misleading legacy pattern>
 Ask when:         <conditions needing clarification>
 ```
@@ -420,7 +415,7 @@ The knobs below are the whole surface. **Complexity is not a knob** — every sk
 
 | Knob | Values | Meaning | Used by |
 |---|---|---|---|
-| `scope` | a path (optional; omit = whole repo) | focuses the run on a sub-path; output is still the single repo-level set | bootstrap, check |
+| `scope` | optional; omit = whole repo. A path, paths/glob, or a manifest `areas:` name | the area a run focuses on; output stays the single repo-level set; runs compound | bootstrap, check |
 | `mode` — **Ask?** | `interactive` / `headless` | `interactive` asks one blocking question when needed; `headless` never asks and records gaps in the report | bootstrap, check |
 | `mode` — **Write?** | `analyze-only` / `apply-approved-update` | `analyze-only` reports without writing; `apply-approved-update` writes only explicitly approved changes | check (read-only), update |
 | `produce` | `context` / `guidelines` / `both` *(default `both`)* | which artifact bootstrap drafts | bootstrap |
@@ -442,7 +437,7 @@ The knobs below are the whole surface. **Complexity is not a knob** — every sk
 
 **Use when:** starting AI delivery in a repo; onboarding a new service/module/context/team; creating the first Context or Guidelines; checking whether existing guidance is usable. **Not** for story-specific planning (use `ai-context-check`) or guidance evolution (use `ai-guidance-update`).
 
-**Invoke:** `/ai-context-bootstrap [scope=<path>] mode=<interactive|headless>` (default `interactive`; omit `scope` for the whole repo, or give a path to focus one area). Optional: `produce=<context|guidelines|both>` (default `both`), `source_override`, `representative_code_override`, `target_output_dir`. (`produce` runs Phase 4, Phase 5, or both; discovery always runs.)
+**Invoke:** `/ai-context-bootstrap [scope=<area>] mode=<interactive|headless>` (default `interactive`; omit for the whole repo — `area` = a path, paths/glob, or a manifest `areas:` name). Optional: `produce=<context|guidelines|both>` (default `both`), `source_override`, `representative_code_override`, `target_output_dir`. (`produce` runs Phase 4, Phase 5, or both; discovery always runs.)
 
 **Phases:**
 
@@ -478,7 +473,7 @@ The knobs below are the whole surface. **Complexity is not a knob** — every sk
 
 **Use when:** reviewing a Jira story, Story Artifact, AI analysis, plan, PR, diff, solution note, or proposed learning — ideally **before** implementation.
 
-**Invoke:** `/ai-context-check work=<story|artifact|plan|pr|diff|solution-note> mode=<interactive|analyze-only>` (default `analyze-only`). Optional: `scope=<path>`, `focus=<architecture|coding|brownfield|contracts|security|all>`.
+**Invoke:** `/ai-context-check work=<story|artifact|plan|pr|diff|solution-note> mode=<interactive|analyze-only>` (default `analyze-only`). Optional: `scope=<area>`, `focus=<architecture|coding|brownfield|contracts|security|all>`.
 
 **Phases:**
 
@@ -597,7 +592,7 @@ It ends with a short **"Do not do"** list (e.g. *don't implement the proposed co
 1. **Create the minimum files** — `ai-context.md`, `ai-coding-guidelines.md`, a root instruction file. (Manifest optional.)
 2. **Add the three skills** under `.claude/skills/`.
 3. **Add agents only if useful.** Skip for a pilot; add when reviews get broad.
-4. **Bootstrap:** `/ai-context-bootstrap mode=interactive` (whole repo; add `scope=<path>` to pilot one area)
+4. **Bootstrap:** `/ai-context-bootstrap mode=interactive` (whole repo; add `scope=<area>` to pilot one area)
 5. **Use on stories:** `/ai-context-check work=<story-or-plan> mode=analyze-only`
 6. **Analyze a candidate learning:** `/ai-guidance-update source=<finding-or-note> mode=analyze-only`
 7. **Apply only approved updates:** `/ai-guidance-update source=<approved-update> mode=apply-approved-update`

@@ -15,7 +15,7 @@ description: >-
 ## Invocation
 
 ```
-/ai-context-bootstrap [scope=<path>] mode=<interactive|headless>
+/ai-context-bootstrap [scope=<area>] mode=<interactive|headless>
 ```
 
 Examples:
@@ -34,16 +34,27 @@ Optional: `produce=<context|guidelines|both>` (default `both`),
 Phase 5, `both` runs both. Discovery and assessment (Phases 1–2) always run, because the
 Coding Guidelines apply the Architecture Context and must read it either way.
 
-## Scope — focusing a run
+## Scope — what a run seeds
 
-`scope=<path>` focuses a run on a sub-path (a service, module, or area); **omit it to
-cover the whole repo.** It bounds what the run **examines and drafts** — not the output
-path. Output is always the single repo-level set (`docs/architecture/ai-context.md`,
-`docs/engineering/ai-coding-guidelines.md`), and the Context's *Purpose & scope* section
-**records what it currently covers**. So you can adopt incrementally: focus one service
-first, then re-run for the whole repo — **refresh mode** keeps the earlier content as the
-approved baseline and proposes coverage for the rest. Coverage only ever **grows**; a
-broader run never discards a narrower one's approved content.
+`scope` names the area this run seeds. It can be:
+- **omitted** → the whole repo;
+- **a path** → `services/orders`;
+- **several paths or a glob** → `services/orders, libs/payments` · `apps/*`;
+- **a name defined in the manifest's `areas:`** → `payments` (resolves to its mapped paths) — this is how a bounded context that spans directories becomes selectable.
+
+A path (or a defined `area`) is the real selector — the agent bounds discovery to it. A bare
+free-form phrase is only a weak hint; prefer a path or a defined area.
+
+Scope bounds what the run **examines and drafts**, not the output path. Output is always the
+single repo-level set (`docs/architecture/ai-context.md`, `docs/engineering/ai-coding-guidelines.md`);
+the Context's *Purpose & scope* section **records each run's covered scope by its label**.
+
+**Runs compound into the one Context** (this is what makes seeding incremental):
+- a **new sub-scope** is **additive** — its coverage is appended; the rest is untouched;
+- a **re-run over, or overlapping, an already-covered scope** **reconciles** — validate the
+  existing entries, propose drift/additions, **never duplicate or overwrite** approved content
+  (refresh mode).
+Coverage only ever **grows**; *Purpose & scope* shows the union of covered areas vs what's still `TBD`.
 
 **Multiple repos:** the toolkit is per-repo — run it in each repo. Cross-repo architecture
 (the SAD/ADRs usually span repos) is governed *above* the repo: keep a shared
@@ -109,7 +120,7 @@ regeneration**:
    below, plus the code under the scope path.
 
 **Sampling representative code** (you can't read everything): prefer the manifest's
-`representative_code`; otherwise sample within `scope` — entry points and public APIs, the
+`code.representative`; otherwise sample within `scope` — entry points and public APIs, the
 modules/services in scope, the largest or most recently-changed areas, and their tests.
 Read excerpts, not whole trees.
 
@@ -157,10 +168,20 @@ approved architecture.
 
 ## Phase 3 — Propose or update the context manifest
 
-If none exists, propose `ai-enablement/context-manifest.yaml` mapping: AI Context,
-Guidelines, SAD, ADRs, formal specs, diagrams, representative code, known legacy
-areas, known target examples, supporting memory. Use discovered paths; mark unknowns
-`TBD`. Do not invent paths.
+If none exists, propose `ai-enablement/context-manifest.yaml` in this shape — a **recommended
+thin map, not an enforced schema.** Use discovered paths; mark unknowns `TBD`; omit what
+doesn't apply; don't invent paths.
+
+```yaml
+guidance:        { context: <path>, guidelines: <path> }                 # OUTPUTS the toolkit maintains
+sources:         { sad: [..], adrs: [..], specs: [..], diagrams: [..] }   # INPUTS (read-only)
+code:            { representative: [..], known_legacy: [..], known_target: [..] }
+solution_notes:  [..]
+areas:           { <name>: [paths] }                                      # optional named scopes for scope=<area>
+```
+
+(The fully annotated version is in the playbook. When **reading** an existing manifest, be
+tolerant — use whatever keys are present and fall back to conventional locations for the rest.)
 
 ## Phase 4 — Draft the AI Architecture Context
 
@@ -233,14 +254,22 @@ current implementation and target direction differ in a way that could mislead A
 
 ## Output format
 
+**Resolve every blocking ambiguity first** (Phase 2 / Stop conditions); write files only when
+none remain. If a blocker stays unresolved, **stop with the Blocking Context Report and write
+no files** — that is the *Blocked* outcome.
+
+On success, the deliverable is the **drafted files** (Phase 7) — drafts pending approval —
+plus this completion report. By definition no blocking items remain; only deliberately-deferred,
+non-blocking ones appear:
+
 ```markdown
 # ai-context-bootstrap Result
 
 ## Decision
-Choose one: Completed | Completed with TBDs | Blocked | Analyze-only report produced
+Completed | Completed with TBDs
 
 ## Files created or updated
-- <file>
+- <file>   (drafts pending approval)
 
 ## Refresh summary (refresh runs only)
 - Kept / Added / Drift / Stale / Gaps
@@ -249,15 +278,12 @@ Choose one: Completed | Completed with TBDs | Blocked | Analyze-only report prod
 | Source | Path | Evidence type | Authority |
 |---|---|---|---|
 
-## Blocking question
-Ask exactly one question, or write: None.
-
-## Contributor decisions needed
-| Decision | Reason | Blocking? | Suggested owner |
-|---|---|---|---|
-
 ## Brownfield Guardrails created
 | Topic | Status | Reason |
+|---|---|---|
+
+## Deferred decisions (non-blocking)
+| Decision | Why deferred (TBD / safe default / proposed) | Suggested owner |
 |---|---|---|
 
 ## Validation summary

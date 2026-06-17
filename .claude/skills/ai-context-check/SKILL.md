@@ -25,7 +25,7 @@ Examples:
 /ai-context-check work=PR-456 mode=analyze-only
 ```
 
-Optional: `scope=<path>` (focus on a sub-path; omit for the whole repo),
+Optional: `scope=<area>` (a path, paths/glob, or a manifest `areas:` name; omit for the whole repo),
 `focus=<architecture|coding|brownfield|contracts|security|all>`. If no mode is given,
 use `analyze-only`.
 

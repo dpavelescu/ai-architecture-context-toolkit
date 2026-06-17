@@ -62,22 +62,25 @@ Optional reviewer **agents** (architecture, engineering, brownfield — plus a c
 
 ## What's in this repo
 
+Two idiomatic builds — same behavior, packaged for each tool. Use the one for your agent.
+
 ```
 README.md                                  ← you are here (the why + onboarding)
 AI-Architecture-Context-and-               ← the full playbook (all the detail)
   Coding-Guidelines-Playbook.md
 
-.claude/
-  skills/
-    ai-context-bootstrap/SKILL.md          ← set up the context
-    ai-context-check/SKILL.md              ← use it on every story
-    ai-guidance-update/SKILL.md            ← evolve it safely
-  agents/
-    architecture-boundary-reviewer.md      ← optional reviewer sub-agents
-    engineering-convention-reviewer.md
-    brownfield-governance-reviewer.md
-    contract-compliance-reviewer.md        ← add only for regulated/contract-heavy work
+.claude/                                   ← Claude Code build
+  skills/    ai-context-bootstrap | ai-context-check | ai-guidance-update   (orchestrators = skills)
+  agents/    architecture-boundary | engineering-convention | brownfield-governance | contract-compliance   (reviewers = sub-agents)
+
+.github/                                   ← GitHub Copilot build (drop in the agents + skills folders)
+  agents/    ai-context-bootstrap | ai-context-check | ai-guidance-update   (orchestrators = custom agents)
+             + the 4 reviewers             (reviewers = custom agents, delegated by check via agents:)
+  skills/    coverage-sweep | brownfield-guardrail   (shared capabilities, auto-loaded)
 ```
+> No global `copilot-instructions.md` is shipped — the short behavioral house rules are inlined in each agent, and the authority/read order lives in the generated Context — so dropping these folders into a project won't touch its own instructions. Agents omit `tools:` (they use your configured Copilot tools); reviewers are read-only by instruction.
+
+> Same responsibilities and boundaries in both; only the *packaging* differs (Claude Code: skills + sub-agents; Copilot: custom agents + Agent Skills). Pick one build — you don't need both.
 
 The two files the skills *produce* in your project end up at:
 
@@ -96,7 +99,9 @@ AGENTS.md / CLAUDE.md / copilot-instructions.md  ← tells the agent to read the
 
 ### Step 1 — Copy the toolkit in
 
-Copy the `.claude/` folder into your project's root — Claude Code discovers `.claude/skills/` and `.claude/agents/` natively.
+Copy the build for your tool into your project's root:
+- **Claude Code:** the `.claude/` folder (skills + sub-agents, discovered natively).
+- **GitHub Copilot:** the `.github/agents/` and `.github/skills/` folders (custom agents + Agent Skills).
 
 ### Step 2 — Run bootstrap
 
@@ -112,7 +117,7 @@ It will:
 - ask you **one question at a time**, only when a real gap blocks it (e.g. *"Which is the authority for cross-service comms — SAD §4.3, ADR-012, or current code?"*)
 - flag anything it can't safely decide as `TBD` or "ask first" instead of guessing
 
-Start small: add `scope=<path>` to focus one service or area if the whole repo is too big.
+Start small: add `scope=<area>` (a path, paths/glob, or a manifest `areas:` name) to focus one service or area if the whole repo is too big.
 
 ### Step 3 — Review and approve the drafts
 
