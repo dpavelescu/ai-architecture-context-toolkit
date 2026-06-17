@@ -26,7 +26,9 @@ Uses your configured Copilot tools.
 ## Generated file structure
 Write both files for **AI consumption and easy review**: conventional, stable headings
 (**don't reinvent the structure**), short declarative bullet rules (not prose), links to
-sources instead of copies. The concern lists below are **guidance for a sensible, consistent
+sources instead of copies. Write each rule as a **pointer to its source** — link the SAD/ADR/spec
+that owns the full detail; the thin rule is never the complete truth. **Prefer pointing to a
+canonical in-repo example** ("mirror this") over prose whenever one exists. The concern lists below are **guidance for a sensible, consistent
 order — not a rigid template: write only sections with real content, omit concerns that don't
 apply, never pad to fill the structure, and adapt to the repo.** Open each file with a one-line
 provenance header — *generated & maintained by this toolkit; the Context mirrors (never

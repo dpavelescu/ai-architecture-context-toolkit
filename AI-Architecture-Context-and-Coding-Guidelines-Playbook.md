@@ -251,6 +251,10 @@ Before analysis, planning, coding, or review, read:
 3. docs/engineering/ai-coding-guidelines.md
 Then read the SAD, ADRs, specs, diagrams, code, and tests they reference.
 
+## Using the Context
+- The Context's rules are **pointers, not the whole truth** — for load-bearing detail, read the linked source. If a rule and its source disagree, the **source wins**: raise a conflict.
+- When the Context names a **canonical example**, mirror it rather than inventing a new shape.
+
 ## Source authority
 Use the authority order (see the guide). Approved requirements win; solution notes are memory only.
 
@@ -287,7 +291,7 @@ Same mechanism, one level up — **no special multi-repo mode**, and you add the
 
 ### Generated file structure (the two files)
 
-Both files are **optimized for AI consumption and easy to review** — conventional, stable headings (don't reinvent the structure), short declarative bullet rules (not prose), links to sources instead of copies. The concern lists below are **guidance for a sensible, consistent order — not a rigid template:** include only sections with real content, **omit concerns that don't apply, never pad to fill the structure,** and adapt to the repo. Each file opens with a one-line provenance header (*generated & maintained by the toolkit; the Context mirrors — never overrides — the SAD/ADRs/specs, the Guidelines apply it in code; drafts pending approval; evolve via the update skill*), then the applicable concerns:
+Both files are **optimized for AI consumption and easy to review** — conventional, stable headings (don't reinvent the structure), short declarative bullet rules (not prose), links to sources instead of copies. Write each rule as a **pointer to its source** — link the SAD/ADR/spec that owns the full detail; the thin rule is never the complete truth. **Prefer pointing to a canonical in-repo example** over prose whenever one exists. The concern lists below are **guidance for a sensible, consistent order — not a rigid template:** include only sections with real content, **omit concerns that don't apply, never pad to fill the structure,** and adapt to the repo. Each file opens with a one-line provenance header (*generated & maintained by the toolkit; the Context mirrors — never overrides — the SAD/ADRs/specs, the Guidelines apply it in code; drafts pending approval; evolve via the update skill*), then the applicable concerns:
 
 **`docs/architecture/ai-context.md`** — Purpose & scope · Read order & authority order · Must-read sources (SAD/ADRs/specs/diagrams) · System overview · Technology & platform (languages, frameworks, runtimes, datastores; allowed/forbidden) · Architecture style & modularity · Boundaries & ownership · Data ownership & access · Integration & communication (sync/async; allowed/forbidden; API & event ownership) · Security, privacy, audit & compliance · Resilience & error handling · Logging & observability · Current-vs-target & Brownfield Guardrails · Prohibited shortcuts & ask-first triggers · Open gaps / TBDs
 

@@ -237,7 +237,9 @@ approval; evolve via `ai-guidance-update`.*
 **Write both files for AI consumption and easy review:** use these conventional, stable
 headings — **don't reinvent the structure**; express rules as short declarative bullets, not
 prose; link to sources instead of copying; keep the ordering consistent across repos so they
-stay skimmable.
+stay skimmable. Write each rule as a **pointer to its source** — link the SAD/ADR/spec that
+owns the full detail; the thin rule is never the complete or authoritative statement. And
+**prefer pointing to a canonical in-repo example** ("mirror this") over prose whenever one exists.
 
 **Thin ≠ narrow:** cover every relevant dimension, but where an artifact already covers
 one well, shrink to a pointer. **Exclude:** full SAD content, long ADR rationale, large
