@@ -78,7 +78,7 @@ AI-Architecture-Context-and-               ← the full playbook (all the detail
              + the 4 reviewers             (reviewers = custom agents, delegated by check via agents:)
   skills/    assess-coverage | write-brownfield-guardrail   (shared capabilities, auto-loaded)
 ```
-> No global `copilot-instructions.md` is shipped — the short behavioral house rules are inlined in each agent, and the authority/read order lives in the generated Context — so dropping these folders into a project won't touch its own instructions. Agents omit `tools:` (they use your configured Copilot tools); reviewers are read-only by instruction.
+> No global `copilot-instructions.md` is shipped — the short behavioral house rules are inlined in each agent, and the authority/read order lives in the generated Context — so dropping these folders into a project won't touch its own instructions. (Bootstrap still *proposes* a root instruction file for the target repo — conventionally `.github/copilot-instructions.md` for a Copilot project — but that's generated for your project, not shipped by the toolkit.) Agents omit `tools:` (they use your configured Copilot tools); reviewers are read-only by instruction.
 
 > Same responsibilities and boundaries in both; only the *packaging* differs (Claude Code: skills + sub-agents; Copilot: custom agents + Agent Skills). Pick one build — you don't need both.
 

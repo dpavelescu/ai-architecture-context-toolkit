@@ -79,7 +79,7 @@ inline — the reviewer file is the single source for the dimension's checks eit
 ## Phase 4 — Coverage gap check (cross-cutting)
 
 While running the checks above, watch for **coverage gaps**: the reviewed work depends on
-a dimension the Context is **silent on**, and no source artifact (SAD, ADR, LLD,
+a concern the Context is **silent on**, and no source artifact (SAD, ADR, LLD,
 security/privacy requirement, spec) covers it at an actionable level. Sweep the same
 concerns bootstrap covers — boundaries & ownership, data ownership, integration, API/event
 contracts, security, privacy, audit, compliance, technology & platform, architecture style &
@@ -133,7 +133,7 @@ Requires ADR or SAD update
 |---|---|---|---|
 
 ## Coverage gaps
-| Dimension | Missing guidance | Where it belongs |
+| Concern | Missing guidance | Where it belongs |
 |---|---|---|
 (Where it belongs: Context | SAD | ADR | requirement | spec)
 

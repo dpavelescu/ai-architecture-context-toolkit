@@ -79,11 +79,11 @@ To act, an AI agent reads what's in the repo — the SAD, ADRs, specs, and code 
 
 ### What the Context must cover — and at what level
 
-This is the Context's actual job. **"Thin" does not mean "narrow":** it must **cover every dimension where the AI could misinterpret** and that's relevant to the work — ownership, data, integration, contracts, security, privacy, audit, compliance, architecture style, and any brownfield divergence. What keeps it thin is *how* it covers each one, decided against your existing artifacts (SAD, ADRs, LLD, security/privacy requirements, specs):
+This is the Context's actual job. **"Thin" does not mean "narrow":** it must **cover every concern where the AI could misinterpret** and that's relevant to the work — ownership, data, integration, contracts, security, privacy, audit, compliance, architecture style, and any brownfield divergence. What keeps it thin is *how* it covers each one, decided against your existing artifacts (SAD, ADRs, LLD, security/privacy requirements, specs):
 
 | If an existing artifact… | …then the Context |
 |---|---|
-| covers the dimension **at a level the AI can act on** | **points** to it (must-read + a one-line operational pointer) — don't restate |
+| covers the concern **at a level the AI can act on** | **points** to it (must-read + a one-line operational pointer) — don't restate |
 | covers it but **too abstractly / buried** to act on | adds a **thin operational rule** that makes it actionable, and links back |
 | **doesn't cover it** (or it lives only in code) | **captures** the operational rule **and flags a gap** — the SAD/ADR/requirement may need to be created or updated (a governance item, never silent) |
 
@@ -101,7 +101,7 @@ So the Context is an **index + gap-filler**: where your artifacts are strong it 
 
 For each: decide **point / restate-actionably / fill-and-flag**. **Every concern is equal** — security, privacy, and contracts deserve the same care as ownership or architecture style. Skip one only when it's genuinely irrelevant — never because it's "not architecture."
 
-The two examples below just show *how* a dimension becomes an actionable rule. They're illustrations, not the focus.
+The two examples below just show *how* a concern becomes an actionable rule. They're illustrations, not the focus.
 
 #### Example: ownership across teams
 
@@ -138,7 +138,7 @@ Most systems combine these; capture only the lines that constrain the work at ha
 
 2. **What's in the repo is evidence, not authority.** A pattern in the code — or a statement in a stale or draft doc — doesn't make it valid for new work; only an approved source does.
 
-3. **Keep the Context thin — but not narrow.** It must *cover* every dimension the AI could misinterpret (see §1 "What the Context must cover"), but where an artifact already covers one well, shrink to a pointer instead of restating it. *Rule of thumb: if the SAD changes but AI behavior doesn't, the Context doesn't change.*
+3. **Keep the Context thin — but not narrow.** It must *cover* every concern the AI could misinterpret (see §1 "What the Context must cover"), but where an artifact already covers one well, shrink to a pointer instead of restating it. *Rule of thumb: if the SAD changes but AI behavior doesn't, the Context doesn't change.*
 
 4. **The Context is a planning-time fitness function.** It forces the AI to check boundaries (ownership, data access, allowed coupling, API/event impact, current-vs-target, security/privacy/audit/compliance, ask-first cases) *before* proposing a solution. Some rules can later become real checks (ArchUnit, dependency/contract tests, lint, CI).
 
@@ -457,7 +457,7 @@ The knobs below are the whole surface. **Complexity is not a knob** — every sk
 1. **Discover** the repo (root file, manifest, existing guidance, SAD/ADRs/diagrams, specs, representative code/tests/CI, solution notes). Classify each source. Strategy: **manifest-first**, else overrides, else convention-scan bounded by `scope`; **sample** representative code (don't read the whole tree); if discovery comes up thin, **flag it and ask for sources** rather than producing a thin draft silently.
 2. **Assess sufficiency:** *sufficient to draft / draft-with-TBDs / blocked by gaps.* Blocking gaps include unclear: service/context/data ownership, cross-service comms rule, API/event authority, security/privacy/audit/compliance constraints, a visible current-vs-target conflict, or a source-of-truth conflict. In `interactive`, ask one question; in `headless`, stop with a Blocking Context Report. **If no SAD/ADRs/specs exist, don't block** — infer candidate rules from code as *proposed/unapproved* (code is evidence, not authority), lean on TBDs, and expect "Completed with TBDs."
 3. **Propose the manifest** (if missing) from discovered paths; mark unknowns `TBD`.
-4. **Draft the AI Architecture Context** → `docs/architecture/ai-context.md`. First run the **coverage sweep** (see §1 "What the Context must cover"): for each relevant dimension decide *point / restate-actionably / fill-and-flag* against the existing artifacts, and record fill-and-flag items under "Contributor decisions needed." Include: purpose/scope, read order, authority order, must-read sources, minimal system overview, ownership/boundary rules, data ownership, integration rules, API/event rules, security/privacy/audit/compliance constraints, architecture style & modularity rules, current-vs-target, Guardrails (only where needed), prohibited shortcuts, ask-first triggers, links. Thin ≠ narrow — cover every relevant dimension but shrink to a pointer where an artifact already covers it. Exclude full SAD, long rationale, big diagrams, coding conventions, plans, story details, unapproved decisions, generic advice.
+4. **Draft the AI Architecture Context** → `docs/architecture/ai-context.md`. First run the **coverage sweep** (see §1 "What the Context must cover"): for each relevant concern decide *point / restate-actionably / fill-and-flag* against the existing artifacts, and record fill-and-flag items under "Contributor decisions needed." Include: purpose/scope, read order, authority order, must-read sources, minimal system overview, ownership/boundary rules, data ownership, integration rules, API/event rules, security/privacy/audit/compliance constraints, architecture style & modularity rules, current-vs-target, Guardrails (only where needed), prohibited shortcuts, ask-first triggers, links. Thin ≠ narrow — cover every relevant concern but shrink to a pointer where an artifact already covers it. Exclude full SAD, long rationale, big diagrams, coding conventions, plans, story details, unapproved decisions, generic advice.
 5. **Draft the AI Coding Guidelines** → `docs/engineering/ai-coding-guidelines.md`. Include: scope control, repo structure, layering, how to apply the Context in code, DTO/mapping/validation/error-handling, contract-change workflow, testing, logging/observability, security/privacy/audit/compliance coding rules, prohibited behaviors, ask-first triggers, brownfield rules (where needed), reference impls. Don't redefine architecture — link to the Context.
 6. **Validate against representative code.** Classify each pattern (aligned / current-approved / target-ready / target-not-ready / brownfield exception / known legacy / suspected drift / ask-first). Make Guardrails only for misleading current-vs-target gaps.
 7. **Output:** the two files, manifest/root-file proposals if missing, a Validation Report, any Guardrails, and a "Contributor Decisions Needed" list.
@@ -493,7 +493,7 @@ The knobs below are the whole surface. **Complexity is not a knob** — every sk
 1. **Discover** context (same sources as bootstrap) and classify each.
 2. **Understand the work:** intent, affected service/module/context, data ownership, API/event/UI contracts, security/privacy/audit/compliance behavior, changed files, the pattern being used, current-vs-target implications, relevant Guardrails. If intent is unclear and risk is material, ask one blocking question (interactive).
 3. **Delegate the dimension reviews** — for each dimension the work touches, delegate to its reviewer (architecture-boundary / engineering-convention / contract-compliance / brownfield-governance), in parallel; each reviewer owns its dimension's checks. Right-size: skip dimensions the work doesn't touch.
-4. **Coverage-gap check (cross-cutting).** Flag any dimension the work depends on that the Context is silent on and no source artifact covers actionably — note what's missing and where it belongs (Context / SAD / ADR / requirement / spec), and recommend `ai-guidance-update`. Don't silently fill it.
+4. **Coverage-gap check (cross-cutting).** Flag any concern the work depends on that the Context is silent on and no source artifact covers actionably — note what's missing and where it belongs (Context / SAD / ADR / requirement / spec), and recommend `ai-guidance-update`. Don't silently fill it.
 5. **Output:** synthesize the reviewers' findings into a Context Alignment Report (incl. coverage gaps).
 
 **Output format:**
@@ -509,7 +509,7 @@ The knobs below are the whole surface. **Complexity is not a knob** — every sk
 ## Brownfield risks            | Pattern | Classification | Risk | Recommendation |
 ## Contract & compliance impact| Area | Impact | Finding | Action |
 ## Source conflicts            | Conflict | Sources | Risk | Recommendation |
-## Coverage gaps               | Dimension | Missing guidance | Where it belongs (Context/SAD/ADR/req/spec) |
+## Coverage gaps               | Concern | Missing guidance | Where it belongs (Context/SAD/ADR/req/spec) |
 ## Blocking question     (one, or "None.")
 ## Non-blocking open points
 ## Recommended next action  (proceed | proceed with risks | clarify | update plan/PR
@@ -669,7 +669,7 @@ The skills are **per-repo**: running them in a repo affects *only that repo's* c
      coding_guidelines:    [.ai/central/docs/engineering/ai-coding-guidelines.md]
      guardrails:           [.ai/central/guardrails/]
    ```
-4. **Draft local specifics:** `/ai-context-bootstrap mode=interactive` — it reads central first and writes only this repo's local Context (cross-repo dimensions just link back to central).
+4. **Draft local specifics:** `/ai-context-bootstrap mode=interactive` — it reads central first and writes only this repo's local Context (cross-repo concerns just link back to central).
 5. **Use it:** `/ai-context-check work=<PR>` — enforces central + local together.
 
 ### Staying current — auto-consume by default; pin only when it gates

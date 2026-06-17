@@ -100,7 +100,7 @@ regeneration**:
   them wholesale; preserve all human edits, filled-in TBDs, and approved entries.
 - **Validate them against the current repo** and report changes as approval-gated proposals:
   - **drift** — code or an approved source has moved away from a stated rule
-  - **new gaps** — a relevant dimension or area is now uncovered
+  - **new gaps** — a relevant concern or area is now uncovered
   - **stale entries** — a rule whose source changed or was removed
   - **new sources** — newly-found SAD/ADRs/specs/code to link
 - **Apply only minimal, approved additions** (same human gate as a first run). Never delete

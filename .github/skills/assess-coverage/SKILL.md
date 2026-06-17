@@ -1,12 +1,12 @@
 ---
 name: assess-coverage
 description: >-
-  Decide, per dimension, how the AI Architecture Context covers it — point to an existing
+  Decide, per concern, how the AI Architecture Context covers it — point to an existing
   artifact, restate it actionably, or fill-and-flag a gap. Use when drafting or refreshing
   the Context, or when checking a work item for coverage gaps.
 ---
 
-For each dimension that is relevant to the work **and** could be misinterpreted by an AI,
+For each concern that is relevant to the work **and** could be misinterpreted by an AI,
 choose one — sized against the existing artifacts (SAD, ADRs, LLD, security/privacy
 requirements, specs):
 
@@ -25,6 +25,6 @@ Concerns (all equal — don't over-weight any one):
 - logging & observability — only where architecturally constrained
 - current-vs-target (brownfield) divergences
 
-**Thin ≠ narrow:** cover every relevant dimension, but where an artifact already covers one
-well, shrink to a pointer. Skip a dimension only when it's genuinely irrelevant — never
+**Thin ≠ narrow:** cover every relevant concern, but where an artifact already covers one
+well, shrink to a pointer. Skip a concern only when it's genuinely irrelevant — never
 because it's "not architecture."
