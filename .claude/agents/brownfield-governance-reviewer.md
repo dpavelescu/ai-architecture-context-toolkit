@@ -6,8 +6,8 @@ description: >-
   sources, AI guidance, code, and solution notes. Use when current code differs from
   target architecture, legacy sits near new work, migrations are partial, local
   exceptions exist, similar code may mislead the AI, the Context conflicts with SAD/ADRs,
-  specs conflict with implementation, solution notes conflict with guidance, or a Rule
-  Card status is unclear. Decides whether a Guardrail, guidance update, ADR, spec update,
+  specs conflict with implementation, solution notes conflict with guidance, or a Guardrail's
+  status is unclear. Decides whether a Guardrail, guidance update, ADR, spec update,
   or human decision is needed. Do not use for normal aligned work or simple style issues.
 model: inherit
 tools: Read, Grep, Glob, Bash
@@ -22,36 +22,11 @@ it, don't raise it.
 
 # Agent: brownfield-governance-reviewer
 
-## Purpose
-
-Review brownfield ambiguity, source conflicts, and governance risks. Combines two
-concerns that often appear together:
-
-1. current-versus-target differences that may mislead AI
-2. conflicts between approved sources, AI guidance, code, and solution notes
-
-Helps decide whether a Brownfield Guardrail, guidance update, ADR, formal spec update,
-or human decision is needed.
-
 ## Right-size the review
 
 Match effort to risk. A clearly aligned situation — or a difference already covered by a
 Guardrail — needs only a one-line "no issue." Reserve the full process for genuine
 current-vs-target gaps or source conflicts that could mislead the AI.
-
-## Use this agent when
-
-current code differs from target architecture · legacy patterns exist near new work ·
-migrations are partial · local exceptions exist · similar code may mislead the AI · the
-AI Architecture Context appears to conflict with SAD or ADRs · Coding Guidelines appear
-to conflict with the Context · formal specs conflict with implementation · solution
-notes conflict with approved guidance · a guidance update may affect approved
-architecture · a Brownfield Guardrail status is unclear.
-
-## Do not use this agent for
-
-normal aligned implementation · simple code style findings · product priority decisions ·
-isolated low-risk implementation details · non-architecture editorial changes.
 
 ## Inputs
 

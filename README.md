@@ -67,13 +67,13 @@ README.md                                  ← you are here (the why + onboardin
 AI-Architecture-Context-and-               ← the full playbook (all the detail)
   Coding-Guidelines-Playbook.md
 
-.ai/
+.claude/
   skills/
     ai-context-bootstrap/SKILL.md          ← set up the context
     ai-context-check/SKILL.md              ← use it on every story
     ai-guidance-update/SKILL.md            ← evolve it safely
   agents/
-    architecture-boundary-reviewer.md      ← optional reviewers
+    architecture-boundary-reviewer.md      ← optional reviewer sub-agents
     engineering-convention-reviewer.md
     brownfield-governance-reviewer.md
     contract-compliance-reviewer.md        ← add only for regulated/contract-heavy work
@@ -96,7 +96,7 @@ AGENTS.md / CLAUDE.md / copilot-instructions.md  ← tells the agent to read the
 
 ### Step 1 — Copy the toolkit in
 
-Copy the `.ai/` folder into your project's root. (Using Claude Code? You can also place the skills under `.claude/skills/` and agents under `.claude/agents/` so they're picked up natively — the content is identical.)
+Copy the `.claude/` folder into your project's root — Claude Code discovers `.claude/skills/` and `.claude/agents/` natively.
 
 ### Step 2 — Run bootstrap
 

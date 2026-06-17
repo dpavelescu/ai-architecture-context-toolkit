@@ -11,20 +11,6 @@ description: >-
 
 # Skill: ai-context-check
 
-## Purpose
-
-Check whether a story, analysis, implementation plan, pull request, diff, or solution
-note is aligned with the approved AI Architecture Context and AI Coding Guidelines.
-Acts as a planning-time and review-time architecture governance check, preventing
-locally reasonable solutions from violating architecture intent.
-
-## When to use
-
-Reviewing a Jira story, Story Artifact, AI-generated analysis, implementation plan,
-pull request, code diff, solution note, or proposed reusable learning. Use **before**
-implementation when possible; during PR review when needed; before guidance-update
-analysis when a repeated issue appears.
-
 ## Invocation
 
 ```
@@ -53,12 +39,10 @@ use `analyze-only`.
 5. **Durable output, read-only** — always produce the Context Alignment Report. This
    skill **never edits** the Context or Guidelines; only `ai-guidance-update` writes to
    them (with approval).
-6. **Cite every finding** — each finding must name the rule or source it violates and the
-   offending location (file:line or contract field). If you can't cite it, don't raise it.
-7. **Right-size the review** — match effort to risk. A small, in-scope, low-risk change
-   gets a short report (or a one-line "Ready"); skip phases with no impact. Reserve the
-   full phase-by-phase check for changes touching boundaries, ownership, data, contracts,
-   or security/privacy/audit/compliance. Use repo-relative paths.
+6. **Right-size the review** — delegate only the dimensions the work actually touches; a
+   small, in-scope, low-risk change gets a short report (or a one-line "Ready"). Use
+   repo-relative paths. (Per-finding citation is each reviewer's job — preserve their
+   cited evidence in the report; don't add uncited findings.)
 
 ## Phase 1 — Discover context
 
@@ -76,43 +60,23 @@ pattern being used or proposed; current-vs-target implications; relevant Brownfi
 Guardrails. If intent is unclear and risk is material, ask one blocking question
 (interactive only).
 
-## Phase 3 — Architecture alignment check
+## Phase 3 — Delegate the dimension reviews
 
-Check against: ownership / service / module / bounded-context boundaries; data
-ownership rules; integration rules; allowed coupling; prohibited shortcuts;
-current-vs-target guidance; Brownfield Guardrails; ask-first triggers.
+For each dimension the work actually touches (right-size — skip the rest), delegate to its
+reviewer sub-agent; run them in parallel. Each reviewer owns its dimension's checks and
+returns cited findings — do **not** re-run their logic here.
 
-Flag **locally reasonable but directionally wrong** solutions, e.g.:
+| Dimension the work touches | Reviewer |
+|---|---|
+| boundaries, ownership, data ownership, coupling, sync-vs-async, API/event ownership, dependency direction | `architecture-boundary-reviewer` |
+| repo structure, layering, naming, DTO/mapping/validation/error-handling, tests, logging/observability, scope control | `engineering-convention-reviewer` |
+| API/event/data/UI contract changes & backward-compat, security, privacy, audit, compliance | `contract-compliance-reviewer` |
+| current-vs-target divergence, copying/extending legacy, conflicts between sources | `brownfield-governance-reviewer` |
 
-- adding a synchronous service-to-service call because similar calls exist
-- reading another service's database because legacy code does
-- duplicating domain logic in the frontend
-- bypassing an event contract
-- writing audit data directly instead of via the approved mechanism
-- copying legacy validation or error-handling that is no longer target
+If you're not running sub-agents (lighter pilot), apply that reviewer file's criteria
+inline — the reviewer file is the single source for the dimension's checks either way.
 
-## Phase 4 — Coding guideline alignment check
-
-Check against: repository structure; layering; naming; DTO / mapping / validation /
-error-handling conventions; testing expectations; logging & observability; security /
-privacy / audit / compliance coding rules; contract-change workflow; scope control.
-Flag changes broader than the reviewed scope.
-
-## Phase 5 — Contract & compliance check
-
-Check impact on OpenAPI, AsyncAPI, UI specs, data specs, security, privacy, audit, and
-compliance. If a formal spec should change but the work does not mention it, flag the
-gap. If the work changes a contract without an approved source, flag a governance
-issue.
-
-## Phase 6 — Brownfield risk check
-
-If the solution copies or extends known legacy / a tolerated workaround / a partial
-migration / a local exception / suspected drift / current-but-not-target code,
-classify the risk: acceptable preservation / risky expansion / migration-needed-but-
-not-scoped / target-not-ready / ask-first / architecture-decision-required.
-
-## Phase 7 — Coverage gap check (cross-cutting)
+## Phase 4 — Coverage gap check (cross-cutting)
 
 While running the checks above, watch for **coverage gaps**: the reviewed work depends on
 a dimension the Context is **silent on**, and no source artifact (SAD, ADR, LLD,
@@ -126,9 +90,10 @@ work is wrong. For each gap, note **what guidance is missing** and **where it be
 (Context / SAD / ADR / requirement / spec), and recommend `ai-guidance-update` (plus a
 source update when the gap belongs in an upstream artifact). Do not silently fill the gap.
 
-## Phase 8 — Produce output
+## Phase 5 — Produce output
 
-Produce a Context Alignment Report.
+Synthesize the reviewers' findings into one Context Alignment Report — each section below
+is populated from the matching reviewer.
 
 ## Output format
 

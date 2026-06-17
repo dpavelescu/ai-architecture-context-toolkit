@@ -22,32 +22,11 @@ finding must cite the specific rule or source it violates and the offending loca
 
 # Agent: contract-compliance-reviewer
 
-## Purpose
-
-Review the contract and compliance dimension that the architecture and engineering
-reviewers do not cover in depth: API/event/data/UI contracts and their compatibility,
-plus security, privacy, audit, and compliance behavior.
-
 ## Right-size the review
 
 Match effort to risk. Work that touches no contract and no sensitive data gets a one-line
 "not applicable / aligned." Reserve the full process for changes that alter a contract,
 handle PII or secrets, emit audit data, or fall under a regulatory rule.
-
-## Use this agent when work involves
-
-a change to OpenAPI / AsyncAPI / data schemas / UI specs · a new or modified public API
-or event · request/response or payload shape changes · authentication or authorization ·
-secrets or credentials · input validation · handling of PII or other sensitive data ·
-data retention, consent, or cross-border transfer · audit-event emission · anything under
-a regulatory regime (PCI, GDPR, HIPAA, SOX, etc.).
-
-## Do not use this agent for
-
-architecture ownership or boundary decisions (use `architecture-boundary-reviewer`) ·
-code style, naming, or layering (use `engineering-convention-reviewer`) · current-vs-
-target/source-conflict triage (use `brownfield-governance-reviewer`) · low-risk changes
-that touch no contract and no sensitive data.
 
 ## Inputs
 

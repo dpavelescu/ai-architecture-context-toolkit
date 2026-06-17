@@ -412,7 +412,7 @@ This is **two-speed governance**: a fast AI-facing lane (Context / Guidelines / 
 
 ## 10. The three skills (templates)
 
-The ready-to-use files live in `.ai/skills/<name>/SKILL.md`; the summaries below are the same content in shorter form for readers. If you edit one, treat the file in `.ai/` as canonical. Each skill follows the house rules in §6, so those aren't repeated below.
+The ready-to-use files live in `.claude/skills/<name>/SKILL.md`; the summaries below are the same content in shorter form for readers. If you edit one, treat the file in `.claude/` as canonical. Each skill follows the house rules in §6, so those aren't repeated below.
 
 ### Invoking the skills — parameters & modes
 
@@ -484,12 +484,9 @@ The knobs below are the whole surface. **Complexity is not a knob** — every sk
 
 1. **Discover** context (same sources as bootstrap) and classify each.
 2. **Understand the work:** intent, affected service/module/context, data ownership, API/event/UI contracts, security/privacy/audit/compliance behavior, changed files, the pattern being used, current-vs-target implications, relevant Guardrails. If intent is unclear and risk is material, ask one blocking question (interactive).
-3. **Architecture check** against ownership/boundaries, data rules, integration rules, allowed coupling, prohibited shortcuts, current-vs-target, Guardrails, ask-first triggers. Flag locally-reasonable-but-wrong moves — e.g. adding a sync call because similar ones exist; reading another service's DB because legacy does; duplicating domain logic in the frontend; bypassing an event contract; writing audit data directly.
-4. **Coding-guideline check** against structure, layering, naming, DTO/mapping/validation/error-handling, testing, logging/observability, security/privacy/audit/compliance coding rules, contract workflow, and scope control. Flag changes broader than the reviewed scope.
-5. **Contract & compliance check.** If a spec should change but the work doesn't mention it, flag the gap. If the work changes a contract with no approved source, flag a governance issue.
-6. **Brownfield risk check.** If the solution copies/extends known legacy, a tolerated workaround, a partial migration, a local exception, suspected drift, or current-but-not-target code, classify the risk (acceptable preservation / risky expansion / migration-needed-not-scoped / target-not-ready / ask-first / architecture-decision-required).
-7. **Coverage-gap check (cross-cutting).** Flag any dimension the work depends on that the Context is silent on and no source artifact covers actionably — note what's missing and where it belongs (Context / SAD / ADR / requirement / spec), and recommend `ai-guidance-update`. Don't silently fill it.
-8. **Output:** a Context Alignment Report (now also listing coverage gaps).
+3. **Delegate the dimension reviews** — for each dimension the work touches, delegate to its reviewer (architecture-boundary / engineering-convention / contract-compliance / brownfield-governance), in parallel; each reviewer owns its dimension's checks. Right-size: skip dimensions the work doesn't touch.
+4. **Coverage-gap check (cross-cutting).** Flag any dimension the work depends on that the Context is silent on and no source artifact covers actionably — note what's missing and where it belongs (Context / SAD / ADR / requirement / spec), and recommend `ai-guidance-update`. Don't silently fill it.
+5. **Output:** synthesize the reviewers' findings into a Context Alignment Report (incl. coverage gaps).
 
 **Output format:**
 
@@ -575,7 +572,7 @@ The knobs below are the whole surface. **Complexity is not a knob** — every sk
 
 ## 11. The optional reviewer agents
 
-The ready-to-use files live in `.ai/agents/<name>.md` (canonical); the table below summarizes them. Add them **only when reviews get too broad or repetitive** — for a pilot, use the skills alone. Each agent takes inputs from the orchestrating skill, identifies missing context, and asks **at most one** blocking question.
+The ready-to-use files live in `.claude/agents/<name>.md` (canonical); the table below summarizes them. They own each dimension's review logic; `ai-context-check` delegates to them. Run them as **parallel sub-agents** when reviews get broad; for a lighter pilot, the check skill applies their criteria **inline from these same files** (one source either way). Each agent takes inputs from the orchestrating skill, identifies missing context, and asks **at most one** blocking question.
 
 | Agent | Reviews | Don't use for |
 |---|---|---|
@@ -598,7 +595,7 @@ It ends with a short **"Do not do"** list (e.g. *don't implement the proposed co
 ## 12. Adoption path
 
 1. **Create the minimum files** — `ai-context.md`, `ai-coding-guidelines.md`, a root instruction file. (Manifest optional.)
-2. **Add the three skills** under `.ai/skills/`.
+2. **Add the three skills** under `.claude/skills/`.
 3. **Add agents only if useful.** Skip for a pilot; add when reviews get broad.
 4. **Bootstrap:** `/ai-context-bootstrap mode=interactive` (whole repo; add `scope=<path>` to pilot one area)
 5. **Use on stories:** `/ai-context-check work=<story-or-plan> mode=analyze-only`

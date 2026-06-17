@@ -13,27 +13,6 @@ description: >-
 
 # Skill: ai-guidance-update
 
-## Purpose
-
-Analyze and apply controlled updates to the AI Architecture Context, AI Coding
-Guidelines, and Brownfield Guardrails. Prevents useful learnings from staying only in
-chat history, PR comments, or solution notes — and prevents unapproved learnings from
-silently becoming governance rules.
-
-## When to use
-
-- the AI makes a wrong assumption the guidance should have prevented
-- a review surfaces an issue the guidance doesn't yet cover
-- a brownfield pattern misleads AI
-- a target direction becomes clear
-- an ADR changes implementation behavior, or a formal spec changes
-- a reference implementation becomes approved
-- a solution note contains reusable learning
-- a current pattern should no longer be copied
-- a guidance conflict is detected
-
-Do not use for story-specific details unless the learning affects future AI behavior.
-
 ## Invocation
 
 ```

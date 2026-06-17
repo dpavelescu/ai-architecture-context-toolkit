@@ -20,28 +20,12 @@ if you can't cite it, don't raise it.
 
 # Agent: architecture-boundary-reviewer
 
-## Purpose
-
-Review architecture boundaries and ownership risks. Detect whether a proposed solution
-violates architecture intent even when it looks locally reasonable.
-
 ## Right-size the review
 
 Match effort to risk. A change that stays inside one module with no ownership, data,
 contract, or coupling impact needs only a one-line "aligned" — skip the full process.
 Reserve the 10-step process for cross-boundary, ownership-sensitive, or coupling-changing
 work.
-
-## Use this agent when work involves
-
-service boundaries · bounded contexts · module boundaries · ownership · data ownership ·
-cross-service communication · synchronous vs asynchronous integration · API or event
-ownership · dependency direction · shared SDK usage · architecture-sensitive refactoring.
-
-## Do not use this agent for
-
-generic code style · test naming · formatting · low-risk local implementation details ·
-story writing · product acceptance criteria.
 
 ## Inputs
 
@@ -56,13 +40,17 @@ return at most one blocking question, only if required.
 this need, and the minimum change to it. Flag an invented parallel structure when reuse
 was available.
 
+**Typical locally-reasonable-but-wrong moves to catch:** a new synchronous service-to-service
+call because similar ones exist; reading another service's database because legacy code does;
+duplicating domain logic in the frontend; bypassing an event contract.
+
 ## Review process
 
 1. Identify the affected architecture boundary.
 2. Identify the owner of the affected service, module, bounded context, or data.
 3. Identify whether the work introduces or changes coupling.
 4. Identify whether current code is being used as evidence.
-5. Check whether the pattern is approved, tolerated legacy, target, or unclear.
+5. If the pattern's status (approved / tolerated legacy / target) is unclear, flag it for `brownfield-governance-reviewer` — don't classify current-vs-target here.
 6. Check whether the proposal respects data ownership.
 7. Check whether the proposal respects API and event ownership.
 8. Check whether a Brownfield Guardrail applies.
@@ -94,14 +82,10 @@ introduces new coupling | reduces coupling | unclear
 ## Data ownership impact
 - <finding>
 
-## Brownfield interpretation
-Choose one: approved current pattern | tolerated legacy | target direction |
-target not ready | ask first | suspected drift | not applicable
-
 ## Blocking question
 Ask exactly one question only if required, or write: None.
 
 ## Recommendation
 Choose one: proceed | proceed with noted risk | update plan | ask Architecture |
-create or update Brownfield Guardrail | raise ADR | update AI Architecture Context
+run brownfield-governance-reviewer | raise ADR | update AI Architecture Context
 ```

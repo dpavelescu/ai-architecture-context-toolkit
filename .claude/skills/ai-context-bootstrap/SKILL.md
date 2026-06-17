@@ -12,33 +12,6 @@ description: >-
 
 # Skill: ai-context-bootstrap
 
-## Purpose
-
-Create or refresh the minimum AI-facing guidance required for safe AI-assisted
-delivery. This skill produces or updates:
-
-- AI Architecture Context (`docs/architecture/ai-context.md`)
-- AI Coding Guidelines (`docs/engineering/ai-coding-guidelines.md`)
-- Brownfield Guardrails — only where needed
-- a context manifest proposal, if missing
-- a root AI instruction file proposal, if missing
-- a validation report
-- a list of contributor decisions needed
-
-Intended for brownfield systems where existing code may not represent approved
-architecture intent.
-
-## When to use
-
-- Starting AI-assisted delivery in a repository
-- Onboarding a new service, module, bounded context, or team
-- Creating the first AI Architecture Context or AI Coding Guidelines
-- Validating whether existing AI guidance is usable
-- Identifying brownfield differences that may mislead AI
-
-Do **not** use for story-specific implementation planning (use `ai-context-check`)
-or for approved guidance evolution (use `ai-guidance-update`).
-
 ## Invocation
 
 ```
