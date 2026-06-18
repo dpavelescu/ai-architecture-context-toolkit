@@ -115,9 +115,8 @@ Copy the build for your tool into your project's root:
 
 It will:
 - discover your SAD, ADRs, specs, and representative code automatically (you won't paste documents)
-- draft `docs/architecture/ai-context.md` and `docs/engineering/ai-coding-guidelines.md`
-- ask you **one question at a time**, only when a real gap blocks it (e.g. *"Which is the authority for cross-service comms — SAD §4.3, ADR-012, or current code?"*)
-- flag anything it can't safely decide as `TBD` or "ask first" instead of guessing
+- **ask you one question at a time**, most critical first, to resolve the important gaps it can't safely decide (e.g. *"Which is the authority for cross-service comms — SAD §4.3, ADR-012, or current code?"*) — it never guesses an important decision
+- then draft the **complete** `docs/architecture/ai-context.md` and `docs/engineering/ai-coding-guidelines.md`, recording only genuinely **minor** open points as `TBD`
 
 Start small: add `scope=<area>` (a path, paths/glob, or a manifest `areas:` name) to focus one service or area if the whole repo is too big.
 
