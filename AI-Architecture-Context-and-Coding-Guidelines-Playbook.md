@@ -14,6 +14,17 @@ One principle underpins it: **each unit of work should make the next one easier.
 
 ---
 
+## Tool scope & terms
+
+This playbook is the **tool-neutral reference** — it describes the toolkit by what each part *does*: three **workflows** (bootstrap, check, update) and four optional **reviewers**. The concepts are identical across coding agents; only the packaging differs:
+
+- **Claude Code** — workflows are *skills* (`.claude/skills/`), reviewers are *sub-agents* (`.claude/agents/`); invoked as `/slash` commands.
+- **GitHub Copilot** — all seven are *custom agents* (`.github/agents/`) plus two shared *Agent Skills* (`.github/skills/`); invoked from the agent picker.
+
+For concreteness the examples below use the Claude form (`skill`, `/ai-context-bootstrap …`). Read **"skill"** as "the workflow" and **"sub-agent"** as "the delegated reviewer" — they map directly to the Copilot build (see the README for the per-tool layout).
+
+---
+
 ## The loop
 
 Everything in this guide is one loop with three steps:
@@ -585,7 +596,7 @@ _Stop conditions are part of Phase 2 (detect → clarify → gate)._
 
 ## 11. The optional reviewer agents
 
-The ready-to-use files live in `.claude/agents/<name>.md` (canonical); the table below summarizes them. They own each dimension's review logic; `ai-context-check` delegates to them. Run them as **parallel sub-agents** when reviews get broad; for a lighter pilot, the check skill applies their criteria **inline from these same files** (one source either way). Each agent takes inputs from the orchestrating skill, identifies missing context, and asks **at most one** blocking question.
+The reviewer files live in `.claude/agents/` (Claude build) or `.github/agents/` (Copilot); the table below summarizes them. They own each dimension's review logic; `ai-context-check` delegates to them. Run them as **parallel sub-agents** when reviews get broad; for a narrow change the check workflow applies their criteria **inline from these same files** (one source either way). Each takes inputs from the orchestrating workflow, identifies missing context, and asks **at most one** blocking question.
 
 | Agent | Reviews | Don't use for |
 |---|---|---|
