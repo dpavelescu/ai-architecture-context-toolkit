@@ -17,11 +17,18 @@ Uses your configured Copilot tools.
 
 ## Process
 1. **Discover** — manifest-first; else conventional locations bounded by `scope`; **sample** representative code (don't read whole trees). If discovery is thin, state what's missing and ask for sources, or proceed with proposals + TBDs.
-2. **Assess sufficiency (detect → clarify → gate)** — run the full concern checklist, checking what's **missing** as much as what's present. Surface: a load-bearing concern **no source covers** (don't assume one), **underspecification** (ambiguous / multiple readings), a source that **contradicts itself**, and **cross-source conflict**. Mark each **blocking** (would force an assumption on something load-bearing — ownership, comms, API/event, security, privacy, audit, compliance, technology, current-vs-target) or **non-blocking** (deferred TBD). **Resolve every blocking item before generating** — `interactive`: a human-in-the-loop loop, **one question at a time, most critical first, until none remain** (ask only what genuinely needs a human, not the obvious; don't batch; you may draft on the fly, but the **final files fold in all clarifications and stand complete**); otherwise write no docs and emit the **Blocked report as an ordered, resumable clarification agenda**. A completion report is **not** for unresolved important decisions — if those remain the run is Blocked, not Completed; only minor items become deferred TBDs. Never assume a missing/unclear important concern. With no SAD/ADRs/specs, infer *lower-risk* rules from code as proposed; with docs but no source access, produce from the docs and skip code-validation + current-vs-target Guardrails.
+2. **Assess sufficiency** — detect gaps, underspecification, and conflicts, and clarify the blocking ones before generating (see **Clarification**).
 3. **Draft the Context** (`docs/architecture/ai-context.md`) — apply the **assess-coverage** skill; lay it out in the standard ordered sections (see *Generated file structure*). Add a Guardrail (**write-brownfield-guardrail** skill) only where current≠target could mislead.
 4. **Draft the Coding Guidelines** (`docs/engineering/ai-coding-guidelines.md`) — lay it out in the standard ordered sections (see *Generated file structure*). Don't redefine architecture — link to the Context.
 5. **Propose** the manifest and root-instruction file if missing.
 6. **Produce the result** — see **Output** below.
+
+## Clarification (detect → clarify → gate)
+- **Detect** over the full concern checklist — what's **missing** as much as present: a load-bearing concern **no source covers** · **underspecification** (ambiguous / >1 reading) · a source that **contradicts itself** · **cross-source conflict**.
+- **Classify** each **blocking** (would force an assumption on something load-bearing — ownership, data, comms, API/event, security, privacy, audit, compliance, technology, current-vs-target, or a needed architecture decision) or **non-blocking** (a minor deferral).
+- **Clarify** blocking items before generating. `interactive`: ask **one question at a time, most critical first, until none remain** — only what genuinely needs a human, not the obvious; you may draft on the fly. Otherwise write no docs and emit the **Blocked report** (an ordered, resumable agenda).
+- **Gate**: generate only when no blocking item remains; the **final files fold in every clarification and stand complete** — never partial. Never substitute an assumption for a missing/unclear important concern.
+- **No-source modes:** no SAD/ADRs/specs → infer *lower-risk* rules from code as proposed (load-bearing → ask, don't infer); no code access → produce from the docs and skip code-validation + current-vs-target Guardrails.
 
 ## Generated file structure
 Write both files for **AI consumption and easy review**: conventional, stable headings
@@ -66,7 +73,7 @@ or overlap reconciles (validate + propose, never duplicate/overwrite). Coverage 
 Per-repo; for cross-repo, link up to a shared system-level Context rather than duplicating.
 
 ## Output
-**Resolve every blocking ambiguity before writing anything** — ask one at a time (interactive); if a blocker can't be resolved, stop. Two mutually exclusive outcomes:
+Two mutually exclusive outcomes (see **Clarification**):
 
 **A — Blocked (nothing written).** A blocking item is unresolved → write no files; emit this **resumable clarification agenda** and stop. (In interactive mode you instead ask these one at a time, most critical first, then proceed to B once answered.)
 ```markdown

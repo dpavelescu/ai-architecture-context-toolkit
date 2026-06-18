@@ -169,7 +169,7 @@ not Completed**; only genuinely non-blocking items become deferred TBDs.
 
 **Treat as load-bearing (missing *or* unclear ⇒ blocking):** service / bounded-context / data
 ownership · cross-service communication · API / event authority · security · privacy · audit ·
-compliance · technology / platform constraints · current-vs-target for a visible brownfield gap.
+compliance · technology / platform constraints · current-vs-target for a visible brownfield gap · a needed architecture decision.
 
 ### When approved sources are absent (no SAD / ADRs / specs)
 
@@ -292,25 +292,29 @@ code; rely on the docs (higher authority than code anyway) and flag ambiguity ra
 
 ## Phase 7 — Produce output
 
-1. `docs/architecture/ai-context.md`
-2. `docs/engineering/ai-coding-guidelines.md`
-3. `ai-enablement/context-manifest.yaml`, if missing or incomplete
-4. root AI instruction proposal, if missing or incomplete
-5. Validation Report
-6. Brownfield Guardrails, only where needed
-7. Contributor Decisions Needed
+End with the **Blocked** or **Completed** output (see *Output format*). A Completed run writes
+`docs/architecture/ai-context.md`, `docs/engineering/ai-coding-guidelines.md`, the manifest and
+root-instruction proposals (if missing), Guardrails (only where needed), and the report below.
 
 ## Output format
 
-**Resolve every blocking item first** via the interactive clarification loop (Phase 2) — one
-question at a time, most critical first. Write files only when none remain. If a blocker stays
-unresolved, **write no files and emit the Blocking Context Report — an ordered, resumable
-clarification agenda** (the *Blocked* outcome). A completion report never carries unresolved
-important decisions; only genuinely non-blocking items appear as deferred TBDs.
+Per **Phase 2**, the run ends one of two ways.
 
-On success, the deliverable is the **drafted files** (Phase 7) — drafts pending approval —
-plus this completion report. By definition no blocking items remain; only deliberately-deferred,
-non-blocking ones appear:
+**Blocked (nothing written)** — a blocking item is unresolved; write no files and emit a
+resumable agenda:
+
+```markdown
+# ai-context-bootstrap — Blocked
+## Clarification agenda (most critical first)
+1. <question> — why it's blocking · who decides
+## Discovered so far
+| Source | Path | Evidence type | Authority |
+|---|---|---|---|
+```
+*Resume by answering the agenda and re-running.*
+
+**Completed** — the deliverable is the **drafted files** (Phase 7, drafts pending approval) plus
+this report; no blocking items remain, only non-blocking deferrals:
 
 ```markdown
 # ai-context-bootstrap Result
@@ -343,13 +347,4 @@ Completed | Completed with TBDs
 - <next step>
 ```
 
-## Stop conditions
-
-Stop and ask one blocking question (in `headless`, produce a Blocking Context Report
-instead) when:
-
-- an authority conflict cannot be resolved
-- ownership or data ownership is unclear
-- security, privacy, audit, or compliance implications are unclear
-- current code and target direction conflict
-- the AI would need to make an architecture decision
+_Stop conditions are covered by Phase 2 (detect → clarify → gate)._
