@@ -122,7 +122,12 @@ Start small: add `scope=<area>` (a path, paths/glob, or a manifest `areas:` name
 
 ### Step 3 — Review and approve the drafts
 
-Read the two generated files. Fix the `TBD`s. This is where you encode the few things that matter — *"new cross-service comms use events, not REST," "no service reads another's DB," "don't copy the old validation helper."* Keep it thin.
+Bootstrap produced the two files as **drafts** — it already encoded the rules from your sources and the clarifications you gave. Your job here is to:
+- **review** them for accuracy and fix anything it got wrong;
+- **resolve the remaining `TBD`s** (the minor open points it deferred);
+- **approve** — accept the drafts as the governing guidance (e.g., commit/merge them), so later runs and the coding agent treat them as the baseline.
+
+Check that the few things that matter came through correctly — *"new cross-service comms use events, not REST," "no service reads another's DB," "don't copy the old validation helper."* Keep it thin.
 
 ### Step 4 — Add a root instruction file
 
