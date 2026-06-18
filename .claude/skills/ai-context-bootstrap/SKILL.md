@@ -152,10 +152,20 @@ Run the **full concern checklist** (Phase 4) — checking what's **missing** as 
 - **sources that disagree** (cross-source conflict)
 
 Classify each as **blocking** (the AI would otherwise assume something load-bearing) or
-**non-blocking** (a deferred TBD). **Clarify blocking items first** — `interactive`: ask exactly
-one blocking question; `headless`: stop and produce a **Blocking Context Report** — and write
-files **only once they're answered.** Never substitute an AI assumption for a missing or unclear
-important concern; record non-blocking items as deferred decisions and proceed.
+**non-blocking** (a genuinely minor deferral). **Resolve every blocking item before generating
+anything:**
+- `interactive` — run a **human-in-the-loop clarification loop**: ask the **single most critical**
+  open question, wait for the answer, then the next, **in order of criticality, until none remain.**
+  Ask only what genuinely needs a human — not what the sources or sensible convention already
+  settle (no obvious or busywork questions). Don't batch; you may draft on the fly, but the
+  **final files must fold in every clarification and stand complete** — never partial.
+- `headless`, or if the human can't answer now — write no docs and produce a **Blocking Context
+  Report**: an **ordered clarification agenda** (most critical first) you resume by answering and
+  re-running.
+
+Never substitute an AI assumption for a missing or unclear important concern. A completion report
+is **not** a place to dump unresolved important decisions — if those remain, the run is **Blocked,
+not Completed**; only genuinely non-blocking items become deferred TBDs.
 
 **Treat as load-bearing (missing *or* unclear ⇒ blocking):** service / bounded-context / data
 ownership · cross-service communication · API / event authority · security · privacy · audit ·
@@ -218,7 +228,8 @@ structure.** Adapt to the repo. **Write for AI consumption and easy review:** co
 stable headings (don't reinvent the structure); short declarative bullets, not prose; each
 rule a **pointer to its source** (link the SAD/ADR/spec that owns the detail — the thin rule is
 never the whole truth); **prefer a canonical in-repo example** ("mirror this") over prose when
-one exists. Open the file with a one-line provenance header — *generated & maintained by the
+one exists. **Don't repeat content** — state each rule once and cross-link rather than restating.
+Open the file with a one-line provenance header — *generated & maintained by the
 toolkit; mirrors, never overrides, the SAD/ADRs/specs; drafts pending approval; evolve via
 `ai-guidance-update`.*
 
@@ -291,9 +302,11 @@ code; rely on the docs (higher authority than code anyway) and flag ambiguity ra
 
 ## Output format
 
-**Resolve every blocking ambiguity first** (Phase 2 / Stop conditions); write files only when
-none remain. If a blocker stays unresolved, **stop with the Blocking Context Report and write
-no files** — that is the *Blocked* outcome.
+**Resolve every blocking item first** via the interactive clarification loop (Phase 2) — one
+question at a time, most critical first. Write files only when none remain. If a blocker stays
+unresolved, **write no files and emit the Blocking Context Report — an ordered, resumable
+clarification agenda** (the *Blocked* outcome). A completion report never carries unresolved
+important decisions; only genuinely non-blocking items appear as deferred TBDs.
 
 On success, the deliverable is the **drafted files** (Phase 7) — drafts pending approval —
 plus this completion report. By definition no blocking items remain; only deliberately-deferred,

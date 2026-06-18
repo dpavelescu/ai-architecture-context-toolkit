@@ -17,7 +17,7 @@ Uses your configured Copilot tools.
 
 ## Process
 1. **Discover** — manifest-first; else conventional locations bounded by `scope`; **sample** representative code (don't read whole trees). If discovery is thin, state what's missing and ask for sources, or proceed with proposals + TBDs.
-2. **Assess sufficiency (detect → clarify → gate)** — run the full concern checklist, checking what's **missing** as much as what's present. Surface: a load-bearing concern **no source covers** (don't assume one), **underspecification** (ambiguous / multiple readings), a source that **contradicts itself**, and **cross-source conflict**. Mark each **blocking** (would force an assumption on something load-bearing — ownership, comms, API/event, security, privacy, audit, compliance, technology, current-vs-target) or **non-blocking** (deferred TBD). **Clarify blocking items first** (ask one at a time, or stop with the Blocked report); write files **only once answered** — never assume a missing/unclear important concern. With no SAD/ADRs/specs, infer *lower-risk* rules from code as proposed; with docs but no source access, produce from the docs and skip code-validation + current-vs-target Guardrails.
+2. **Assess sufficiency (detect → clarify → gate)** — run the full concern checklist, checking what's **missing** as much as what's present. Surface: a load-bearing concern **no source covers** (don't assume one), **underspecification** (ambiguous / multiple readings), a source that **contradicts itself**, and **cross-source conflict**. Mark each **blocking** (would force an assumption on something load-bearing — ownership, comms, API/event, security, privacy, audit, compliance, technology, current-vs-target) or **non-blocking** (deferred TBD). **Resolve every blocking item before generating** — `interactive`: a human-in-the-loop loop, **one question at a time, most critical first, until none remain** (ask only what genuinely needs a human, not the obvious; don't batch; you may draft on the fly, but the **final files fold in all clarifications and stand complete**); otherwise write no docs and emit the **Blocked report as an ordered, resumable clarification agenda**. A completion report is **not** for unresolved important decisions — if those remain the run is Blocked, not Completed; only minor items become deferred TBDs. Never assume a missing/unclear important concern. With no SAD/ADRs/specs, infer *lower-risk* rules from code as proposed; with docs but no source access, produce from the docs and skip code-validation + current-vs-target Guardrails.
 3. **Draft the Context** (`docs/architecture/ai-context.md`) — apply the **assess-coverage** skill; lay it out in the standard ordered sections (see *Generated file structure*). Add a Guardrail (**write-brownfield-guardrail** skill) only where current≠target could mislead.
 4. **Draft the Coding Guidelines** (`docs/engineering/ai-coding-guidelines.md`) — lay it out in the standard ordered sections (see *Generated file structure*). Don't redefine architecture — link to the Context.
 5. **Propose** the manifest and root-instruction file if missing.
@@ -28,7 +28,7 @@ Write both files for **AI consumption and easy review**: conventional, stable he
 (**don't reinvent the structure**), short declarative bullet rules (not prose), links to
 sources instead of copies. Write each rule as a **pointer to its source** — link the SAD/ADR/spec
 that owns the full detail; the thin rule is never the complete truth. **Prefer pointing to a
-canonical in-repo example** ("mirror this") over prose whenever one exists. The concern lists below are **guidance for a sensible, consistent
+canonical in-repo example** ("mirror this") over prose whenever one exists. **Don't repeat content** — state each rule once and cross-link rather than restating. The concern lists below are **guidance for a sensible, consistent
 order — not a rigid template: write only sections with real content, omit concerns that don't
 apply, never pad to fill the structure, and adapt to the repo.** Open each file with a one-line
 provenance header — *generated & maintained by this toolkit; the Context mirrors (never
@@ -68,17 +68,19 @@ Per-repo; for cross-repo, link up to a shared system-level Context rather than d
 ## Output
 **Resolve every blocking ambiguity before writing anything** — ask one at a time (interactive); if a blocker can't be resolved, stop. Two mutually exclusive outcomes:
 
-**A — Blocked (nothing written).** A blocking gap remains → produce only this; write no files:
+**A — Blocked (nothing written).** A blocking item is unresolved → write no files; emit this **resumable clarification agenda** and stop. (In interactive mode you instead ask these one at a time, most critical first, then proceed to B once answered.)
 ```markdown
 # ai-context-bootstrap — Blocked
-## Unresolved blocking gap(s)
-- <the gap> — what's needed to resolve it / who decides
+## Clarification agenda (most critical first)
+1. <question> — why it's blocking · who decides
+2. ...
 ## Discovered so far
 | Source | Path | Evidence type | Authority |
 |---|---|---|---|
 ```
+*Resume by answering the agenda (update the source, or answer in an interactive re-run) and running again.*
 
-**B — Completed (the artifacts — the deliverable).** All blocking gaps resolved → write the draft `ai-context.md` + `ai-coding-guidelines.md` (+ Guardrails where needed; manifest/root-file proposals if missing), then this report. **No blocking items remain** — only deliberately-deferred, non-blocking ones:
+**B — Completed (the artifacts — the deliverable).** All blocking gaps resolved → write the draft `ai-context.md` + `ai-coding-guidelines.md` (+ Guardrails where needed; manifest/root-file proposals if missing), then this report. **No blocking items remain** — only deliberately-deferred, non-blocking ones (important unresolved decisions would make the run Blocked, not Completed):
 ```markdown
 # ai-context-bootstrap Result
 
