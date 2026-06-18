@@ -456,28 +456,32 @@ The knobs below are the whole surface. **Complexity is not a knob** — every sk
 **Phases:**
 
 1. **Discover** the repo (root file, manifest, existing guidance, SAD/ADRs/diagrams, specs, representative code/tests/CI, solution notes). Classify each source. Strategy: **manifest-first**, else overrides, else convention-scan bounded by `scope`; **sample** representative code (don't read the whole tree); if discovery comes up thin, **flag it and ask for sources** rather than producing a thin draft silently.
-2. **Assess sufficiency:** *sufficient to draft / draft-with-TBDs / blocked by gaps.* Blocking gaps include unclear: service/context/data ownership, cross-service comms rule, API/event authority, security/privacy/audit/compliance constraints, a visible current-vs-target conflict, or a source-of-truth conflict. In `interactive`, ask one question; in `headless`, stop with a Blocking Context Report. **If no SAD/ADRs/specs exist, don't block** — infer candidate rules from code as *proposed/unapproved* (code is evidence, not authority), lean on TBDs, and expect "Completed with TBDs."
+2. **Assess sufficiency (detect → clarify → gate):** run the full concern checklist — what's **missing** as much as present — surfacing a load-bearing concern no source covers, underspecification (ambiguous / >1 reading), a source that contradicts itself, and cross-source conflict. Mark each **blocking** or **non-blocking** (a minor deferral). Resolve blocking items first — `interactive`: ask one question at a time, **most critical first, until none remain** (only what genuinely needs a human, not the obvious); `headless`/can't-answer: write no docs and emit a **Blocking Context Report** (an ordered, resumable agenda). Generate only once blocking items are answered — never a partial doc, never an AI assumption for a missing/unclear important concern. With no SAD/ADRs/specs, infer *lower-risk* rules from code as proposed (load-bearing → ask, don't infer).
 3. **Propose the manifest** (if missing) from discovered paths; mark unknowns `TBD`.
-4. **Draft the AI Architecture Context** → `docs/architecture/ai-context.md`. First run the **coverage sweep** (see §1 "What the Context must cover"): for each relevant concern decide *point / restate-actionably / fill-and-flag* against the existing artifacts, and record fill-and-flag items under "Contributor decisions needed." Include: purpose/scope, read order, authority order, must-read sources, minimal system overview, ownership/boundary rules, data ownership, integration rules, API/event rules, security/privacy/audit/compliance constraints, architecture style & modularity rules, current-vs-target, Guardrails (only where needed), prohibited shortcuts, ask-first triggers, links. Thin ≠ narrow — cover every relevant concern but shrink to a pointer where an artifact already covers it. Exclude full SAD, long rationale, big diagrams, coding conventions, plans, story details, unapproved decisions, generic advice.
-5. **Draft the AI Coding Guidelines** → `docs/engineering/ai-coding-guidelines.md`. Include: scope control, repo structure, layering, how to apply the Context in code, DTO/mapping/validation/error-handling, contract-change workflow, testing, logging/observability, security/privacy/audit/compliance coding rules, prohibited behaviors, ask-first triggers, brownfield rules (where needed), reference impls. Don't redefine architecture — link to the Context.
+4. **Draft the AI Architecture Context** → `docs/architecture/ai-context.md`. Run the **coverage sweep** (see §1) per concern — *point / restate-actionably / flag-for-clarification (if ambiguous) / flag-or-fill (load-bearing → flag, don't invent; else a proposed rule)*. Lay it out in the standard concern sections (§5 "Generated file structure") — guidance, not a rigid template: only sections with real content, omit the rest, don't pad. Each rule a pointer to its source; prefer a canonical in-repo example; don't repeat content. Thin ≠ narrow.
+5. **Draft the AI Coding Guidelines** → `docs/engineering/ai-coding-guidelines.md`. Lay it out in the standard coding-concern sections (§5 "Generated file structure"); same writing rules as the Context. Don't redefine architecture — link to it.
 6. **Validate against representative code.** Classify each pattern (aligned / current-approved / target-ready / target-not-ready / brownfield exception / known legacy / suspected drift / ask-first). Make Guardrails only for misleading current-vs-target gaps. *(Doc-only, no source access: skip this and current-vs-target Guardrails — both need code; rely on the docs and flag ambiguity rather than infer.)*
-7. **Output:** the two files, manifest/root-file proposals if missing, a Validation Report, any Guardrails, and a "Contributor Decisions Needed" list.
+7. **Produce output:** end **Blocked** (no files; a resumable clarification agenda) or **Completed** (the drafted files + a report — only non-blocking deferrals remain).
 
-**Output format:**
+**Output format** — one of two outcomes (blocking items are resolved first):
 
 ```markdown
-# ai-context-bootstrap Result
-## Decision        (Completed | Completed with TBDs | Blocked | Analyze-only)
+# ai-context-bootstrap — Blocked        (nothing written)
+## Clarification agenda (most critical first)   1. <question> — why blocking · who decides
+## Discovered so far   | Source | Path | Evidence type | Authority |
+
+# ai-context-bootstrap Result            (completed)
+## Decision        (Completed | Completed with TBDs)
 ## Files created or updated
+## Refresh summary (refresh runs only)
 ## Context sources discovered   | Source | Path | Evidence type | Authority |
-## Blocking question            (one question, or "None.")
-## Contributor decisions needed | Decision | Reason | Blocking? | Owner |
 ## Brownfield Guardrails created | Topic | Status | Reason |
+## Deferred decisions (non-blocking)   | Decision | Why deferred | Suggested owner |
 ## Validation summary
 ## Recommended next step
 ```
 
-**Stop and ask one blocking question (or, in headless, report) when:** authority conflict is unresolvable; ownership or data ownership is unclear; security/privacy/audit/compliance impact is unclear; current code and target conflict; or the AI would have to make an architecture decision.
+_Stop conditions are part of Phase 2 (detect → clarify → gate)._
 
 ---
 

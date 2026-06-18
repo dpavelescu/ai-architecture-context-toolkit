@@ -214,12 +214,11 @@ requirements, specs):
 - **Restate actionably** — covered but too abstract or buried to act on → add a thin
   operational rule and link back.
 - **Flag for clarification** — covered, but the source is ambiguous or admits more than one
-  valid reading on something that matters → don't pick a reading; record it in *Contributor
-  decisions needed* for a human to state explicitly.
-- **Flag or fill** — nothing covers it. If it's **load-bearing**, flag it for clarification in
-  *Contributor decisions needed* — don't invent a rule. For lower-risk concerns you may add a
-  *proposed* rule (marked proposed/TBD). Either way record the gap (the SAD/ADR/requirement may
-  need creating; never decide it silently).
+  valid reading on something that matters → don't pick a reading; flag it for clarification so
+  a human states it explicitly.
+- **Flag or fill** — nothing covers it. If it's **load-bearing**, flag it for clarification —
+  don't invent a rule. For lower-risk concerns you may add a *proposed* rule (marked proposed/TBD).
+  Either way record the gap (the SAD/ADR/requirement may need creating; never decide it silently).
 
 **Structure the file as the concerns below that apply** — guidance for a sensible, consistent
 order, **not a rigid template.** Write a section only when you have something real to say;

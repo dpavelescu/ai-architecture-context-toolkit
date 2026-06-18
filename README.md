@@ -48,6 +48,19 @@ The two files are **thin**: they don't repeat your architecture, they *point* to
 
 ---
 
+## The rules that keep it safe (and small)
+
+*Everything below relies on these.*
+
+- **Existing code is evidence, not authority.** A pattern existing in the repo doesn't make it approved for new work.
+- **The AI never decides governance silently.** Architecture, security, privacy, audit, compliance, and contract changes need a human. The AI proposes; you approve.
+- **One blocking question at a time, most critical first.** No 20-question intake forms; it asks only what genuinely needs a human, not the obvious.
+- **Resolve the important questions before generating.** The output is complete and built from the answers — never a partial doc with a pile of open points.
+- **Right-size everything.** Small, low-risk work gets a compact pass; full ceremony only for large or risky changes — *leverage, not paperwork.*
+- **Humans still review.** This makes what reaches review safer; it doesn't replace review.
+
+---
+
 ## How it works: one small loop
 
 | Step | Workflow | When | What it does |
@@ -153,16 +166,6 @@ When you notice the AI making the *same* mistake across stories, fold the lesson
 ```
 
 That's the whole loop. **You don't need steps 6 or the agents to start** — bootstrap + check is enough for a pilot.
-
----
-
-## The rules that keep it safe (and small)
-
-- **Existing code is evidence, not authority.** A pattern existing in the repo doesn't make it approved for new work.
-- **The AI never decides governance silently.** Architecture, security, privacy, audit, compliance, and contract changes need a human. The AI proposes; you approve.
-- **One blocking question at a time.** No 20-question intake forms.
-- **Right-size everything.** Small, low-risk work gets a compact pass. Full ceremony is reserved for large or risky changes. The point is *leverage, not paperwork.*
-- **Humans still review.** This makes what reaches review safer; it doesn't replace review.
 
 ---
 
