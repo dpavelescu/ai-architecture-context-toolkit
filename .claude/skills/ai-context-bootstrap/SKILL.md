@@ -195,6 +195,9 @@ artifacts (SAD, ADRs, LLD, security/privacy requirements, specs):
   a one-line operational pointer); do not restate.
 - **Restate actionably** — covered but too abstract or buried to act on → add a thin
   operational rule and link back.
+- **Flag for clarification** — covered, but the source is ambiguous or admits more than one
+  valid reading on something that matters → don't pick a reading; record it in *Contributor
+  decisions needed* for a human to state explicitly.
 - **Fill and flag** — not covered anywhere (or only implied in code) → capture the
   operational rule here, and record a gap in *Contributor decisions needed* (the
   SAD/ADR/requirement may need creating or updating; never decide it silently).
@@ -263,6 +266,9 @@ Inspect representative code and tests. Classify each relevant pattern as: aligne
 current-approved practice / target-ready / target-not-ready / brownfield exception /
 known legacy / suspected drift / ask-first. Create Brownfield Guardrails **only** when
 current implementation and target direction differ in a way that could mislead AI.
+
+**Doc-only (no source access):** skip this phase and current-vs-target Guardrails — both need
+code; rely on the docs (higher authority than code anyway) and flag ambiguity rather than infer.
 
 ## Phase 7 — Produce output
 

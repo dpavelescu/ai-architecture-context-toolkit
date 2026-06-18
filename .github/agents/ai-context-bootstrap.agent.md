@@ -17,7 +17,7 @@ Uses your configured Copilot tools.
 
 ## Process
 1. **Discover** — manifest-first; else conventional locations bounded by `scope`; **sample** representative code (don't read whole trees). If discovery is thin, state what's missing and ask for sources, or proceed with proposals + TBDs.
-2. **Assess sufficiency** — sufficient / draft-with-TBDs / blocked. With no SAD/ADRs/specs, infer candidate rules from code as *proposed / unapproved*; expect "Completed with TBDs."
+2. **Assess sufficiency** — sufficient / draft-with-TBDs / blocked. With no SAD/ADRs/specs, infer candidate rules from code as *proposed / unapproved*; expect "Completed with TBDs." With docs but no source access, produce from the docs (they outrank code), skip code-validation and current-vs-target Guardrails, and flag ambiguity rather than infer.
 3. **Draft the Context** (`docs/architecture/ai-context.md`) — apply the **assess-coverage** skill; lay it out in the standard ordered sections (see *Generated file structure*). Add a Guardrail (**write-brownfield-guardrail** skill) only where current≠target could mislead.
 4. **Draft the Coding Guidelines** (`docs/engineering/ai-coding-guidelines.md`) — lay it out in the standard ordered sections (see *Generated file structure*). Don't redefine architecture — link to the Context.
 5. **Propose** the manifest and root-instruction file if missing.

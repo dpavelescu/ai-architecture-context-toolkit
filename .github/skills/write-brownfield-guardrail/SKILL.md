@@ -1,9 +1,10 @@
 ---
 name: write-brownfield-guardrail
 description: >-
-  The Brownfield Guardrail format and rules — for when current code and target direction
-  differ in a way that could mislead the AI. Use when creating, updating, or applying a
-  Guardrail (during bootstrap, guidance updates, or brownfield review).
+  Write a Brownfield Guardrail when current code and target direction differ in a way that
+  could mislead the AI — capturing what to use, what not to copy, and when to ask. Use when
+  creating, updating, or applying one (in bootstrap, guidance updates, or brownfield review).
+  A Guardrail records a divergence; it never originates an architecture decision.
 ---
 
 Create a Guardrail **only** when current code and target direction differ in a way that

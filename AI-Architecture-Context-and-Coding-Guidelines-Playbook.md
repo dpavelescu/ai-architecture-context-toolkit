@@ -85,6 +85,7 @@ This is the Context's actual job. **"Thin" does not mean "narrow":** it must **c
 |---|---|
 | covers the concern **at a level the AI can act on** | **points** to it (must-read + a one-line operational pointer) — don't restate |
 | covers it but **too abstractly / buried** to act on | adds a **thin operational rule** that makes it actionable, and links back |
+| says something but **ambiguously / open to more than one reading** | **flags it for clarification** — captures the candidate readings, doesn't pick one |
 | **doesn't cover it** (or it lives only in code) | **captures** the operational rule **and flags a gap** — the SAD/ADR/requirement may need to be created or updated (a governance item, never silent) |
 
 So the Context is an **index + gap-filler**: where your artifacts are strong it shrinks to pointers; where they're silent it carries the operational rule and surfaces the gap.
@@ -459,7 +460,7 @@ The knobs below are the whole surface. **Complexity is not a knob** — every sk
 3. **Propose the manifest** (if missing) from discovered paths; mark unknowns `TBD`.
 4. **Draft the AI Architecture Context** → `docs/architecture/ai-context.md`. First run the **coverage sweep** (see §1 "What the Context must cover"): for each relevant concern decide *point / restate-actionably / fill-and-flag* against the existing artifacts, and record fill-and-flag items under "Contributor decisions needed." Include: purpose/scope, read order, authority order, must-read sources, minimal system overview, ownership/boundary rules, data ownership, integration rules, API/event rules, security/privacy/audit/compliance constraints, architecture style & modularity rules, current-vs-target, Guardrails (only where needed), prohibited shortcuts, ask-first triggers, links. Thin ≠ narrow — cover every relevant concern but shrink to a pointer where an artifact already covers it. Exclude full SAD, long rationale, big diagrams, coding conventions, plans, story details, unapproved decisions, generic advice.
 5. **Draft the AI Coding Guidelines** → `docs/engineering/ai-coding-guidelines.md`. Include: scope control, repo structure, layering, how to apply the Context in code, DTO/mapping/validation/error-handling, contract-change workflow, testing, logging/observability, security/privacy/audit/compliance coding rules, prohibited behaviors, ask-first triggers, brownfield rules (where needed), reference impls. Don't redefine architecture — link to the Context.
-6. **Validate against representative code.** Classify each pattern (aligned / current-approved / target-ready / target-not-ready / brownfield exception / known legacy / suspected drift / ask-first). Make Guardrails only for misleading current-vs-target gaps.
+6. **Validate against representative code.** Classify each pattern (aligned / current-approved / target-ready / target-not-ready / brownfield exception / known legacy / suspected drift / ask-first). Make Guardrails only for misleading current-vs-target gaps. *(Doc-only, no source access: skip this and current-vs-target Guardrails — both need code; rely on the docs and flag ambiguity rather than infer.)*
 7. **Output:** the two files, manifest/root-file proposals if missing, a Validation Report, any Guardrails, and a "Contributor Decisions Needed" list.
 
 **Output format:**
