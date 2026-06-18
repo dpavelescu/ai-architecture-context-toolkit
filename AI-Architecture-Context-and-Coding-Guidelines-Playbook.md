@@ -186,7 +186,7 @@ The AI **reads** AI-facing files first — but they are **not** the highest auth
 8. Local code and tests (implementation evidence)
 9. Solution notes (supporting memory only)
 
-**When sources conflict, the AI does not resolve it silently — it raises a context conflict.** The team then decides what's stale (Context? SAD? code?) and whether a Guardrail, ADR, spec, or guidance update is needed.
+**When sources conflict — or a source contradicts itself — the AI does not resolve it silently; it raises a context conflict.** The team then decides what's stale (Context? SAD? code?) and whether a Guardrail, guidance update, ADR, SAD, or spec change is needed (the AI writes only the AI-facing ones, with approval; ADR/SAD/spec stay human-owned).
 
 ---
 
