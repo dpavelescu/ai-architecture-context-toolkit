@@ -2,7 +2,9 @@
 
 **Make AI coding agents respect your approved architecture and decisions — especially in messy, real-world (brownfield) projects.**
 
-This repo gives you two thin files, three skills, and four optional reviewer agents that tell an AI agent *how to apply your approved architecture* before it plans or writes code. No new architecture document. No heavy process. It's designed to drop into an existing project.
+This repo gives you two thin files, three guided workflows (bootstrap, check, update), and four optional reviewers that tell an AI agent *how to apply your approved architecture* before it plans or writes code. No new architecture document. No heavy process. It's designed to drop into an existing project.
+
+> **A note on terms:** the three workflows and four reviewers are **packaged differently per tool** — in **Claude Code** the workflows are *skills* and the reviewers are *sub-agents*; in **GitHub Copilot** all seven are *custom agents* (plus two shared Agent Skills). Same behavior, same outputs — see the repo map below. ("Skill" and "agent" mean different things in each tool, so this README names the capabilities by what they *do*.)
 
 ---
 
@@ -48,7 +50,7 @@ The two files are **thin**: they don't repeat your architecture, they *point* to
 
 ## How it works: one small loop
 
-| Step | Skill | When | What it does |
+| Step | Workflow | When | What it does |
 |---|---|---|---|
 | **1. Bootstrap** | `ai-context-bootstrap` | Once per repo | Reads your repo and drafts the two thin files (+ a manifest and Guardrails if needed) |
 | **2. Check** | `ai-context-check` | Every story / plan / PR | Checks the proposed work against the files — catches "locally reasonable but architecturally wrong" before it ships |
@@ -56,7 +58,7 @@ The two files are **thin**: they don't repeat your architecture, they *point* to
 
 Day to day it's **Check ↔ Update**: bootstrap once, then check each story, and occasionally capture a learning. Each story leaves the guidance a little better than it found it.
 
-Optional reviewer **agents** (architecture, engineering, brownfield — plus a contract & compliance reviewer for regulated/contract-heavy work) plug into the Check/Update steps *only if* reviews get broad. Skip them for a pilot.
+Optional **reviewers** (architecture, engineering, brownfield — plus a contract & compliance reviewer for regulated/contract-heavy work) plug into the Check/Update steps *only if* reviews get broad. Skip them for a pilot.
 
 ---
 

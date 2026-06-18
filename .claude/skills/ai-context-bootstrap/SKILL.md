@@ -141,26 +141,33 @@ authority:
 6. Code evidence: representative services, modules, tests, CI checks, reference implementations
 7. Supporting memory: `docs/solutions/`, previous reports
 
-## Phase 2 — Assess sufficiency
+## Phase 2 — Assess sufficiency (detect → clarify → gate)
 
-Decide: **sufficient to draft** / **sufficient to draft with TBDs** / **insufficient
-(blocking gaps)**. Blocking gaps include missing or unclear:
+Run the **full concern checklist** (Phase 4) — checking what's **missing** as much as what's
+**present** — and surface four things:
 
-- service / bounded-context / data ownership
-- cross-service communication rule
-- API or event authority
-- security, privacy, audit, or compliance constraints
-- current-vs-target direction for a visible brownfield conflict
-- source-of-truth conflict between SAD, ADRs, specs, AI context, and code
+- a **load-bearing concern no source covers** (don't fill it with an assumption)
+- a statement that's **ambiguous or open to more than one reading** (underspecification)
+- a source that **contradicts itself** (intra-source conflict)
+- **sources that disagree** (cross-source conflict)
 
-In `interactive` mode, ask exactly one blocking question. In `headless` mode, do not
-ask — stop and produce a **Blocking Context Report**.
+Classify each as **blocking** (the AI would otherwise assume something load-bearing) or
+**non-blocking** (a deferred TBD). **Clarify blocking items first** — `interactive`: ask exactly
+one blocking question; `headless`: stop and produce a **Blocking Context Report** — and write
+files **only once they're answered.** Never substitute an AI assumption for a missing or unclear
+important concern; record non-blocking items as deferred decisions and proceed.
+
+**Treat as load-bearing (missing *or* unclear ⇒ blocking):** service / bounded-context / data
+ownership · cross-service communication · API / event authority · security · privacy · audit ·
+compliance · technology / platform constraints · current-vs-target for a visible brownfield gap.
 
 ### When approved sources are absent (no SAD / ADRs / specs)
 
 With no authoritative source to point to, don't block outright. **Infer candidate rules
-from representative code and conventions, and mark every one as *proposed / unapproved*** —
-existing code is evidence, not authority. Lean on `TBD`, ask-first, and the *Contributor
+from representative code and conventions for lower-risk concerns, and mark every one as
+*proposed / unapproved*** — existing code is evidence, not authority. For **load-bearing**
+concerns (the list above), flag or ask rather than infer — don't let a missing decision
+become a silent assumption. Lean on `TBD`, ask-first, and the *Contributor
 decisions needed* list; ask only the few genuinely blocking questions. Expect a Decision
 of **Completed with TBDs**, with each inferred entry tagged *(proposed — needs approval)*
 until a human confirms it or an ADR/SAD is created. Never present an inferred rule as
@@ -187,9 +194,10 @@ tolerant — use whatever keys are present and fall back to conventional locatio
 
 Create or update `docs/architecture/ai-context.md`.
 
-**Run a coverage sweep.** For each *content* concern in the list below that is relevant and
-could be misinterpreted by an AI, decide how to cover it — sized against the existing
-artifacts (SAD, ADRs, LLD, security/privacy requirements, specs):
+**Run a coverage sweep.** Run over the **full checklist** (the concerns below) — checking what's **missing** as much as
+what the sources mention. For each relevant content concern that could be misinterpreted by an
+AI, decide how to cover it — sized against the existing artifacts (SAD, ADRs, LLD, security/privacy
+requirements, specs):
 
 - **Point** — an artifact covers it at an actionable level → reference it (must-read +
   a one-line operational pointer); do not restate.
@@ -198,9 +206,10 @@ artifacts (SAD, ADRs, LLD, security/privacy requirements, specs):
 - **Flag for clarification** — covered, but the source is ambiguous or admits more than one
   valid reading on something that matters → don't pick a reading; record it in *Contributor
   decisions needed* for a human to state explicitly.
-- **Fill and flag** — not covered anywhere (or only implied in code) → capture the
-  operational rule here, and record a gap in *Contributor decisions needed* (the
-  SAD/ADR/requirement may need creating or updating; never decide it silently).
+- **Flag or fill** — nothing covers it. If it's **load-bearing**, flag it for clarification in
+  *Contributor decisions needed* — don't invent a rule. For lower-risk concerns you may add a
+  *proposed* rule (marked proposed/TBD). Either way record the gap (the SAD/ADR/requirement may
+  need creating; never decide it silently).
 
 **Structure the file as the concerns below that apply** — guidance for a sensible, consistent
 order, **not a rigid template.** Write a section only when you have something real to say;

@@ -86,7 +86,7 @@ This is the Context's actual job. **"Thin" does not mean "narrow":** it must **c
 | covers the concern **at a level the AI can act on** | **points** to it (must-read + a one-line operational pointer) — don't restate |
 | covers it but **too abstractly / buried** to act on | adds a **thin operational rule** that makes it actionable, and links back |
 | says something but **ambiguously / open to more than one reading** | **flags it for clarification** — captures the candidate readings, doesn't pick one |
-| **doesn't cover it** (or it lives only in code) | **captures** the operational rule **and flags a gap** — the SAD/ADR/requirement may need to be created or updated (a governance item, never silent) |
+| **doesn't cover it** (or it lives only in code) | **flags it for clarification** if it's load-bearing (don't assume) — else **captures a *proposed* rule and flags the gap**; the SAD/ADR/requirement may need creating (a governance item, never silent) |
 
 So the Context is an **index + gap-filler**: where your artifacts are strong it shrinks to pointers; where they're silent it carries the operational rule and surfaces the gap.
 
@@ -267,7 +267,7 @@ target differ and no Guardrail covers it — and it touches architecture, owners
 data, contracts, security, privacy, audit, or compliance — ask first.
 
 ## Conflict rule
-If sources conflict, don't decide silently. Raise a context conflict.
+If sources conflict — or a source contradicts itself — don't decide silently. Raise a context conflict.
 
 ## Question rule
 Ask one blocking question at a time. Put non-blocking questions in the report.

@@ -20,7 +20,7 @@ First, identify the current pattern and whether an approved target or Guardrail 
 ## Review
 1. Current pattern / conflicting statement; the target direction and its approved source.
 2. Do current and target differ in a way that could mislead the AI?
-3. Source conflicts — stale guidance / stale SAD or ADR / spec mismatch / drift / coding-guideline or solution-note overreach / missing architecture decision / missing contract update / governance approval required.
+3. Conflicts (within a source or across sources) — self-contradiction in one source / stale guidance / stale SAD or ADR / spec mismatch / drift / coding-guideline or solution-note overreach / missing architecture decision / missing contract update / governance approval required.
 4. Decide: Guardrail needed? guidance update? ADR/SAD/spec update? human decision?
 
 Statuses: `Use current` · `Use target` · `Target not ready` · `Ask first`.

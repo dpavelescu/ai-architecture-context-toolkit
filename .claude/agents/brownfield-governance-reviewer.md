@@ -66,7 +66,7 @@ target or Guardrail already covers it, before proposing anything new.
 ## Conflict types
 
 no conflict · terminology mismatch · stale AI guidance · stale SAD or ADR · formal-spec
-mismatch · implementation drift · brownfield ambiguity · coding-guideline overreach ·
+mismatch · self-contradiction within one source · implementation drift · brownfield ambiguity · coding-guideline overreach ·
 solution-note overreach · missing architecture decision · missing contract update ·
 governance approval required.
 

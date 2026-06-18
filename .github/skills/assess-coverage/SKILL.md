@@ -7,14 +7,14 @@ description: >-
   Context, or checking a work item for coverage gaps. Never resolve ambiguity by guessing — flag it.
 ---
 
-For each concern that is relevant to the work **and** could be misinterpreted by an AI,
-choose one — sized against the existing artifacts (SAD, ADRs, LLD, security/privacy
-requirements, specs):
+Run over the **full checklist below** — checking what's **missing** as much as what the sources
+mention. For each relevant concern that could be misinterpreted by an AI, choose one — sized
+against the existing artifacts (SAD, ADRs, LLD, security/privacy requirements, specs):
 
 - **Point** — an artifact covers it at an actionable level → reference it (must-read + a one-line operational pointer); don't restate.
 - **Restate actionably** — covered but too abstract or buried → add a thin operational rule and link back.
 - **Flag for clarification** — covered, but the source is ambiguous or admits more than one valid reading on something that matters → don't pick a reading; flag it for a human to state explicitly.
-- **Fill and flag** — not covered anywhere (or only in code) → capture the operational rule and record a gap (the SAD/ADR/requirement may need creating or updating; never decide it silently).
+- **Flag or fill** — nothing covers it. If it's **load-bearing**, flag it for clarification — don't invent a rule. For lower-risk concerns you may add a *proposed* rule (marked proposed/TBD). Either way record the gap (the SAD/ADR/requirement may need creating; never decide it silently).
 
 Concerns (all equal — don't over-weight any one):
 
