@@ -1,6 +1,6 @@
 # AI Architecture Context & AI Coding Guidelines — A Generation & Maintenance Playbook
 
-**Version:** 0.9 (draft) · **Audience:** Architects, tech leads, developers, QA, platform engineers, engineering managers
+**Audience:** Architects, tech leads, developers, QA, platform engineers, engineering managers
 
 ---
 

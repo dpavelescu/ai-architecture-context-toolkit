@@ -1,10 +1,10 @@
 ---
+name: brownfield-governance-reviewer
 description: >-
   Review current-vs-target divergence and source conflicts that could mislead the AI, and
   decide whether a Guardrail, guidance update, ADR, spec update, or human decision is
   needed. Owns the Brownfield Guardrail call. Delegated by ai-context-check; not for normal
   aligned work or simple style.
-name: brownfield-governance-reviewer
 model: inherit
 ---
 

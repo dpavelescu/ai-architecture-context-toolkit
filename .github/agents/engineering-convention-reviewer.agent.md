@@ -1,10 +1,10 @@
 ---
+name: engineering-convention-reviewer
 description: >-
   Review whether code follows the approved AI Coding Guidelines and repo conventions —
   structure, placement, layering, naming, DTO/mapping/validation/error-handling, tests,
   logging/observability, scope control. Delegated by ai-context-check; not for
   architecture/ownership/security/contract decisions.
-name: engineering-convention-reviewer
 model: inherit
 ---
 

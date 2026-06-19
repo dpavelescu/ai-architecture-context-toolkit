@@ -1,10 +1,10 @@
 ---
+name: architecture-boundary-reviewer
 description: >-
   Review architecture boundaries and ownership — service/module/bounded-context boundaries,
   ownership, data ownership, coupling, sync-vs-async, API/event ownership, dependency
   direction. Detects locally-reasonable solutions that violate architecture intent.
   Delegated by ai-context-check; not for code style or low-risk local detail.
-name: architecture-boundary-reviewer
 model: inherit
 ---
 

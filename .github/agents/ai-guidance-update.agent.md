@@ -1,9 +1,9 @@
 ---
+name: ai-guidance-update
 description: >-
   Evaluate whether a learning should change the AI Architecture Context, Coding Guidelines,
   or Brownfield Guardrails, and apply the minimal approved change. Default analyze-only;
   never auto-promotes, never writes SAD/ADRs/specs.
-name: ai-guidance-update
 model: inherit
 ---
 

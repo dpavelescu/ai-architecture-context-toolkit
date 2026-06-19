@@ -1,9 +1,9 @@
 ---
+name: ai-context-bootstrap
 description: >-
   Create or refresh the AI Architecture Context and AI Coding Guidelines (plus Brownfield
   Guardrails and manifest/root-file proposals) for this repo. Use when starting AI-assisted
   delivery, onboarding a service/area, or checking whether existing guidance is usable.
-name: ai-context-bootstrap
 model: inherit
 ---
 

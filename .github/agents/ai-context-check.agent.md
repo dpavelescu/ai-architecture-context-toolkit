@@ -1,9 +1,9 @@
 ---
+name: ai-context-check
 description: >-
   Review a story, plan, PR, diff, or solution note against the approved AI Architecture
   Context and AI Coding Guidelines. Read-only; catches locally-reasonable-but-directionally-
   wrong solutions. Delegates the dimension reviews to the reviewer agents.
-name: ai-context-check
 model: inherit
 agents: ['architecture-boundary-reviewer', 'engineering-convention-reviewer', 'contract-compliance-reviewer', 'brownfield-governance-reviewer']
 ---

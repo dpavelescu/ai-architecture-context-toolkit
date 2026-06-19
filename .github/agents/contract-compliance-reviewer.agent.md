@@ -1,10 +1,10 @@
 ---
+name: contract-compliance-reviewer
 description: >-
   Review contract and compliance impact — API/event/data/UI contract changes and backward
   compatibility, plus security, privacy, audit, and compliance. Flags governance-significant
   changes made without an approved source. Delegated by ai-context-check for
   regulated/contract-heavy work; not for architecture decisions or pure code style.
-name: contract-compliance-reviewer
 model: inherit
 ---
 
