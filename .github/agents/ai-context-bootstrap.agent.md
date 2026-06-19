@@ -26,7 +26,7 @@ Uses your configured Copilot tools.
 ## Clarification (detect → clarify → gate)
 - **Detect** over the full concern checklist — what's **missing** as much as present: a load-bearing concern **no source covers** · **underspecification** (ambiguous / >1 reading) · a source that **contradicts itself** · **cross-source conflict**.
 - **Classify** each **blocking** (would force an assumption on something load-bearing — ownership, data, comms, API/event, security, privacy, audit, compliance, technology, current-vs-target, or a needed architecture decision) or **non-blocking** (a minor deferral).
-- **Clarify** blocking items before generating. `interactive`: ask **one question at a time, most critical first, until none remain** — only what genuinely needs a human, not the obvious; you may draft on the fly. Otherwise write no docs and emit the **Blocked report** (an ordered, resumable agenda).
+- **Clarify** blocking items before generating. `interactive`: ask **one question at a time, most critical first, until none remain** (use the IDE/agent's native prompt if it has one) — only what genuinely needs a human, not the obvious; you may draft on the fly. Otherwise write no docs and emit the **Blocked report** (an ordered, resumable agenda).
 - **Gate**: generate only when no blocking item remains; the **final files fold in every clarification and stand complete** — never partial. Never substitute an assumption for a missing/unclear important concern.
 - **No-source modes:** no SAD/ADRs/specs → infer *lower-risk* rules from code as proposed (load-bearing → ask, don't infer); no code access → produce from the docs and skip code-validation + current-vs-target Guardrails.
 
@@ -35,7 +35,7 @@ Write both files for **AI consumption and easy review**: conventional, stable he
 (**don't reinvent the structure**), short declarative bullet rules (not prose), links to
 sources instead of copies. Write each rule as a **pointer to its source** — link the SAD/ADR/spec
 that owns the full detail; the thin rule is never the complete truth. **Prefer pointing to a
-canonical in-repo example** ("mirror this") over prose whenever one exists. **Don't repeat content** — state each rule once and cross-link rather than restating. The concern lists below are **guidance for a sensible, consistent
+canonical in-repo example** ("mirror this") over prose whenever one exists. **Don't repeat content** — state each rule once and cross-link rather than restating. **Rule shape:** one line per rule — the imperative rule, a link to its source, and an inline *ask-first if …* where relevant (plus a canonical example to mirror when one exists). Make the **weight** visible: non-negotiables as **Never/Always**, preferences as **Prefer**. The concern lists below are **guidance for a sensible, consistent
 order — not a rigid template: write only sections with real content, omit concerns that don't
 apply, never pad to fill the structure, and adapt to the repo.** Open each file with a one-line
 provenance header — *generated & maintained by this toolkit; the Context mirrors (never

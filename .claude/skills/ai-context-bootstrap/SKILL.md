@@ -155,7 +155,8 @@ Classify each as **blocking** (the AI would otherwise assume something load-bear
 **non-blocking** (a genuinely minor deferral). **Resolve every blocking item before generating
 anything:**
 - `interactive` — run a **human-in-the-loop clarification loop**: ask the **single most critical**
-  open question, wait for the answer, then the next, **in order of criticality, until none remain.**
+  open question (use the IDE/agent's native prompt if it has one), wait for the answer, then the
+next, **in order of criticality, until none remain.**
   Ask only what genuinely needs a human — not what the sources or sensible convention already
   settle (no obvious or busywork questions). Don't batch; you may draft on the fly, but the
   **final files must fold in every clarification and stand complete** — never partial.
@@ -227,7 +228,7 @@ structure.** Adapt to the repo. **Write for AI consumption and easy review:** co
 stable headings (don't reinvent the structure); short declarative bullets, not prose; each
 rule a **pointer to its source** (link the SAD/ADR/spec that owns the detail — the thin rule is
 never the whole truth); **prefer a canonical in-repo example** ("mirror this") over prose when
-one exists. **Don't repeat content** — state each rule once and cross-link rather than restating.
+one exists. **Don't repeat content** — state each rule once and cross-link rather than restating. **Rule shape:** one line per rule — the imperative rule, a link to its source, and an inline *ask-first if …* where relevant (plus a canonical example to mirror when one exists). Make the **weight** visible: non-negotiables as **Never/Always**, preferences as **Prefer**.
 Open the file with a one-line provenance header — *generated & maintained by the
 toolkit; mirrors, never overrides, the SAD/ADRs/specs; drafts pending approval; evolve via
 `ai-guidance-update`.*
