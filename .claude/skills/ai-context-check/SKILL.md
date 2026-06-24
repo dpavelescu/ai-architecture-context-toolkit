@@ -57,8 +57,11 @@ Identify: the work item; business intent; affected service / module / bounded co
 affected data ownership; affected API / event / UI contracts; affected security /
 privacy / audit / compliance behavior; changed or proposed files; the implementation
 pattern being used or proposed; current-vs-target implications; relevant Brownfield
-Guardrails. If intent is unclear and risk is material, ask one blocking question
-(interactive only).
+Guardrails. In `interactive` mode, ask one blocking question (otherwise report the issue)
+when intent is unclear and risk is material, or when: the solution requires an architecture
+decision; ownership, data ownership, or contract authority is unclear; security, privacy,
+audit, or compliance impact is unclear; current code and target direction conflict; or the
+reviewed work violates an ask-first trigger.
 
 ## Phase 3 — Delegate the dimension reviews
 
@@ -148,14 +151,3 @@ Choose one: proceed | proceed with noted risks | clarify one blocking question |
 update plan | update PR | run ai-guidance-update in analyze-only mode | raise
 architecture decision | update formal spec | create or update Brownfield Guardrail
 ```
-
-## Stop conditions
-
-In `interactive` mode, stop and ask one blocking question (otherwise report the issue)
-when:
-
-- the solution requires an architecture decision
-- ownership, data ownership, or contract authority is unclear
-- security, privacy, audit, or compliance impact is unclear
-- current code and target direction conflict
-- the reviewed work violates an ask-first trigger

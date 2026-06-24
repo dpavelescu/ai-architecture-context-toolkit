@@ -148,7 +148,12 @@ create or update Brownfield Guardrail
 
 ## Phase 6 — Apply-approved-update behavior
 
-In `apply-approved-update` mode:
+Do not apply — stop and report — when: approval is missing (produce an Approval Missing
+Report); the target artifact is unclear; the update conflicts with formal specs, SAD, or ADRs;
+it would require an architecture decision, or security / privacy / audit / compliance approval;
+it would change contract truth; it is broader than the approved change; or the target is the
+Context/Guidelines but no baseline exists (recommend `ai-context-bootstrap`). Otherwise, in
+`apply-approved-update` mode:
 
 1. Verify explicit approval exists.
 2. Verify the approved target artifact.
@@ -159,8 +164,6 @@ In `apply-approved-update` mode:
 7. Add or update the source reference.
 8. Flag any conflict discovered during application.
 9. Produce an Applied Guidance Update Report.
-
-If approval is missing, stop and produce an Approval Missing Report.
 
 ```markdown
 # Applied Guidance Update Report
@@ -184,11 +187,3 @@ Choose one: Applied | Not applied | Partially applied | Blocked
 ## Follow-up recommended
 - <follow-up or none>
 ```
-
-## Stop conditions
-
-Stop when: approval is missing; the target artifact is unclear; the update conflicts
-with formal specs, SAD, or ADRs; it would require an architecture decision; it would
-require security / privacy / audit / compliance approval; it would change contract
-truth; it is broader than the approved change; or the target is the Context/Guidelines
-but no baseline exists — recommend `ai-context-bootstrap` first.

@@ -43,8 +43,8 @@ defined `area` is the real selector; a bare free-form phrase is only a weak hint
 Scope bounds what the run examines and drafts, not the output path. Output always goes to the
 single repo-level pair (`docs/architecture/ai-context.md`,
 `docs/engineering/ai-coding-guidelines.md`); the Context's *Purpose & scope* section records the
-covered areas. Re-running over an already-covered area reconciles, never overwrites — see
-**Refresh mode**.
+covered areas. Re-running over an already-covered area reconciles, never overwrites — Phase 1
+detects an existing baseline and runs a refresh.
 
 For multiple repos, run the toolkit in each. For cross-repo architecture, keep a shared
 system-level Context and have each repo link up to it rather than duplicating.
@@ -77,25 +77,6 @@ absolute paths. Write only the AI-facing layer (Context, Guidelines, Guardrails,
 manifest/root-file, candidate solution notes); never write SAD/ADRs/specs/tracker items —
 flag or draft those for a human.
 
-## Refresh mode
-
-If Phase 1 finds existing `ai-context.md` / `ai-coding-guidelines.md` (or approved
-Guardrails), switch to **refresh mode** — a health-check and re-baseline, **never a
-regeneration**:
-
-- **Treat the existing files as the approved baseline.** Never overwrite or regenerate
-  them wholesale; preserve all human edits, filled-in TBDs, and approved entries.
-- **Validate them against the current repo** and report changes as approval-gated proposals:
-  - **drift** — code or an approved source has moved away from a stated rule
-  - **new gaps** — a relevant concern or area is now uncovered
-  - **stale entries** — a rule whose source changed or was removed
-  - **new sources** — newly-found SAD/ADRs/specs/code to link
-- **Apply only minimal, approved additions** (same human gate as a first run). Never delete
-  or rewrite an existing rule without explicit approval; if a rule looks wrong, **flag it,
-  don't silently change it.**
-- **Boundary:** refresh is for re-baselining, large drift, or onboarding a new area.
-  Incremental, per-learning evolution belongs to `ai-guidance-update`.
-
 ## Phase 1 — Discover context
 
 **Discovery strategy (don't blind-scan the whole repo):**
@@ -127,6 +108,24 @@ authority:
 5. Formal specs: OpenAPI, AsyncAPI, UI, data, security, privacy, audit, compliance
 6. Code evidence: representative services, modules, tests, CI checks, reference implementations
 7. Supporting memory: `docs/solutions/`, previous reports
+
+### If guidance already exists (refresh)
+
+If discovery finds existing `ai-context.md` / `ai-coding-guidelines.md` (or approved
+Guardrails), this run is a **refresh** — a health-check and re-baseline, **never a
+regeneration**:
+
+- **Treat the existing files as the approved baseline.** Never overwrite or regenerate them
+  wholesale; preserve all human edits, filled-in TBDs, and approved entries.
+- **Validate them against the current repo** and report changes as approval-gated proposals:
+  drift (a source moved away from a stated rule), new gaps (a now-uncovered concern or area),
+  stale entries (a rule whose source changed or was removed), new sources (newly-found
+  SAD/ADRs/specs/code to link).
+- **Apply only minimal, approved additions** (same human gate as a first run). Never delete or
+  rewrite an existing rule without explicit approval; if a rule looks wrong, **flag it, don't
+  silently change it.**
+- **Boundary:** refresh is for re-baselining, large drift, or onboarding a new area;
+  incremental, per-learning evolution belongs to `ai-guidance-update`.
 
 ## Phase 2 — Assess sufficiency (detect → clarify → gate)
 
@@ -329,5 +328,3 @@ Completed | Completed with TBDs
 ## Recommended next step
 - <next step>
 ```
-
-_Stop conditions are covered by Phase 2 (detect → clarify → gate)._
