@@ -14,20 +14,20 @@ description: >-
 ## Invocation
 
 ```
-/ai-context-check work=<story|artifact|plan|pr|diff|solution-note> mode=<interactive|analyze-only>
+/ai-context-check work=<story|artifact|plan|pr|diff|solution-note> [scope=<area>]
 ```
 
 Examples:
 
 ```
-/ai-context-check work=JIRA-123 mode=analyze-only
-/ai-context-check work=docs/plans/payment-events-plan.md mode=interactive
-/ai-context-check work=PR-456 mode=analyze-only
+/ai-context-check work=JIRA-123
+/ai-context-check work=docs/plans/payment-events-plan.md
+/ai-context-check work=PR-456
 ```
 
-Optional: `scope=<area>` (a path, paths/glob, or a manifest `areas:` name; omit for the whole repo),
-`focus=<architecture|coding|brownfield|contracts|security|all>`. If no mode is given,
-use `analyze-only`.
+Optional: `scope=<area>` — a path, paths/glob, or a manifest `areas:` name; omit for the whole
+repo. The check is read-only and interactive: it asks one blocking question only when something
+genuinely needs a human, otherwise it records the question in its report.
 
 ## Constraints
 
@@ -57,8 +57,8 @@ Identify: the work item; business intent; affected service / module / bounded co
 affected data ownership; affected API / event / UI contracts; affected security /
 privacy / audit / compliance behavior; changed or proposed files; the implementation
 pattern being used or proposed; current-vs-target implications; relevant Brownfield
-Guardrails. In `interactive` mode, ask one blocking question (otherwise report the issue)
-when intent is unclear and risk is material, or when: the solution requires an architecture
+Guardrails. Ask one blocking question (otherwise record it in the report) when intent is unclear
+and risk is material, or when: the solution requires an architecture
 decision; ownership, data ownership, or contract authority is unclear; security, privacy,
 audit, or compliance impact is unclear; current code and target direction conflict; or the
 reviewed work violates an ask-first trigger.
@@ -107,7 +107,7 @@ decision | Requires guidance update analysis | Requires formal spec update |
 Requires ADR or SAD update
 
 ## Reviewed input
-- Type: / Reference: / Scope: / Mode:
+- Type: / Reference: / Scope:
 
 ## Summary
 - <short summary>

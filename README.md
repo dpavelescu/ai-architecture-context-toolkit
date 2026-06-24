@@ -122,9 +122,9 @@ Copy the build for your tool into your project's root:
 ### Step 2 — Run bootstrap
 
 ```
-/ai-context-bootstrap mode=interactive            # whole repo
+/ai-context-bootstrap                             # whole repo
 # or focus one area first:
-/ai-context-bootstrap scope=services/order-service mode=interactive
+/ai-context-bootstrap scope=services/order-service
 ```
 
 It will:
@@ -152,7 +152,7 @@ Add `AGENTS.md` (or `CLAUDE.md`, or `.github/copilot-instructions.md`) that tell
 Before building a story, check the plan against your guidance:
 
 ```
-/ai-context-check work=<story-or-plan> mode=analyze-only
+/ai-context-check work=<story-or-plan>
 ```
 
 You get an alignment report: what's fine, what's risky, and any "this copies legacy you're moving away from" warnings.

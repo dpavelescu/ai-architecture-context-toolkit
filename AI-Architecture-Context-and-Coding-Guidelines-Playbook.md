@@ -19,7 +19,7 @@ One principle underpins it: **each unit of work should make the next one easier.
 This playbook is the **tool-neutral reference** — it describes the toolkit by what each part *does*: three **workflows** (bootstrap, check, update) and four optional **reviewers**. The concepts are identical across coding agents; only the packaging differs:
 
 - **Claude Code** — workflows are *skills* (`.claude/skills/`), reviewers are *sub-agents* (`.claude/agents/`); invoked as `/slash` commands.
-- **GitHub Copilot** — all seven are *custom agents* (`.github/agents/`) plus two shared *Agent Skills* (`.github/skills/`); invoked from the agent picker.
+- **GitHub Copilot** — all seven are *custom agents* (`.github/agents/`) plus four shared *Agent Skills* (`.github/skills/`); invoked from the agent picker.
 
 For concreteness the examples below use the Claude form (`skill`, `/ai-context-bootstrap …`). Read **"skill"** as "the workflow" and **"sub-agent"** as "the delegated reviewer" — they map directly to the Copilot build (see the README for the per-tool layout).
 
@@ -319,8 +319,8 @@ These apply to all three skills — defined once here, referenced by each.
 1. **Discover first.** Inspect the repo for the root file, manifest, Context, Guidelines, relevant SAD/ADRs/specs, code/tests, and solution notes. Never ask the user to paste something that's discoverable.
 2. **One blocking question at a time.** Classify each gap as *blocking / non-blocking / clarify-later*. Only blocking gaps may interrupt. Prefer multiple-choice. Non-blocking questions go in the report.
    > *Example:* "Which source is the authority for cross-service communication? **A)** SAD §4.3 · **B)** ADR-012 · **C)** current code · **D)** no safe default — mark Ask first."
-3. **Use safe defaults.** If a missing decision touches architecture, ownership, data, contracts, or security/privacy/audit/compliance, never invent the answer. Instead: ask one blocking question, mark it `TBD` or `Ask first`, recommend a decision, stop with a blocking finding, or produce an analyze-only report.
-4. **Modes — two dials.** Each run sets **Ask?** (`interactive` = ask one blocking question when needed; otherwise never ask and record gaps in the report) and **Write?** (read-only vs writing files). Each skill exposes only what it needs: `ai-context-bootstrap` writes drafts (`interactive` / `headless`); `ai-context-check` is **always read-only** (`interactive` / `analyze-only`); `ai-guidance-update` is read-only in `analyze-only` (default) and writes only in `apply-approved-update`. Default to the safest option.
+3. **Use safe defaults.** If a missing decision touches architecture, ownership, data, contracts, or security/privacy/audit/compliance, never invent the answer. Instead: ask one blocking question, mark it `TBD` or `Ask first`, recommend a decision, or stop with a blocking finding.
+4. **Interactive by nature; writing is gated.** Every skill asks one blocking question only when something genuinely needs a human, otherwise it records the gap in its report (in a non-interactive context it never blocks). Writing is the gated dial: `ai-context-bootstrap` writes drafts; `ai-context-check` and the reviewers are read-only; `ai-guidance-update` is read-only in `analyze-only` (default) and writes only in `apply-approved-update`. Default to the safest option.
 5. **Classify evidence.** Tag every source: approved requirement / Story Artifact / formal spec / approved ADR / SAD / Context / Guidelines / Guardrail / approved reference impl / current code / known legacy / suspected drift / candidate learning / supporting memory. **Current code is never "approved architecture" unless an approved source confirms it.**
 6. **Produce durable output.** Always emit a file or report — an updated/draft artifact, a validation/alignment/analysis report, a blocking question, or a stopped state with reason. **Chat history is never the source of truth.**
 7. **Right-size the work.** Match the amount of ceremony to the size, clarity, and risk of the work. A small repo or an aligned, low-risk change gets a compact pass — skip phases that add nothing and prefer a short report (or "no change needed"). Reserve the full multi-phase treatment for large, ambiguous, or high-risk work. Don't manufacture Guardrails, reports, or questions the situation doesn't need. *(This is the principle that keeps the whole approach lightweight: match ceremony to the work.)*
@@ -421,10 +421,10 @@ That splits an update into two cases:
 
 - **The decision already exists upstream** (an ADR/spec changed, or an approved story set the direction). `update` simply *propagates* it into the Context — safe to apply immediately (through the human gate), because it decides nothing; it mirrors the source and links to it.
 - **The new pattern has no approved home yet.** The Context must not silently become the decision. Choose by stakes:
-  - *High-stakes / irreversible / cross-team / contract / security* → **raise an ADR first**; the Context stays "ask first / pending" until the decision exists.
-  - *Low-stakes, operational* → a **human-approved Brownfield Guardrail marked `pending ADR`, with an owner and a review date**, guides the AI now; the ADR/SAD is formalized later, then the card is reconciled and linked.
+  - *High-stakes / irreversible / cross-team / contract / security* → **raise an ADR first**; the Context stays **Ask first** until the decision exists.
+  - *Low-stakes, operational* → a **human-approved Brownfield Guardrail marked `Ask first`, with an owner**, guides the AI now; recommend formalizing the decision (ADR/SAD) when it matters, then reconcile and link.
 
-This is **two-speed governance**: a fast AI-facing lane (Context / Guidelines / Guardrails) that `update` writes *with approval* and may mark provisional, and a slow authoritative lane (ADR / SAD / specs) that **humans own** — `update` only *flags or drafts* those, never writes them. A `pending ADR` marker is **tracked debt**: `ai-context-check`'s coverage-gap surfaces it on every run until the upstream artifact catches up, so the fast lane never permanently outruns the SAD.
+This is **two-speed governance**: a fast AI-facing lane (Context / Guidelines / Guardrails) that `update` writes *with approval* and may mark provisional, and a slow authoritative lane (ADR / SAD / specs) that **humans own** — `update` only *flags or drafts* those, never writes them. Provisional entries live under *Open gaps / TBD* and as `Ask first`, so they resurface for anyone reading the Context until a human formalizes and links the upstream decision.
 
 > **Keep it light.** The provisional-card path (with owners and review dates) is *optional* — it's for teams that already track debt. Until then, just use **ADR-first** (or plain "ask first") and accept a slower cadence. Adopt the lifecycle only once the tracking earns its keep.
 
@@ -441,18 +441,17 @@ The knobs below are the whole surface. **Complexity is not a knob** — every sk
 | Knob | Values | Meaning | Used by |
 |---|---|---|---|
 | `scope` | optional; omit = whole repo. A path, paths/glob, or a manifest `areas:` name | the area a run focuses on; output stays the single repo-level set; runs compound | bootstrap, check |
-| `mode` — **Ask?** | `interactive` / `headless` | `interactive` asks one blocking question when needed; `headless` never asks and records gaps in the report | bootstrap, check |
-| `mode` — **Write?** | `analyze-only` / `apply-approved-update` | `analyze-only` reports without writing; `apply-approved-update` writes only explicitly approved changes | check (read-only), update |
 | `produce` | `context` / `guidelines` / `both` *(default `both`)* | which artifact bootstrap drafts | bootstrap |
-| `focus` | `architecture` / `coding` / `brownfield` / `contracts` / `security` / `all` | narrows what check examines | check |
 | `work` | `story` / `artifact` / `plan` / `pr` / `diff` / `solution-note` | what check is reviewing | check |
+| `mode` | `analyze-only` *(default)* / `apply-approved-update` | `analyze-only` proposes without writing; `apply-approved-update` writes only explicitly approved changes | update |
 | `source` | `learning` / `solution-note` / `pr-finding` / `review-issue` / `adr` / `spec-change` / `approved-update` | the learning update evaluates | update |
 
 **Choosing values:**
 - **scope** — start at `service`/`module` for a pilot or a large repo; `repository` for a small, cohesive one.
-- **interactivity** — `interactive` when a human is present to answer; `headless` for CI/automation (it never blocks).
-- **write** — default to the read-only option; only `apply-approved-update` writes, and only what a human approved.
+- **write** — only `ai-guidance-update` writes governance, and only in `apply-approved-update` with explicit approval; its default `analyze-only` just proposes. Bootstrap writes drafts; check and the reviewers are read-only.
 - **which skill, when** — see *The loop* (top) and §12: bootstrap once, check per story, update only to promote a confirmed learning.
+
+**Interactivity is automatic, not a knob.** Every skill asks one blocking question only when something genuinely needs a human; otherwise it records the gap in its report. In a non-interactive context (no one to answer), bootstrap writes nothing and emits its Blocked agenda instead of guessing.
 
 ### 10.1 `ai-context-bootstrap` — set up the context
 
@@ -462,12 +461,12 @@ The knobs below are the whole surface. **Complexity is not a knob** — every sk
 
 **Use when:** starting AI delivery in a repo; onboarding a new service/module/context/team; creating the first Context or Guidelines; checking whether existing guidance is usable. **Not** for story-specific planning (use `ai-context-check`) or guidance evolution (use `ai-guidance-update`).
 
-**Invoke:** `/ai-context-bootstrap [scope=<area>] mode=<interactive|headless>` (default `interactive`; omit for the whole repo — `area` = a path, paths/glob, or a manifest `areas:` name). Optional: `produce=<context|guidelines|both>` (default `both`), `source_override`, `representative_code_override`, `target_output_dir`. (`produce` runs Phase 4, Phase 5, or both; discovery always runs.)
+**Invoke:** `/ai-context-bootstrap [scope=<area>] [produce=<context|guidelines|both>]` (omit `scope` for the whole repo — `area` = a path, paths/glob, or a manifest `areas:` name; `produce` defaults to `both` and runs Phase 4, Phase 5, or both — discovery and assessment always run). The skill is interactive: it asks one blocking question when needed, otherwise emits the Blocked agenda.
 
 **Phases:**
 
 1. **Discover** the repo (root file, manifest, existing guidance, SAD/ADRs/diagrams, specs, representative code/tests/CI, solution notes). Classify each source. Strategy: **manifest-first**, else overrides, else convention-scan bounded by `scope`; **sample** representative code (don't read the whole tree); if discovery comes up thin, **flag it and ask for sources** rather than producing a thin draft silently.
-2. **Assess sufficiency (detect → clarify → gate):** run the full concern checklist — what's **missing** as much as present — surfacing an architecturally significant concern no source covers, underspecification (ambiguous / >1 reading), a source that contradicts itself, and cross-source conflict. Mark each **blocking** or **non-blocking** (a minor deferral). Resolve blocking items first — `interactive`: ask one question at a time, **most critical first, until none remain** (only what genuinely needs a human, not the obvious; use the IDE's native prompt if available); `headless`/can't-answer: write no docs and emit a **Blocking Context Report** (an ordered, resumable agenda). Generate only once blocking items are answered — never a partial doc, never an AI assumption for a missing/unclear important concern. With no SAD/ADRs/specs, infer *lower-risk* rules from code as proposed (architecturally significant → ask, don't infer).
+2. **Assess sufficiency (detect → clarify → gate):** run the full concern checklist — what's **missing** as much as present — surfacing an architecturally significant concern no source covers, underspecification (ambiguous / >1 reading), a source that contradicts itself, and cross-source conflict. Mark each **blocking** or **non-blocking** (a minor deferral). Resolve blocking items first: ask one question at a time, **most critical first, until none remain** (only what genuinely needs a human, not the obvious; use the IDE's native prompt if available). If a question can't be answered now, write no docs and emit a **Blocking Context Report** (an ordered, resumable agenda). Generate only once blocking items are answered — never a partial doc, never an AI assumption for a missing/unclear important concern. With no SAD/ADRs/specs, infer *lower-risk* rules from code as proposed (architecturally significant → ask, don't infer).
 3. **Propose the manifest** (if missing) from discovered paths; mark unknowns `TBD`.
 4. **Draft the AI Architecture Context** → `docs/architecture/ai-context.md`. Run the **coverage sweep** (see §1) per concern — *point / restate-actionably / flag-for-clarification (if ambiguous) / flag-or-fill (architecturally significant → flag, don't invent; else a proposed rule)*. Lay it out in the standard concern sections (§5 "Generated file structure") — guidance, not a rigid template: only sections with real content, omit the rest, don't pad. Each rule a pointer to its source; prefer a canonical in-repo example; don't repeat content. Thin ≠ narrow.
 5. **Draft the AI Coding Guidelines** → `docs/engineering/ai-coding-guidelines.md`. Lay it out in the standard coding-concern sections (§5 "Generated file structure"); same writing rules as the Context. Don't redefine architecture — link to it.
@@ -502,12 +501,12 @@ _Stop conditions are part of Phase 2 (detect → clarify → gate)._
 
 **Use when:** reviewing a Jira story, Story Artifact, AI analysis, plan, PR, diff, solution note, or proposed learning — ideally **before** implementation.
 
-**Invoke:** `/ai-context-check work=<story|artifact|plan|pr|diff|solution-note> mode=<interactive|analyze-only>` (default `analyze-only`). Optional: `scope=<area>`, `focus=<architecture|coding|brownfield|contracts|security|all>`.
+**Invoke:** `/ai-context-check work=<story|artifact|plan|pr|diff|solution-note> [scope=<area>]` (read-only; interactive — it asks one blocking question only when needed, otherwise records it in the report).
 
 **Phases:**
 
 1. **Discover** context (same sources as bootstrap) and classify each.
-2. **Understand the work:** intent, affected service/module/context, data ownership, API/event/UI contracts, security/privacy/audit/compliance behavior, changed files, the pattern being used, current-vs-target implications, relevant Guardrails. If intent is unclear and risk is material, ask one blocking question (interactive).
+2. **Understand the work:** intent, affected service/module/context, data ownership, API/event/UI contracts, security/privacy/audit/compliance behavior, changed files, the pattern being used, current-vs-target implications, relevant Guardrails. If intent is unclear and risk is material, ask one blocking question.
 3. **Delegate the dimension reviews** — for each dimension the work touches, delegate to its reviewer (architecture-boundary / engineering-convention / contract-compliance / brownfield-governance), in parallel; each reviewer owns its dimension's checks. Right-size: skip dimensions the work doesn't touch.
 4. **Coverage-gap check (cross-cutting).** Flag any concern the work depends on that the Context is silent on and no source artifact covers actionably — note what's missing and where it belongs (Context / SAD / ADR / requirement / spec), and recommend `ai-guidance-update`. Don't silently fill it.
 5. **Output:** synthesize the reviewers' findings into a Context Alignment Report (incl. coverage gaps).
@@ -517,7 +516,7 @@ _Stop conditions are part of Phase 2 (detect → clarify → gate)._
 ```markdown
 # Context Alignment Report
 ## Decision   (Ready | Ready with risks | Needs clarification | Blocked by architecture decision
-              | Requires guidance update | Requires formal spec update | Requires ADR/SAD update)
+              | Requires guidance update analysis | Requires formal spec update | Requires ADR/SAD update)
 ## Reviewed input        (type / reference / scope / mode)
 ## Summary
 ## Architecture alignment      | Area | Status | Finding | Evidence |   (status: aligned/risk/conflict/unclear/n-a)
@@ -533,7 +532,7 @@ _Stop conditions are part of Phase 2 (detect → clarify → gate)._
                             | update spec | create/update Guardrail)
 ```
 
-**Stop and ask one question (interactive) — otherwise report it (analyze-only) — when:** the solution needs an architecture decision; ownership, data ownership, or contract authority is unclear; security/privacy/audit/compliance impact is unclear; current and target conflict; or the work hits an ask-first trigger.
+**Stop and ask one blocking question — otherwise report it — when:** the solution needs an architecture decision; ownership, data ownership, or contract authority is unclear; security/privacy/audit/compliance impact is unclear; current and target conflict; or the work hits an ask-first trigger.
 
 ---
 
@@ -549,7 +548,7 @@ _Stop conditions are part of Phase 2 (detect → clarify → gate)._
 - Analyze: `/ai-guidance-update source=<learning|solution-note|pr-finding|review-issue|adr|spec-change> mode=analyze-only` (default)
 - Apply: `/ai-guidance-update source=<approved-update> mode=apply-approved-update`
 
-**Required behavior:** never apply governance-impacting updates without explicit approval; never auto-promote solution notes to guidance; keep changes minimal; touch one thing; preserve links to approved sources; flag conflicts rather than resolving them.
+**Constraints:** never apply governance-impacting updates without explicit approval; never auto-promote solution notes to guidance; keep changes minimal; touch one thing; preserve links to approved sources; flag conflicts rather than resolving them.
 
 **Phases:**
 
@@ -610,7 +609,7 @@ The reviewer files live in `.claude/agents/` (Claude build) or `.github/agents/`
 The brownfield agent also uses the **statuses** and **conflict types** below, and includes a draft Guardrail only when one is needed:
 
 - *Statuses:* Use current · Use target · Target not ready · Ask first
-- *Conflict types:* no conflict · terminology mismatch · stale AI guidance · stale SAD/ADR · formal-spec mismatch · implementation drift · brownfield ambiguity · coding-guideline overreach · solution-note overreach · missing architecture decision · missing contract update · governance approval required
+- *Conflict types:* no conflict · terminology mismatch · stale AI guidance · stale SAD/ADR · formal-spec mismatch · self-contradiction within one source · implementation drift · brownfield ambiguity · coding-guideline overreach · solution-note overreach · missing architecture decision · missing contract update · governance approval required
 
 It ends with a short **"Do not do"** list (e.g. *don't implement the proposed coupling; don't update guidance; don't treat current code as approved*) until the issue is resolved.
 
@@ -621,8 +620,8 @@ It ends with a short **"Do not do"** list (e.g. *don't implement the proposed co
 1. **Create the minimum files** — `ai-context.md`, `ai-coding-guidelines.md`, a root instruction file. (Manifest optional.)
 2. **Add the three skills** under `.claude/skills/`.
 3. **Add agents only if useful.** Skip for a pilot; add when reviews get broad.
-4. **Bootstrap:** `/ai-context-bootstrap mode=interactive` (whole repo; add `scope=<area>` to pilot one area)
-5. **Use on stories:** `/ai-context-check work=<story-or-plan> mode=analyze-only`
+4. **Bootstrap:** `/ai-context-bootstrap` (whole repo; add `scope=<area>` to pilot one area)
+5. **Use on stories:** `/ai-context-check work=<story-or-plan>`
 6. **Analyze a candidate learning:** `/ai-guidance-update source=<finding-or-note> mode=analyze-only`
 7. **Apply only approved updates:** `/ai-guidance-update source=<approved-update> mode=apply-approved-update`
 
@@ -680,12 +679,11 @@ The skills are **per-repo**: running them in a repo affects *only that repo's* c
    ```
 3. **Point the skills at it** — `ai-enablement/context-manifest.yaml`:
    ```yaml
-   ai_guidance:
-     architecture_context: [.ai/central/docs/architecture/ai-context.md, docs/architecture/ai-context.md]
-     coding_guidelines:    [.ai/central/docs/engineering/ai-coding-guidelines.md]
-     guardrails:           [.ai/central/guardrails/]
+   guidance:                                  # canonical keys; central paths first, then this repo's
+     context:    [.ai/central/docs/architecture/ai-context.md, docs/architecture/ai-context.md]
+     guidelines: [.ai/central/docs/engineering/ai-coding-guidelines.md]
    ```
-4. **Draft local specifics:** `/ai-context-bootstrap mode=interactive` — it reads central first and writes only this repo's local Context (cross-repo concerns just link back to central).
+4. **Draft local specifics:** `/ai-context-bootstrap` — it reads central first and writes only this repo's local Context (cross-repo concerns just link back to central).
 5. **Use it:** `/ai-context-check work=<PR>` — enforces central + local together.
 
 ### Staying current — auto-consume by default; pin only when it gates

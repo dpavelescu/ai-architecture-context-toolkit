@@ -14,7 +14,7 @@ not authority; no silent governance; one blocking question at a time; right-size
 authority order is in the Context you read.) Delegation to the reviewers in `agents:` uses
 your Copilot's subagent tool (`agent`) — ensure it's enabled.
 
-**Args:** `work=<story|plan|pr|diff|solution-note>` · `scope=<area>` · `focus=<architecture|coding|brownfield|contracts|security|all>`.
+**Args:** `work=<story|artifact|plan|pr|diff|solution-note>` · `scope=<area>`.
 
 ## Process
 1. **Discover** context with the **read-context-manifest** skill (manifest first, conventional fallback) — the Context, Guidelines, Guardrails, and relevant SAD/ADRs/specs/code.
@@ -39,7 +39,7 @@ decision | Requires guidance update analysis | Requires formal spec update |
 Requires ADR or SAD update
 
 ## Reviewed input
-- Type: / Reference: / Scope: / Mode:
+- Type: / Reference: / Scope:
 
 ## Summary
 - <short summary>

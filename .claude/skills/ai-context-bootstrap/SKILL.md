@@ -20,23 +20,22 @@ names it rather than re-deriving its logic here.
 ## Invocation
 
 ```
-/ai-context-bootstrap [scope=<area>] mode=<interactive|headless>
+/ai-context-bootstrap [scope=<area>] [produce=<context|guidelines|both>]
 ```
 
 Examples:
 
 ```
-/ai-context-bootstrap mode=interactive                              # whole repo
-/ai-context-bootstrap scope=services/order-service mode=interactive # focus one service
-/ai-context-bootstrap scope=libs/payments mode=headless            # focus an area
+/ai-context-bootstrap                               # whole repo
+/ai-context-bootstrap scope=services/order-service  # focus one service
+/ai-context-bootstrap scope=libs/payments           # focus an area
 ```
 
-Optional: `produce=<context|guidelines|both>` (default `both`),
-`source_override=<path-or-reference>`, `representative_code_override=<path>`,
-`target_output_dir=<path>`. If no mode is given, use `interactive`. `produce` selects which
-file(s) to draft — `context` runs step 3, `guidelines` runs step 4, `both` runs both; discovery
-and assessment (steps 1–2) always run, because the Coding Guidelines apply the Architecture
-Context and must read it either way.
+`produce` (default `both`) selects which file(s) to draft — `context` runs step 3, `guidelines`
+runs step 4, `both` runs both; discovery and assessment (steps 1–2) always run, because the
+Coding Guidelines apply the Architecture Context and must read it either way. The skill is
+interactive: it asks one blocking question at a time when something genuinely needs a human, and
+if a question can't be answered now it writes nothing and emits the Blocked agenda.
 
 ## Scope
 
@@ -61,8 +60,8 @@ system-level Context and have each repo link up to it rather than duplicating.
    non-blocking questions in the report.
 3. **Safe defaults** — if a missing decision touches architecture, ownership, data,
    contracts, or security/privacy/audit/compliance, never invent the answer: ask one
-   blocking question, mark `TBD` or `Ask first`, recommend a decision, stop with a
-   blocking finding, or produce an analyze-only report.
+   blocking question, mark `TBD` or `Ask first`, recommend a decision, or stop with a
+   blocking finding.
 4. **Classify evidence** — current code is never "approved architecture" unless an
    approved source confirms it.
 5. **No silent governance** — propose, never silently approve, governance-significant
@@ -87,8 +86,8 @@ flag or draft those for a human.
    conventional fallback, bounded by `scope`). Sample representative code — entry points and
    public APIs, the in-scope modules/services, the largest or most-recently-changed areas, and
    their tests; read excerpts, not whole trees. If discovery is thin, don't draft silently:
-   state what's missing and either ask the user to point at sources (interactive) or record an
-   insufficiency note and proceed in no-source mode with proposals + TBDs (headless).
+   state what's missing and either ask the user to point at sources or, if you can't ask, record
+   an insufficiency note and proceed in no-source mode with proposals + TBDs.
    - **If guidance already exists (refresh).** When discovery finds an existing `ai-context.md`
      / `ai-coding-guidelines.md` (or approved Guardrails), this run is a refresh — a health-check
      and re-baseline, never a regeneration: treat the existing files as the approved baseline
@@ -105,10 +104,9 @@ flag or draft those for a human.
      something architecturally significant (ownership, data, cross-service communication,
      API/event authority, security, privacy, audit, compliance, technology/platform,
      current-vs-target, or a needed architecture decision).
-   - **Clarify** blocking items first. `interactive`: ask the single most critical question,
-     wait, then the next, in order of criticality, until none remain — only what genuinely needs
-     a human. `headless` (or the human can't answer now): write no files and emit the Blocked
-     agenda.
+   - **Clarify** blocking items first: ask the single most critical question, wait, then the next,
+     in order of criticality, until none remain — only what genuinely needs a human. If a question
+     can't be answered now, write no files and emit the Blocked agenda.
    - **Gate**: draft only when no blocking item remains — the files then fold in every
      clarification and stand complete; never substitute an assumption for a missing
      architecturally significant concern. With no SAD/ADRs/specs, infer lower-risk rules from

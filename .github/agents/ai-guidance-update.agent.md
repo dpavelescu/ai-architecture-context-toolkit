@@ -11,7 +11,7 @@ Decide whether a learning becomes a rule, and where. **Constraints:** no silent 
 (propose — a human approves); **write only the AI-facing layer — never SAD/ADRs/specs (flag
 or draft)**; promote thin by reference; right-size; one blocking question at a time.
 
-**Args:** `source=<learning|solution-note|pr-finding|review-issue|adr|spec-change|approved-update>` · `mode=analyze` (default) or `mode=apply` (explicit approval only).
+**Args:** `source=<learning|solution-note|pr-finding|review-issue|adr|spec-change|approved-update>` · `mode=analyze-only` (default) or `mode=apply-approved-update` (explicit approval only).
 
 ## Process
 1. **Discover** current guidance (locate it with the **read-context-manifest** skill — manifest first, conventional fallback) and the source learning. If no Context/Guidelines exist yet, recommend `ai-context-bootstrap` first and park the learning as a candidate solution note.

@@ -29,5 +29,5 @@ Ask when:          <conditions needing clarification>
 ```
 
 A Guardrail is operational guidance, not an architecture decision: if it needs a decision
-that doesn't exist yet, mark `Ask first` (or `pending ADR` with an owner) — never decide it
-silently.
+that doesn't exist yet, mark `Ask first` (with an owner) and recommend formalizing it — never
+decide it silently.

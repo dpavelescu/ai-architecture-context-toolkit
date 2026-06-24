@@ -50,7 +50,7 @@ If no mode is given, use `analyze-only`.
   those are human-owned, only flag or draft them. This skill writes only the AI-facing
   layer (Context, Guidelines, Guardrails, candidate solution notes). The Context never
   originates a decision: for a new direction with no approved source, propose ADR-first, or
-  a provisional Brownfield Guardrail marked `pending ADR` with an owner and review date
+  a provisional Brownfield Guardrail marked `Ask first` with an owner
 
 ## Phase 1 — Discover current guidance
 
