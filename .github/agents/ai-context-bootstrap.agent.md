@@ -20,28 +20,21 @@ files — never SAD/ADRs/specs (flag or draft those).
 - `produce=<context|guidelines|both>` — which file(s) to draft (default `both`); discovery and assessment run either way.
 
 ## Process
-1. **Discover** — locate inputs with the **read-context-manifest** skill (manifest first, conventional fallback, bounded by `scope`); sample representative code, don't read whole trees. If `ai-context.md` or `ai-coding-guidelines.md` already exist, switch to refresh mode (see **Refresh**). If discovery is thin, state what's missing and either ask for sources or proceed with proposals and TBDs.
-2. **Assess sufficiency** — apply the **assess-coverage** skill over the full concern checklist; detect gaps, underspecification, and conflicts; clarify the blocking ones before drafting (see **Clarification**).
+1. **Discover** — locate inputs with the **read-context-manifest** skill (manifest first, conventional fallback, bounded by `scope`); sample representative code, don't read whole trees.
+   - If `ai-context.md` or `ai-coding-guidelines.md` already exist, this run is a **refresh**: treat them as the approved baseline — never overwrite or regenerate; validate against the repo and propose drift, new gaps (including a newly scoped area), stale entries, and new sources as approval-gated changes; preserve human edits.
+   - If discovery is thin, state what's missing, then either ask for sources or proceed with proposals and TBDs.
+2. **Assess sufficiency** — apply the **assess-coverage** skill over the full concern checklist, then resolve before drafting:
+   - **Detect** what's missing as much as present: an architecturally significant concern no source covers; an ambiguous statement (more than one reading); a self-contradicting source; a cross-source conflict.
+   - **Classify** each as blocking or non-blocking — blocking = it forces an assumption on something architecturally significant (ownership, data, communication, API/event authority, security, privacy, audit, compliance, technology, current-vs-target, or a needed architecture decision).
+   - **Clarify** blocking items first: ask one question at a time, most critical first, until none remain; if one can't be answered now, write no files and emit the Blocked agenda.
+   - **Gate**: draft only when no blocking item remains — the files then fold in every clarification and stand complete; never substitute an assumption for a missing architecturally significant concern. With no SAD/ADRs/specs, infer lower-risk rules from code as *proposed* (architecturally significant → ask, don't infer); with no code access, draft from the docs and skip code validation and current-vs-target Guardrails.
 3. **Draft the Context** — write `docs/architecture/ai-context.md` per the **write-guidance-file** skill. Add a Guardrail (**write-brownfield-guardrail** skill) only where current and target differ enough to mislead.
 4. **Draft the Guidelines** — write `docs/engineering/ai-coding-guidelines.md` per the **write-guidance-file** skill. Don't redefine architecture; link to the Context.
 5. **Propose** — if missing, propose the manifest (**read-context-manifest** skill) and the repo's root instruction file.
-6. **Report** — emit the Blocked or Completed result (see **Output**).
+6. **Report** — emit the Blocked or Completed result (see **Output format**).
 
-## Clarification
-- **Detect** across the full checklist — what's missing as much as what's present: an architecturally significant concern no source covers; an ambiguous statement (more than one reading); a self-contradicting source; a cross-source conflict.
-- **Classify** each item as blocking or non-blocking. Blocking = it forces an assumption on something architecturally significant: ownership, data, communication, API/event authority, security, privacy, audit, compliance, technology, current-vs-target, or a needed architecture decision.
-- **Clarify** blocking items before drafting — ask one question at a time, most critical first, until none remain. If one can't be answered now, write no files and emit the Blocked agenda.
-- **Gate** — draft only when no blocking item remains. The final files fold in every clarification and stand complete; never substitute an assumption for a missing architecturally significant concern.
-- **No-source modes** — no SAD/ADRs/specs: infer lower-risk rules from code as *proposed* (architecturally significant concerns: ask, don't infer). No code access: draft from the docs and skip code validation and current-vs-target Guardrails.
-
-## Refresh
-When step 1 finds an existing `ai-context.md` or `ai-coding-guidelines.md`, treat it as the
-approved baseline — never overwrite or regenerate. Validate against the repo and propose drift,
-new gaps (including a newly scoped area), stale entries, and new sources as approval-gated
-changes; preserve human edits.
-
-## Output
-Two outcomes (see **Clarification**).
+## Output format
+Two outcomes, set by the **Gate** in step 2.
 
 **A — Blocked (nothing written).** A blocking item is unresolved: emit this resumable agenda and stop.
 ```markdown
