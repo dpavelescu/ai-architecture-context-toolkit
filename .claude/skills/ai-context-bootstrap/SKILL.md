@@ -34,33 +34,20 @@ Optional: `produce=<context|guidelines|both>` (default `both`),
 Phase 5, `both` runs both. Discovery and assessment (Phases 1–2) always run, because the
 Coding Guidelines apply the Architecture Context and must read it either way.
 
-## Scope — what a run seeds
+## Scope — what a run covers
 
-`scope` names the area this run seeds. It can be:
-- **omitted** → the whole repo;
-- **a path** → `services/orders`;
-- **several paths or a glob** → `services/orders, libs/payments` · `apps/*`;
-- **a name defined in the manifest's `areas:`** → `payments` (resolves to its mapped paths) — this is how a bounded context that spans directories becomes selectable.
+`scope` is which part of the repo to bootstrap: a path (`services/orders`), a glob (`apps/*`),
+several paths, or a name from the manifest's `areas:`. Omit it for the whole repo. A path or a
+defined `area` is the real selector; a bare free-form phrase is only a weak hint.
 
-A path (or a defined `area`) is the real selector — the agent bounds discovery to it. A bare
-free-form phrase is only a weak hint; prefer a path or a defined area.
+Scope bounds what the run examines and drafts, not the output path. Output always goes to the
+single repo-level pair (`docs/architecture/ai-context.md`,
+`docs/engineering/ai-coding-guidelines.md`); the Context's *Purpose & scope* section records the
+covered areas. Re-running over an already-covered area reconciles, never overwrites — see
+**Refresh mode**.
 
-Scope bounds what the run **examines and drafts**, not the output path. Output is always the
-single repo-level set (`docs/architecture/ai-context.md`, `docs/engineering/ai-coding-guidelines.md`);
-the Context's *Purpose & scope* section **records each run's covered scope by its label**.
-
-**Runs compound into the one Context** (this is what makes seeding incremental):
-- a **new sub-scope** is **additive** — its coverage is appended; the rest is untouched;
-- a **re-run over, or overlapping, an already-covered scope** **reconciles** — validate the
-  existing entries, propose drift/additions, **never duplicate or overwrite** approved content
-  (refresh mode).
-Coverage only ever **grows**; *Purpose & scope* shows the union of covered areas vs what's still `TBD`.
-
-**Multiple repos:** the toolkit is per-repo — run it in each repo. Cross-repo architecture
-(the SAD/ADRs usually span repos) is governed *above* the repo: keep a shared
-**system-level Context** alongside the cross-repo SAD/ADRs, and have each repo's
-Context/manifest **link up** to it and add only repo-local specifics — point, don't
-duplicate.
+For multiple repos, run the toolkit in each. For cross-repo architecture, keep a shared
+system-level Context and have each repo link up to it rather than duplicating.
 
 ## House rules (apply throughout)
 
@@ -146,12 +133,12 @@ authority:
 Run the **full concern checklist** (Phase 4) — checking what's **missing** as much as what's
 **present** — and surface four things:
 
-- a **load-bearing concern no source covers** (don't fill it with an assumption)
+- an **architecturally significant concern no source covers** (don't fill it with an assumption)
 - a statement that's **ambiguous or open to more than one reading** (underspecification)
 - a source that **contradicts itself** (intra-source conflict)
 - **sources that disagree** (cross-source conflict)
 
-Classify each as **blocking** (the AI would otherwise assume something load-bearing) or
+Classify each as **blocking** (the AI would otherwise assume something architecturally significant) or
 **non-blocking** (a genuinely minor deferral). **Resolve every blocking item before generating
 anything:**
 - `interactive` — run a **human-in-the-loop clarification loop**: ask the **single most critical**
@@ -168,7 +155,7 @@ Never substitute an AI assumption for a missing or unclear important concern. A 
 is **not** a place to dump unresolved important decisions — if those remain, the run is **Blocked,
 not Completed**; only genuinely non-blocking items become deferred TBDs.
 
-**Treat as load-bearing (missing *or* unclear ⇒ blocking):** service / bounded-context / data
+**Treat as architecturally significant (missing *or* unclear ⇒ blocking):** service / bounded-context / data
 ownership · cross-service communication · API / event authority · security · privacy · audit ·
 compliance · technology / platform constraints · current-vs-target for a visible brownfield gap · a needed architecture decision.
 
@@ -176,7 +163,7 @@ compliance · technology / platform constraints · current-vs-target for a visib
 
 With no authoritative source to point to, don't block outright. **Infer candidate rules
 from representative code and conventions for lower-risk concerns, and mark every one as
-*proposed / unapproved*** — existing code is evidence, not authority. For **load-bearing**
+*proposed / unapproved*** — existing code is evidence, not authority. For **architecturally significant**
 concerns (the list above), flag or ask rather than infer — don't let a missing decision
 become a silent assumption. Lean on `TBD`, ask-first, and the *Contributor
 decisions needed* list; ask only the few genuinely blocking questions. Expect a Decision
@@ -217,21 +204,17 @@ requirements, specs):
 - **Flag for clarification** — covered, but the source is ambiguous or admits more than one
   valid reading on something that matters → don't pick a reading; flag it for clarification so
   a human states it explicitly.
-- **Flag or fill** — nothing covers it. If it's **load-bearing**, flag it for clarification —
+- **Flag or fill** — nothing covers it. If it's **architecturally significant**, flag it for clarification —
   don't invent a rule. For lower-risk concerns you may add a *proposed* rule (marked proposed/TBD).
   Either way record the gap (the SAD/ADR/requirement may need creating; never decide it silently).
 
-**Structure the file as the concerns below that apply** — guidance for a sensible, consistent
-order, **not a rigid template.** Write a section only when you have something real to say;
-**omit concerns that don't apply, and never add an empty or padded section to fill the
-structure.** Adapt to the repo. **Write for AI consumption and easy review:** conventional,
-stable headings (don't reinvent the structure); short declarative bullets, not prose; each
-rule a **pointer to its source** (link the SAD/ADR/spec that owns the detail — the thin rule is
-never the whole truth); **prefer a canonical in-repo example** ("mirror this") over prose when
-one exists. **Don't repeat content** — state each rule once and cross-link rather than restating. **Rule shape:** one line per rule — the imperative rule, a link to its source, and an inline *ask-first if …* where relevant (plus a canonical example to mirror when one exists). Make the **weight** visible: non-negotiables as **Never/Always**, preferences as **Prefer**.
-Open the file with a one-line provenance header — *generated & maintained by the
-toolkit; mirrors, never overrides, the SAD/ADRs/specs; drafts pending approval; evolve via
-`ai-guidance-update`.*
+Write the file for AI consumption and easy review: conventional, stable headings (don't reinvent
+the structure); short declarative bullets, not prose; links to sources instead of copies.
+
+- **Rule shape** — one line per rule: the imperative rule, a link to the source that owns the full detail, and an inline *ask-first if …* where relevant. Prefer pointing to a canonical in-repo example ("mirror this") when one exists. State each rule once and cross-link — don't restate.
+- **Weight** — make it visible: non-negotiables as **Never/Always**, preferences as **Prefer**.
+- **Provenance** — open the file with one line: *generated & maintained by the toolkit; mirrors (never overrides) the SAD/ADRs/specs; drafts pending approval; evolve via `ai-guidance-update`.*
+- **Sections** — use the order below as a sensible default, not a rigid template: write only sections with real content, omit what doesn't apply, never pad.
 
 - Purpose & scope — covered areas vs `TBD`
 - Read order & authority order

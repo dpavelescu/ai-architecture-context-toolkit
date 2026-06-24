@@ -14,7 +14,7 @@ or draft)**; promote thin by reference; right-size; one blocking question at a t
 **Args:** `source=<learning|solution-note|pr-finding|review-issue|adr|spec-change|approved-update>` · `mode=analyze` (default) or `mode=apply` (explicit approval only).
 
 ## Process
-1. **Discover** current guidance + the source learning. If no Context/Guidelines exist yet, recommend `ai-context-bootstrap` first and park the learning as a candidate solution note.
+1. **Discover** current guidance (locate it with the **read-context-manifest** skill — manifest first, conventional fallback) and the source learning. If no Context/Guidelines exist yet, recommend `ai-context-bootstrap` first and park the learning as a candidate solution note.
 2. **Classify by altitude + conflict/drift** and route (most learnings don't reach the Context):
    - reusable coding convention → **AI Coding Guidelines**
    - behavior-changing architecture rule → **AI Architecture Context**

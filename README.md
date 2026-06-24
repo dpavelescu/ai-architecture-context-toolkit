@@ -4,7 +4,7 @@
 
 This repo gives you two thin files, three guided workflows (bootstrap, check, update), and four optional reviewers that tell an AI agent *how to apply your approved architecture* before it plans or writes code. No new architecture document. No heavy process. It's designed to drop into an existing project.
 
-> **A note on terms:** the three workflows and four reviewers are **packaged differently per tool** — in **Claude Code** the workflows are *skills* and the reviewers are *sub-agents*; in **GitHub Copilot** all seven are *custom agents* (plus two shared Agent Skills). Same behavior, same outputs — see the repo map below. ("Skill" and "agent" mean different things in each tool, so this README names the capabilities by what they *do*.)
+> **A note on terms:** the three workflows and four reviewers are **packaged differently per tool** — in **Claude Code** the workflows are *skills* and the reviewers are *sub-agents*; in **GitHub Copilot** all seven are *custom agents* (plus four shared Agent Skills). Same behavior, same outputs — see the repo map below. ("Skill" and "agent" mean different things in each tool, so this README names the capabilities by what they *do*.)
 
 ---
 
@@ -91,7 +91,7 @@ AI-Architecture-Context-and-               ← the full playbook (all the detail
 .github/                                   ← GitHub Copilot build (drop in the agents + skills folders)
   agents/    ai-context-bootstrap | ai-context-check | ai-guidance-update   (orchestrators = custom agents)
              + the 4 reviewers             (reviewers = custom agents, delegated by check via agents:)
-  skills/    assess-coverage | write-brownfield-guardrail   (shared capabilities, auto-loaded)
+  skills/    assess-coverage | write-brownfield-guardrail | write-guidance-file | read-context-manifest   (shared capabilities, auto-loaded)
 ```
 > No global `copilot-instructions.md` is shipped — the short behavioral house rules are inlined in each agent, and the authority/read order lives in the generated Context — so dropping these folders into a project won't touch its own instructions. (Bootstrap still *proposes* a root instruction file for the target repo — conventionally `.github/copilot-instructions.md` for a Copilot project — but that's generated for your project, not shipped by the toolkit.) Agents omit `tools:` (they use your configured Copilot tools); reviewers are read-only by instruction.
 

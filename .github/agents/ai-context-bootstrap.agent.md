@@ -7,87 +7,55 @@ description: >-
 model: inherit
 ---
 
-Create or refresh the two thin AI-facing files (the authority order and read order live
-*in* the Context you produce). **House rules:** existing code/docs are evidence, not
-authority; no silent governance (propose — a human approves); one blocking question at a
-time; right-size; **write only the AI-facing files — never SAD/ADRs/specs (flag or draft).**
-Uses your configured Copilot tools.
+Create or refresh the two thin AI-facing files: the **AI Architecture Context**
+(`docs/architecture/ai-context.md`) and the **AI Coding Guidelines**
+(`docs/engineering/ai-coding-guidelines.md`).
 
-**Args:** `scope=<area>` — a path, paths/glob, or a manifest `areas:` name; omit = whole repo · `produce=<context|guidelines|both>` (default both).
+**House rules:** existing code/docs are evidence, not authority; no silent governance (propose,
+a human approves); one blocking question at a time; right-size the work; write only the AI-facing
+files — never SAD/ADRs/specs (flag or draft those).
+
+**Args:**
+- `scope=<area>` — which part of the repo to bootstrap: a path (`services/orders`), a glob (`apps/*`), several paths, or a name from the manifest's `areas:`. Omit for the whole repo. Output always goes to the same repo-level pair, whatever the scope.
+- `produce=<context|guidelines|both>` — which file(s) to draft (default `both`); discovery and assessment run either way.
 
 ## Process
-1. **Discover** — manifest-first; else conventional locations bounded by `scope`; **sample** representative code (don't read whole trees). If discovery is thin, state what's missing and ask for sources, or proceed with proposals + TBDs.
-2. **Assess sufficiency** — detect gaps, underspecification, and conflicts, and clarify the blocking ones before generating (see **Clarification**).
-3. **Draft the Context** (`docs/architecture/ai-context.md`) — apply the **assess-coverage** skill; lay it out in the standard ordered sections (see *Generated file structure*). Add a Guardrail (**write-brownfield-guardrail** skill) only where current≠target could mislead.
-4. **Draft the Coding Guidelines** (`docs/engineering/ai-coding-guidelines.md`) — lay it out in the standard ordered sections (see *Generated file structure*). Don't redefine architecture — link to the Context.
-5. **Propose** the manifest and root-instruction file if missing.
-6. **Produce the result** — see **Output** below.
+1. **Discover** — locate inputs with the **read-context-manifest** skill (manifest first, conventional fallback, bounded by `scope`); sample representative code, don't read whole trees. If `ai-context.md` or `ai-coding-guidelines.md` already exist, switch to refresh mode (see **Refresh**). If discovery is thin, state what's missing and either ask for sources or proceed with proposals and TBDs.
+2. **Assess sufficiency** — apply the **assess-coverage** skill over the full concern checklist; detect gaps, underspecification, and conflicts; clarify the blocking ones before drafting (see **Clarification**).
+3. **Draft the Context** — write `docs/architecture/ai-context.md` per the **write-guidance-file** skill. Add a Guardrail (**write-brownfield-guardrail** skill) only where current and target differ enough to mislead.
+4. **Draft the Guidelines** — write `docs/engineering/ai-coding-guidelines.md` per the **write-guidance-file** skill. Don't redefine architecture; link to the Context.
+5. **Propose** — if missing, propose the manifest (**read-context-manifest** skill) and the repo's root instruction file.
+6. **Report** — emit the Blocked or Completed result (see **Output**).
 
-## Clarification (detect → clarify → gate)
-- **Detect** over the full concern checklist — what's **missing** as much as present: a load-bearing concern **no source covers** · **underspecification** (ambiguous / >1 reading) · a source that **contradicts itself** · **cross-source conflict**.
-- **Classify** each **blocking** (would force an assumption on something load-bearing — ownership, data, comms, API/event, security, privacy, audit, compliance, technology, current-vs-target, or a needed architecture decision) or **non-blocking** (a minor deferral).
-- **Clarify** blocking items before generating. `interactive`: ask **one question at a time, most critical first, until none remain** (use the IDE/agent's native prompt if it has one) — only what genuinely needs a human, not the obvious; you may draft on the fly. Otherwise write no docs and emit the **Blocked report** (an ordered, resumable agenda).
-- **Gate**: generate only when no blocking item remains; the **final files fold in every clarification and stand complete** — never partial. Never substitute an assumption for a missing/unclear important concern.
-- **No-source modes:** no SAD/ADRs/specs → infer *lower-risk* rules from code as proposed (load-bearing → ask, don't infer); no code access → produce from the docs and skip code-validation + current-vs-target Guardrails.
+## Clarification
+- **Detect** across the full checklist — what's missing as much as what's present: an architecturally significant concern no source covers; an ambiguous statement (more than one reading); a self-contradicting source; a cross-source conflict.
+- **Classify** each item as blocking or non-blocking. Blocking = it forces an assumption on something architecturally significant: ownership, data, communication, API/event authority, security, privacy, audit, compliance, technology, current-vs-target, or a needed architecture decision.
+- **Clarify** blocking items before drafting — ask one question at a time, most critical first, until none remain. If one can't be answered now, write no files and emit the Blocked agenda.
+- **Gate** — draft only when no blocking item remains. The final files fold in every clarification and stand complete; never substitute an assumption for a missing architecturally significant concern.
+- **No-source modes** — no SAD/ADRs/specs: infer lower-risk rules from code as *proposed* (architecturally significant concerns: ask, don't infer). No code access: draft from the docs and skip code validation and current-vs-target Guardrails.
 
-## Generated file structure
-Write both files for **AI consumption and easy review**: conventional, stable headings
-(**don't reinvent the structure**), short declarative bullet rules (not prose), links to
-sources instead of copies. Write each rule as a **pointer to its source** — link the SAD/ADR/spec
-that owns the full detail; the thin rule is never the complete truth. **Prefer pointing to a
-canonical in-repo example** ("mirror this") over prose whenever one exists. **Don't repeat content** — state each rule once and cross-link rather than restating. **Rule shape:** one line per rule — the imperative rule, a link to its source, and an inline *ask-first if …* where relevant (plus a canonical example to mirror when one exists). Make the **weight** visible: non-negotiables as **Never/Always**, preferences as **Prefer**. The concern lists below are **guidance for a sensible, consistent
-order — not a rigid template: write only sections with real content, omit concerns that don't
-apply, never pad to fill the structure, and adapt to the repo.** Open each file with a one-line
-provenance header — *generated & maintained by this toolkit; the Context mirrors (never
-overrides) the SAD/ADRs/specs and the Guidelines apply it in code; drafts pending approval;
-evolve via `ai-guidance-update`.*
-
-**ai-context.md:** Purpose & scope · Read order & authority order · Must-read sources (SAD/ADRs/specs/diagrams) · System overview · Technology & platform (languages/frameworks/runtimes/datastores; allowed/forbidden) · Architecture style & modularity · Boundaries & ownership · Data ownership & access · Integration & communication (sync/async; API & event ownership) · Security, privacy, audit & compliance · Resilience & error handling · Logging & observability · Current-vs-target & Brownfield Guardrails · Prohibited shortcuts & ask-first triggers · Open gaps / TBDs
-
-**ai-coding-guidelines.md:** Scope control · Technology & libraries (approved stack; adding a dependency) · Repository structure & placement · Layering & module conventions · Naming · DTOs, mapping & validation · Error handling · Contract-change workflow (API/event/data/UI) · Testing · Logging & observability · Security & privacy coding rules · Brownfield implementation rules · Prohibited behaviors & ask-first triggers · Reference implementations & links · Open gaps / TBDs
-
-## Refresh (re-running where guidance exists)
-Treat existing files as the approved baseline — never overwrite or regenerate. Validate
-against the repo and propose drift / new gaps / stale entries / new sources as
-approval-gated changes; preserve human edits. Coverage only ever grows.
-
-## Manifest
-`ai-enablement/context-manifest.yaml` is a **recommended thin map** (not an enforced schema) of
-where this repo's AI-context lives. Propose it when missing; read it **tolerantly** when present
-(use whatever keys exist; fall back to conventional locations). Shape:
-
-```yaml
-guidance:        { context: <path>, guidelines: <path> }                 # OUTPUTS the toolkit maintains
-sources:         { sad: [..], adrs: [..], specs: [..], diagrams: [..] }   # INPUTS (read-only)
-code:            { representative: [..], known_legacy: [..], known_target: [..] }
-solution_notes:  [..]
-areas:           { <name>: [paths] }                                      # optional named scopes for scope=<area>
-```
-
-## Scope
-`scope` names the area a run seeds: omit (whole repo) · a path · several paths/glob · or a
-manifest `areas:` name (so a bounded context spanning dirs is selectable). It bounds what's
-examined and drafted, not the output path (always the repo-level set; the Context records
-each run's covered scope by label). **Runs compound:** a new sub-scope is additive; a re-run
-or overlap reconciles (validate + propose, never duplicate/overwrite). Coverage only grows.
-Per-repo; for cross-repo, link up to a shared system-level Context rather than duplicating.
+## Refresh
+When step 1 finds an existing `ai-context.md` or `ai-coding-guidelines.md`, treat it as the
+approved baseline — never overwrite or regenerate. Validate against the repo and propose drift,
+new gaps (including a newly scoped area), stale entries, and new sources as approval-gated
+changes; preserve human edits.
 
 ## Output
-Two mutually exclusive outcomes (see **Clarification**):
+Two outcomes (see **Clarification**).
 
-**A — Blocked (nothing written).** A blocking item is unresolved → write no files; emit this **resumable clarification agenda** and stop. (In interactive mode you instead ask these one at a time, most critical first, then proceed to B once answered.)
+**A — Blocked (nothing written).** A blocking item is unresolved: emit this resumable agenda and stop.
 ```markdown
 # ai-context-bootstrap — Blocked
 ## Clarification agenda (most critical first)
 1. <question> — why it's blocking · who decides
-2. ...
 ## Discovered so far
 | Source | Path | Evidence type | Authority |
 |---|---|---|---|
 ```
-*Resume by answering the agenda (update the source, or answer in an interactive re-run) and running again.*
+*Resume by answering the agenda and re-running.*
 
-**B — Completed (the artifacts — the deliverable).** All blocking gaps resolved → write the draft `ai-context.md` + `ai-coding-guidelines.md` (+ Guardrails where needed; manifest/root-file proposals if missing), then this report. **No blocking items remain** — only deliberately-deferred, non-blocking ones (important unresolved decisions would make the run Blocked, not Completed):
+**B — Completed.** All blocking gaps resolved: write the drafts (plus Guardrails where needed, and
+manifest/root-file proposals if missing), then this report. Only non-blocking deferrals remain.
 ```markdown
 # ai-context-bootstrap Result
 

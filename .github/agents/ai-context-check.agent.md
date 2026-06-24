@@ -17,7 +17,7 @@ your Copilot's subagent tool (`agent`) — ensure it's enabled.
 **Args:** `work=<story|plan|pr|diff|solution-note>` · `scope=<area>` · `focus=<architecture|coding|brownfield|contracts|security|all>`.
 
 ## Process
-1. **Discover** context — manifest, Context, Guidelines, Guardrails, relevant SAD/ADRs/specs/code.
+1. **Discover** context with the **read-context-manifest** skill (manifest first, conventional fallback) — the Context, Guidelines, Guardrails, and relevant SAD/ADRs/specs/code.
 2. **Understand the work** — intent; affected service/module/context; data, contracts, security touched; the pattern proposed; current-vs-target implications.
 3. **Delegate the dimension reviews** — for each dimension the work actually touches (right-size; skip the rest), delegate to its reviewer; run them in **parallel** (subagents in the IDE via `agents:`; `/fleet` in Copilot CLI). Each reviewer owns its dimension — don't re-run its logic here.
    - boundaries, ownership, coupling, integration, API/event ownership → `architecture-boundary-reviewer`
