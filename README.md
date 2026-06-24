@@ -86,6 +86,7 @@ AI-Architecture-Context-and-               ← the full playbook (all the detail
 
 .claude/                                   ← Claude Code build
   skills/    ai-context-bootstrap | ai-context-check | ai-guidance-update   (orchestrators = skills)
+             assess-coverage | write-brownfield-guardrail | write-guidance-file | read-context-manifest   (shared capabilities the orchestrators call)
   agents/    architecture-boundary | engineering-convention | brownfield-governance | contract-compliance   (reviewers = sub-agents)
 
 .github/                                   ← GitHub Copilot build (drop in the agents + skills folders)
@@ -95,7 +96,7 @@ AI-Architecture-Context-and-               ← the full playbook (all the detail
 ```
 > No global `copilot-instructions.md` is shipped — the short behavioral constraints are inlined in each agent, and the authority/read order lives in the generated Context — so dropping these folders into a project won't touch its own instructions. (Bootstrap still *proposes* a root instruction file for the target repo — conventionally `.github/copilot-instructions.md` for a Copilot project — but that's generated for your project, not shipped by the toolkit.) Agents omit `tools:` (they use your configured Copilot tools); reviewers are read-only by instruction.
 
-> Same responsibilities and boundaries in both; only the *packaging* differs (Claude Code: skills + sub-agents; Copilot: custom agents + Agent Skills). Pick one build — you don't need both.
+> Same responsibilities and boundaries in both; only the *packaging* differs (Claude Code: skills for orchestrators + shared capabilities, sub-agents for reviewers; Copilot: custom agents for orchestrators + reviewers, Agent Skills for shared capabilities). Pick one build — you don't need both.
 
 The two files the skills *produce* in your project end up at:
 

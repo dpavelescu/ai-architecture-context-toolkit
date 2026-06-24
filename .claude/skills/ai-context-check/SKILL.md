@@ -46,10 +46,10 @@ use `analyze-only`.
 
 ## Phase 1 — Discover context
 
-Read and classify: root AI instruction file; context manifest; AI Architecture
-Context; AI Coding Guidelines; Brownfield Guardrails; relevant SAD sections; relevant
-ADRs; relevant formal specs; relevant code and tests; relevant solution notes
-(supporting memory only).
+Locate inputs with the **read-context-manifest** skill (manifest first, conventional
+fallback), then read and classify: the AI Architecture Context; AI Coding Guidelines;
+Brownfield Guardrails; relevant SAD sections, ADRs, and formal specs; relevant code and
+tests; relevant solution notes (supporting memory only).
 
 ## Phase 2 — Understand the reviewed work
 
@@ -81,12 +81,10 @@ inline — the reviewer file is the single source for the dimension's checks eit
 
 ## Phase 4 — Coverage gap check (cross-cutting)
 
-While running the checks above, watch for **coverage gaps**: the reviewed work depends on
-a concern the Context is **silent on**, and no source artifact (SAD, ADR, LLD,
-security/privacy requirement, spec) covers it at an actionable level. Sweep the same
-concerns bootstrap covers — boundaries & ownership, data ownership, integration, API/event
-contracts, security, privacy, audit, compliance, technology & platform, architecture style &
-modularity, resilience & error handling, logging & observability, current-vs-target.
+While running the checks above, apply the **assess-coverage** skill over the full concern
+checklist to watch for **coverage gaps**: the reviewed work depends on a concern the Context is
+**silent on**, and no source artifact (SAD, ADR, LLD, security/privacy requirement, spec)
+covers it at an actionable level.
 
 A coverage gap means the AI had to guess because the guidance was missing — not that the
 work is wrong. For each gap, note **what guidance is missing** and **where it belongs**

@@ -54,9 +54,10 @@ If no mode is given, use `analyze-only`.
 
 ## Phase 1 — Discover current guidance
 
-Read: root file; context manifest; AI Architecture Context; AI Coding Guidelines;
-Brownfield Guardrails; relevant SAD sections, ADRs, formal specs; the source learning;
-relevant code evidence; relevant solution notes (supporting memory only).
+Locate current guidance with the **read-context-manifest** skill (manifest first, conventional
+fallback), then read: the AI Architecture Context; AI Coding Guidelines; Brownfield Guardrails;
+relevant SAD sections, ADRs, formal specs; the source learning; relevant code evidence; relevant
+solution notes (supporting memory only).
 
 ### When no baseline exists (bootstrap not yet run)
 
@@ -92,6 +93,10 @@ Recommend one target and follow these routing rules:
 | Contract change | Formal spec |
 | Candidate / unproven learning | Solution note only |
 | Repeated brownfield ambiguity | Brownfield Guardrail |
+
+When the target is a Brownfield Guardrail, write it with the **write-brownfield-guardrail**
+skill; when it's the Context or Guidelines, follow the **write-guidance-file** skill (a thin
+rule linked to its source).
 
 ## Phase 4 — Conflict check
 
