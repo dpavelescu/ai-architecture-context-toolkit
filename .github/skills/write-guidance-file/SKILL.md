@@ -20,9 +20,12 @@ example ("mirror this") when one exists. State each rule once and cross-link —
 - Context: *generated & maintained by the toolkit; mirrors (never overrides) the SAD/ADRs/specs; drafts pending approval; evolve via `ai-guidance-update`.*
 - Guidelines: *generated & maintained by the toolkit; applies the Architecture Context in code (doesn't redefine it); drafts pending approval; evolve via `ai-guidance-update`.*
 
-**Section order** — the lists below are a sensible, consistent order, not a rigid template:
-write only sections with real content, omit concerns that don't apply, never pad. Thin ≠ narrow:
-cover every relevant concern, but shrink to a pointer where an artifact already covers one well.
+**Section order** — the lists below are a sensible, consistent order and a baseline, not a ceiling:
+write only sections with real content, omit concerns that don't apply, never pad — and **add a
+section for any repo- or domain-specific concern that matters even if it isn't listed** (e.g.
+multi-tenancy, performance/SLAs, i18n), kept concrete and repo-specific, not generic advice.
+Thin ≠ narrow: cover every relevant concern, but shrink to a pointer where an artifact already
+covers one well.
 
 **ai-context.md:**
 - Purpose & scope — covered areas vs `TBD`

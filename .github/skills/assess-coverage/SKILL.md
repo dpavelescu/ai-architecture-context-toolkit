@@ -7,9 +7,9 @@ description: >-
   Context, or checking a work item for coverage gaps. Never resolve ambiguity by guessing — flag it.
 ---
 
-Run over the **full checklist below** — checking what's **missing** as much as what the sources
-mention. For each relevant concern that could be misinterpreted by an AI, choose one — sized
-against the existing artifacts (SAD, ADRs, LLD, security/privacy requirements, specs):
+Run over the **checklist below** (a baseline, not a ceiling) — checking what's **missing** as much
+as what the sources mention. For each relevant concern that could be misinterpreted by an AI, choose
+one — sized against the existing artifacts (SAD, ADRs, LLD, security/privacy requirements, specs):
 
 - **Point** — an artifact covers it at an actionable level → reference it (must-read + a one-line operational pointer); don't restate.
 - **Restate actionably** — covered but too abstract or buried → add a thin operational rule and link back.
@@ -26,6 +26,11 @@ Concerns (all equal — don't over-weight any one):
 - resilience & error handling
 - logging & observability — only where architecturally constrained
 - current-vs-target (brownfield) divergences
+
+**The list is a baseline, not a ceiling.** Also surface and cover any concern specific to this repo
+or domain that could mislead an AI even if it isn't listed — e.g. performance/latency SLAs,
+scalability, cost, multi-tenancy & data isolation, internationalization/accessibility, caching,
+concurrency. Cover it as its own concern; never drop a real concern for being "off-list."
 
 **Thin ≠ narrow:** cover every relevant concern, but where an artifact already covers one
 well, shrink to a pointer. Skip a concern only when it's genuinely irrelevant — never
