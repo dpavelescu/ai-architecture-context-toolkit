@@ -33,7 +33,7 @@ Examples:
 
 If no mode is given, use `analyze-only`.
 
-## Required behavior
+## House rules
 
 - never apply governance-impacting updates without explicit approval
 - never auto-promote solution notes to approved guidance

@@ -34,7 +34,7 @@ Optional: `produce=<context|guidelines|both>` (default `both`),
 Phase 5, `both` runs both. Discovery and assessment (Phases 1–2) always run, because the
 Coding Guidelines apply the Architecture Context and must read it either way.
 
-## Scope — what a run covers
+## Scope
 
 `scope` is which part of the repo to bootstrap: a path (`services/orders`), a glob (`apps/*`),
 several paths, or a name from the manifest's `areas:`. Omit it for the whole repo. A path or a
@@ -49,7 +49,7 @@ covered areas. Re-running over an already-covered area reconciles, never overwri
 For multiple repos, run the toolkit in each. For cross-repo architecture, keep a shared
 system-level Context and have each repo link up to it rather than duplicating.
 
-## House rules (apply throughout)
+## House rules
 
 1. **Discover first** — never ask the user to paste anything discoverable from the repo.
 2. **One blocking question at a time** — classify gaps as blocking / non-blocking /
@@ -77,7 +77,7 @@ absolute paths. Write only the AI-facing layer (Context, Guidelines, Guardrails,
 manifest/root-file, candidate solution notes); never write SAD/ADRs/specs/tracker items —
 flag or draft those for a human.
 
-## Refresh mode — re-running where guidance already exists
+## Refresh mode
 
 If Phase 1 finds existing `ai-context.md` / `ai-coding-guidelines.md` (or approved
 Guardrails), switch to **refresh mode** — a health-check and re-baseline, **never a
