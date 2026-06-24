@@ -65,9 +65,10 @@ reviewed work violates an ask-first trigger.
 
 ## Phase 3 — Delegate the dimension reviews
 
-For each dimension the work actually touches (right-size — skip the rest), delegate to its
-reviewer sub-agent; run them in parallel. Each reviewer owns its dimension's checks and
-returns cited findings — do **not** re-run their logic here.
+For each dimension the work actually touches (right-size — skip the rest): **assemble that
+reviewer's input packet** — the relevant Context, Guidelines, Guardrails, SAD/ADRs/specs, and
+code evidence — then delegate to its reviewer sub-agent; run them in parallel. Each reviewer owns
+its dimension's checks and returns cited findings — do **not** re-run their logic here.
 
 | Dimension the work touches | Reviewer |
 |---|---|
@@ -88,8 +89,9 @@ covers it at an actionable level.
 
 A coverage gap means the AI had to guess because the guidance was missing — not that the
 work is wrong. For each gap, note **what guidance is missing** and **where it belongs**
-(Context / SAD / ADR / requirement / spec), and recommend `ai-guidance-update` (plus a
-source update when the gap belongs in an upstream artifact). Do not silently fill the gap.
+(Context / SAD / ADR / requirement / spec), and recommend `ai-guidance-update` (citing the
+specific finding as its `source`; plus a source update when the gap belongs in an upstream
+artifact). Do not silently fill the gap.
 
 ## Phase 5 — Produce output
 

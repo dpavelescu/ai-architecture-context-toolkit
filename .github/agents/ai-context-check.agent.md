@@ -19,12 +19,12 @@ your Copilot's subagent tool (`agent`) — ensure it's enabled.
 ## Process
 1. **Discover** context with the **read-context-manifest** skill (manifest first, conventional fallback) — the Context, Guidelines, Guardrails, and relevant SAD/ADRs/specs/code.
 2. **Understand the work** — intent; affected service/module/context; data, contracts, security touched; the pattern proposed; current-vs-target implications.
-3. **Delegate the dimension reviews** — for each dimension the work actually touches (right-size; skip the rest), delegate to its reviewer; run them in **parallel** (subagents in the IDE via `agents:`; `/fleet` in Copilot CLI). Each reviewer owns its dimension — don't re-run its logic here.
+3. **Delegate the dimension reviews** — for each dimension the work actually touches (right-size; skip the rest), assemble that reviewer's input packet (relevant Context, Guidelines, Guardrails, SAD/ADRs/specs, code evidence), then delegate to its reviewer; run them in **parallel** (subagents in the IDE via `agents:`; `/fleet` in Copilot CLI). Each reviewer owns its dimension — don't re-run its logic here.
    - boundaries, ownership, coupling, integration, API/event ownership → `architecture-boundary-reviewer`
    - structure, layering, naming, DTO/mapping/validation/error-handling, tests, logging, scope → `engineering-convention-reviewer`
    - contract changes + backward-compat, security, privacy, audit, compliance → `contract-compliance-reviewer`
    - current-vs-target, copying legacy, source conflicts → `brownfield-governance-reviewer`
-4. **Coverage-gap check** — apply the **assess-coverage** skill; flag any concern the guidance is silent on (note where it belongs: Context / SAD / ADR / requirement / spec) and recommend `ai-guidance-update`. Don't silently fill it.
+4. **Coverage-gap check** — apply the **assess-coverage** skill; flag any concern the guidance is silent on (note where it belongs: Context / SAD / ADR / requirement / spec) and recommend `ai-guidance-update` (citing this finding as its `source`). Don't silently fill it.
 5. **Synthesize** the reviewers' findings into one **Context Alignment Report** (see **Output**). When the work needs an undecided architecture call, surface `Decision = Blocked by architecture decision` with `where it belongs: ADR`.
 
 ## Output format
