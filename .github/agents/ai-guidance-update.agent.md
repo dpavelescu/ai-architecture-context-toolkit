@@ -7,7 +7,7 @@ description: >-
 model: inherit
 ---
 
-Decide whether a learning becomes a rule, and where. **House rules:** no silent governance
+Decide whether a learning becomes a rule, and where. **Constraints:** no silent governance
 (propose — a human approves); **write only the AI-facing layer — never SAD/ADRs/specs (flag
 or draft)**; promote thin by reference; right-size; one blocking question at a time.
 

@@ -49,7 +49,7 @@ covered areas. Re-running over an already-covered area reconciles, never overwri
 For multiple repos, run the toolkit in each. For cross-repo architecture, keep a shared
 system-level Context and have each repo link up to it rather than duplicating.
 
-## House rules
+## Constraints
 
 1. **Discover first** — never ask the user to paste anything discoverable from the repo.
 2. **One blocking question at a time** — classify gaps as blocking / non-blocking /

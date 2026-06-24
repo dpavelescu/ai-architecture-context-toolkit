@@ -11,7 +11,7 @@ Create or refresh the two thin AI-facing files: the **AI Architecture Context**
 (`docs/architecture/ai-context.md`) and the **AI Coding Guidelines**
 (`docs/engineering/ai-coding-guidelines.md`).
 
-**House rules:** existing code/docs are evidence, not authority; no silent governance (propose,
+**Constraints:** existing code/docs are evidence, not authority; no silent governance (propose,
 a human approves); one blocking question at a time; right-size the work; write only the AI-facing
 files — never SAD/ADRs/specs (flag or draft those).
 

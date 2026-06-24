@@ -29,7 +29,7 @@ Optional: `scope=<area>` (a path, paths/glob, or a manifest `areas:` name; omit 
 `focus=<architecture|coding|brownfield|contracts|security|all>`. If no mode is given,
 use `analyze-only`.
 
-## House rules
+## Constraints
 
 1. **Discover first** — never ask the user to paste anything discoverable from the repo.
 2. **One blocking question at a time** — non-blocking questions go in the report.

@@ -9,7 +9,7 @@ agents: ['architecture-boundary-reviewer', 'engineering-convention-reviewer', 'c
 ---
 
 Review the work against the guidance. **Read-only — never edit the Context or Guidelines**
-(only `ai-guidance-update` writes them). **House rules:** existing code/docs are evidence,
+(only `ai-guidance-update` writes them). **Constraints:** existing code/docs are evidence,
 not authority; no silent governance; one blocking question at a time; right-size. (The
 authority order is in the Context you read.) Delegation to the reviewers in `agents:` uses
 your Copilot's subagent tool (`agent`) — ensure it's enabled.

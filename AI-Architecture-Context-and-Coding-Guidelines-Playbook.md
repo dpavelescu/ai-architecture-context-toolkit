@@ -246,7 +246,7 @@ areas:
   # eventing: [services/*/events, libs/event-bus]
 ```
 
-Two parts only: **`guidance`** (the OUTPUTS the toolkit writes) and the INPUTS it reads (`sources` / `code` / `solution_notes`), plus optional `areas` for named scopes. Nothing else — house rules and the authority order are **not** here (they live in the Context).
+Two parts only: **`guidance`** (the OUTPUTS the toolkit writes) and the INPUTS it reads (`sources` / `code` / `solution_notes`), plus optional `areas` for named scopes. Nothing else — constraints and the authority order are **not** here (they live in the Context).
 
 This is the shape **`ai-context-bootstrap` proposes and maintains** — a *recommended thin map, not an enforced schema*. Agents **produce** it (bootstrap) or **read** it tolerantly (check/update/reviewers use whatever keys exist and fall back to conventional locations when it's absent or partial).
 
@@ -312,7 +312,7 @@ Both files are **optimized for AI consumption and easy to review** — conventio
 
 ---
 
-## 6. House rules for every skill
+## 6. Constraints for every skill
 
 These apply to all three skills — defined once here, referenced by each.
 
@@ -432,7 +432,7 @@ This is **two-speed governance**: a fast AI-facing lane (Context / Guidelines / 
 
 ## 10. The three skills (templates)
 
-The ready-to-use files live in `.claude/skills/<name>/SKILL.md`; the summaries below are the same content in shorter form for readers. If you edit one, treat the file in `.claude/` as canonical. Each skill follows the house rules in §6, so those aren't repeated below.
+The ready-to-use files live in `.claude/skills/<name>/SKILL.md`; the summaries below are the same content in shorter form for readers. If you edit one, treat the file in `.claude/` as canonical. Each skill follows the constraints in §6, so those aren't repeated below.
 
 ### Invoking the skills — parameters & modes
 
