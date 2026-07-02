@@ -54,8 +54,8 @@ The two files are **thin**: they don't repeat your architecture, they *point* to
 
 - **Existing code is evidence, not authority.** A pattern existing in the repo doesn't make it approved for new work.
 - **The AI never decides governance silently.** Architecture, security, privacy, audit, compliance, and contract changes need a human. The AI proposes; you approve.
-- **One blocking question at a time, most critical first.** No 20-question intake forms; it asks only what genuinely needs a human, not the obvious.
-- **Resolve the important questions before generating.** The output is complete and built from the answers — never a partial doc with a pile of open points.
+- **Only critical questions are asked live, one at a time.** Security, privacy, compliance, data ownership, and needed architecture decisions get a live question (decide now, or defer it); everything else becomes a proposal you decide later. No 20-question intake forms.
+- **Clean files, plus a ledger of open decisions.** Bootstrap always produces ready-to-use Context and Guidelines with only decided rules — nothing half-decided leaks in — and a separate clarifications ledger holding the open proposals for you to ratify.
 - **Right-size everything.** Small, low-risk work gets a compact pass; full ceremony only for large or risky changes — *leverage, not paperwork.*
 - **Humans still review.** This makes what reaches review safer; it doesn't replace review.
 
@@ -65,9 +65,9 @@ The two files are **thin**: they don't repeat your architecture, they *point* to
 
 | Step | Workflow | When | What it does |
 |---|---|---|---|
-| **1. Bootstrap** | `ai-context-bootstrap` | Once per repo | Reads your repo and drafts the two thin files (+ a manifest and Guardrails if needed) |
+| **1. Bootstrap** | `ai-context-bootstrap` | Once per repo | Reads your repo and writes the two clean files + a **clarifications ledger** of open decisions (plus a source map and Guardrails if needed) |
 | **2. Check** | `ai-context-check` | Every story / plan / PR | Checks the proposed work against the files — catches "locally reasonable but architecturally wrong" before it ships |
-| **3. Update** | `ai-guidance-update` | Only when a learning should become a rule | Folds an approved learning into the files, with human approval |
+| **3. Update** | `ai-guidance-update` | To ratify the ledger, or when a learning should become a rule | Folds approved decisions (a filled-in ledger) or an approved learning into the clean files, with human approval |
 
 Day to day it's **Check ↔ Update**: bootstrap once, then check each story, and occasionally capture a learning. Each story leaves the guidance a little better than it found it.
 
@@ -94,16 +94,17 @@ AI-Architecture-Context-and-               ← the full playbook (all the detail
              + the 4 reviewers             (reviewers = custom agents, delegated by check via agents:)
   skills/    assess-coverage | write-brownfield-guardrail | write-guidance-file | read-context-manifest   (shared capabilities, auto-loaded)
 ```
-> No global `copilot-instructions.md` is shipped — the short behavioral constraints are inlined in each agent, and the authority/read order lives in the generated Context — so dropping these folders into a project won't touch its own instructions. (Bootstrap still *proposes* a root instruction file for the target repo — conventionally `.github/copilot-instructions.md` for a Copilot project — but that's generated for your project, not shipped by the toolkit.) Agents omit `tools:` (they use your configured Copilot tools); reviewers are read-only by instruction.
+> No global `copilot-instructions.md` is shipped — the short behavioral constraints are inlined in each agent, and the authority/read order lives in the generated Context — so dropping these folders into a project won't touch its own instructions. (Bootstrap still *proposes* a root instruction file for the target repo — conventionally `.github/copilot-instructions.md` for a Copilot project — but that's generated for your project, not shipped by the toolkit.) Most agents declare a minimal `tools:` array (the writing orchestrators read/search/edit; the reviewers read/search, read-only by instruction); `ai-context-check` omits it and acts through its delegated reviewers.
 
 > Same responsibilities and boundaries in both; only the *packaging* differs (Claude Code: skills for orchestrators + shared capabilities, sub-agents for reviewers; Copilot: custom agents for orchestrators + reviewers, Agent Skills for shared capabilities). Pick one build — you don't need both.
 
-The two files the skills *produce* in your project end up at:
+The files the skills *produce* in your project end up at:
 
 ```
-docs/architecture/ai-context.md            ← AI Architecture Context
-docs/engineering/ai-coding-guidelines.md   ← AI Coding Guidelines
-ai-enablement/context-manifest.yaml        ← optional map of your sources
+docs/architecture/ai-context.md            ← AI Architecture Context (clean, final)
+docs/engineering/ai-coding-guidelines.md   ← AI Coding Guidelines (clean, final)
+docs/architecture/ai-clarifications.md     ← clarifications ledger (open decisions to ratify)
+ai-enablement/context-manifest.yaml        ← optional source map (where your sources live)
 AGENTS.md / CLAUDE.md / copilot-instructions.md  ← tells the agent to read the above
 ```
 
@@ -129,17 +130,17 @@ Copy the build for your tool into your project's root:
 
 It will:
 - discover your SAD, ADRs, specs, and representative code automatically (you won't paste documents)
-- **ask you one question at a time**, most critical first, to resolve the important gaps it can't safely decide (e.g. *"Which is the authority for cross-service comms — SAD §4.3, ADR-012, or current code?"*) — it never guesses an important decision
-- then draft the **complete** `docs/architecture/ai-context.md` and `docs/engineering/ai-coding-guidelines.md`, recording only genuinely **minor** open points as `TBD`
+- **ask you one question at a time** for the *critical* gaps only — security, privacy, compliance, data ownership, a needed architecture decision (e.g. *"Which is the authority for cross-service comms — SAD §4.3, ADR-012, or current code?"*) — offering *decide now or defer to the ledger*; it never guesses a critical decision
+- write the **clean** `docs/architecture/ai-context.md` and `docs/engineering/ai-coding-guidelines.md` (decided rules only) plus `docs/architecture/ai-clarifications.md` — a ledger of the open decisions it proposed for you to ratify
 
-Start small: add `scope=<area>` (a path, paths/glob, or a manifest `areas:` name) to focus one service or area if the whole repo is too big.
+Start small: add `scope=<area>` (a path, paths/glob, or a source map `areas:` name) to focus one service or area if the whole repo is too big.
 
-### Step 3 — Review and approve the drafts
+### Step 3 — Review the files and work the ledger
 
-Bootstrap produced the two files as **drafts** — it already encoded the rules from your sources and the clarifications you gave. Your job here is to:
-- **review** them for accuracy and fix anything it got wrong;
-- **resolve the remaining `TBD`s** (the minor open points it deferred);
-- **approve** — accept the drafts as the governing guidance (e.g., commit/merge them), so later runs and the coding agent treat them as the baseline.
+Bootstrap produced the two files **clean** — only the rules an approved source (or your live answers) settled. The open decisions are in `docs/architecture/ai-clarifications.md`. Your job here is to:
+- **review** the clean files for accuracy and fix anything it got wrong;
+- **work the ledger** — for each open item (a proposal + why), fill in `decision:` to accept, edit, or reject it;
+- **ratify** — run `/ai-guidance-update source=docs/architecture/ai-clarifications.md mode=apply-approved-update` to fold the accepted decisions into the clean files (rejected ones move to `Settled` so they don't come back). Then commit/merge as the governing baseline.
 
 Check that the few things that matter came through correctly — *"new cross-service comms use events, not REST," "no service reads another's DB," "don't copy the old validation helper."* Keep it thin.
 

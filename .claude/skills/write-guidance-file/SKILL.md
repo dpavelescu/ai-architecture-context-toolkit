@@ -9,6 +9,8 @@ description: >-
 
 Write both files for AI consumption and easy review: conventional, stable headings (don't
 reinvent the structure); short declarative bullets, not prose; links to sources instead of copies.
+Keep them **clean and final** — only decided rules, ready for downstream use. Open decisions and
+proposals live in the clarifications ledger, never in these files.
 
 **Rule shape** — one line per rule: the imperative rule, a link to the source that owns the full
 detail, and an inline *ask-first if …* where relevant. Prefer pointing to a canonical in-repo
@@ -17,20 +19,21 @@ example ("mirror this") when one exists. State each rule once and cross-link —
 **Weight** — make it visible: non-negotiables as **Never/Always**, preferences as **Prefer**.
 
 **Provenance header** — open each file with one line:
-- Context: *generated & maintained by the toolkit; mirrors (never overrides) the SAD/ADRs/specs; drafts pending approval; evolve via `ai-guidance-update`.*
-- Guidelines: *generated & maintained by the toolkit; applies the Architecture Context in code (doesn't redefine it); drafts pending approval; evolve via `ai-guidance-update`.*
+- Context: *generated & maintained by the toolkit; mirrors (never overrides) the sources in the source map; evolve via `ai-guidance-update`.*
+- Guidelines: *generated & maintained by the toolkit; applies the Architecture Context in code (doesn't redefine it); evolve via `ai-guidance-update`.*
 
 **Section order** — the lists below are a sensible, consistent order and a baseline, not a ceiling:
 write only sections with real content, omit concerns that don't apply, never pad — and **add a
 section for any repo- or domain-specific concern that matters even if it isn't listed** (e.g.
 multi-tenancy, performance/SLAs, i18n), kept concrete and repo-specific, not generic advice.
-Thin ≠ narrow: cover every relevant concern, but shrink to a pointer where an artifact already
-covers one well.
+Keep the listed sections in their given relative order; append any added section after the listed
+ones (or in the nearest topical position), never reordering the listed set. Thin ≠ narrow: cover
+every relevant concern, but shrink to a pointer where an artifact already covers one well.
 
 **ai-context.md:**
-- Purpose & scope — covered areas vs `TBD`
+- Purpose & scope — covered areas
 - Read order & authority order
-- Must-read sources — SAD / ADRs / specs / diagrams
+- Must-read sources — pointer to the source map (no prose source list)
 - System overview (minimal)
 - Technology & platform — languages/frameworks/runtimes/datastores; allowed/forbidden
 - Architecture style & modularity
@@ -42,7 +45,6 @@ covers one well.
 - Logging & observability
 - Current-vs-target & Brownfield Guardrails
 - Prohibited shortcuts & ask-first triggers
-- Open gaps / TBDs
 
 **ai-coding-guidelines.md** (don't redefine architecture — link to the Context):
 - Scope control — minimal change; reuse before adding
@@ -59,7 +61,7 @@ covers one well.
 - Brownfield implementation rules
 - Prohibited behaviors & ask-first triggers
 - Reference implementations & links
-- Open gaps / TBDs
 
-**Exclude:** full SAD content, long ADR rationale, large copied diagrams, implementation plans,
-story-specific detail, unapproved decisions, generic engineering advice.
+**Exclude** all plumbing — statuses, placeholders, `TBD`/proposed markers, and open decisions (those
+live in the clarifications ledger, never here) — and full SAD content, long ADR rationale, large copied
+diagrams, implementation plans, story-specific detail, unapproved decisions, generic engineering advice.

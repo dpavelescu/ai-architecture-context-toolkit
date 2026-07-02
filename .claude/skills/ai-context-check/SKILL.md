@@ -25,7 +25,7 @@ Examples:
 /ai-context-check work=PR-456
 ```
 
-Optional: `scope=<area>` — a path, paths/glob, or a manifest `areas:` name; omit for the whole
+Optional: `scope=<area>` — a path, paths/glob, or a source map `areas:` name; omit for the whole
 repo. The check is read-only and interactive: it asks one blocking question only when something
 genuinely needs a human, otherwise it records the question in its report.
 
@@ -46,10 +46,12 @@ genuinely needs a human, otherwise it records the question in its report.
 
 ## Phase 1 — Discover context
 
-Locate inputs with the **read-context-manifest** skill (manifest first, conventional
-fallback), then read and classify: the AI Architecture Context; AI Coding Guidelines;
-Brownfield Guardrails; relevant SAD sections, ADRs, and formal specs; relevant code and
-tests; relevant solution notes (supporting memory only).
+Locate inputs with the **read-context-manifest** skill (source map first, search fallback,
+passing `scope`), then read and classify: the AI Architecture Context; AI Coding Guidelines;
+Brownfield Guardrails; the clarifications ledger; relevant SAD sections, ADRs, and formal specs;
+relevant code and tests; relevant solution notes (supporting memory only). The Context/Guidelines
+are authoritative; treat an `## Open` ledger item as **not yet binding** — a concern still awaiting
+decision, not an approved rule.
 
 ## Phase 2 — Understand the reviewed work
 
@@ -82,10 +84,12 @@ inline — the reviewer file is the single source for the dimension's checks eit
 
 ## Phase 4 — Coverage gap check (cross-cutting)
 
-While running the checks above, apply the **assess-coverage** skill over the full concern
-checklist to watch for **coverage gaps**: the reviewed work depends on a concern the Context is
+While running the checks above, apply the **assess-coverage** skill (passing Phase 1's resolved
+source list) to watch for **coverage gaps**: the reviewed work depends on a concern the Context is
 **silent on**, and no source artifact (SAD, ADR, LLD, security/privacy requirement, spec)
-covers it at an actionable level.
+covers it at an actionable level. If the work depends on a concern that is an **open ledger item**,
+surface it as awaiting decision (recommend ratifying it via `ai-guidance-update`) — don't treat the
+silence as approval.
 
 A coverage gap means the AI had to guess because the guidance was missing — not that the
 work is wrong. For each gap, note **what guidance is missing** and **where it belongs**

@@ -17,10 +17,10 @@ description: >-
 
 ```
 # analyze only (default)
-/ai-guidance-update source=<learning|solution-note|pr-finding|review-issue|adr|spec-change> mode=analyze-only
+/ai-guidance-update source=<clarification-decision|learning|solution-note|pr-finding|review-issue|adr|spec-change> mode=analyze-only
 
-# apply an already-approved update
-/ai-guidance-update source=<approved-update> mode=apply-approved-update
+# apply an already-approved update (a filled-in clarifications ledger counts as approval)
+/ai-guidance-update source=<clarification-decision|approved-update> mode=apply-approved-update
 ```
 
 Examples:
@@ -29,6 +29,7 @@ Examples:
 /ai-guidance-update source=docs/solutions/payment-status-event-versioning.md mode=analyze-only
 /ai-guidance-update source=PR-456-review-finding mode=analyze-only
 /ai-guidance-update source=approved-guidance-update-2026-06-13 mode=apply-approved-update
+/ai-guidance-update source=docs/architecture/ai-clarifications.md mode=apply-approved-update
 ```
 
 If no mode is given, use `analyze-only`.
@@ -54,10 +55,12 @@ If no mode is given, use `analyze-only`.
 
 ## Phase 1 — Discover current guidance
 
-Locate current guidance with the **read-context-manifest** skill (manifest first, conventional
-fallback), then read: the AI Architecture Context; AI Coding Guidelines; Brownfield Guardrails;
+Locate current guidance with the **read-context-manifest** skill (source map first, search
+fallback; it returns the resolved source list the conflict check uses), then read: the AI
+Architecture Context; AI Coding Guidelines; Brownfield Guardrails; the clarifications ledger;
 relevant SAD sections, ADRs, formal specs; the source learning; relevant code evidence; relevant
-solution notes (supporting memory only).
+solution notes (supporting memory only). When `source=clarification-decision`, read the ledger's
+`## Open` items and their filled `decision:` lines — each filled decision is the approval.
 
 ### When no baseline exists (bootstrap not yet run)
 
@@ -170,11 +173,20 @@ Context/Guidelines but no baseline exists (recommend `ai-context-bootstrap`). Ot
 8. Flag any conflict discovered during application.
 9. Produce an Applied Guidance Update Report.
 
+**From the ledger** (`source=clarification-decision`): each filled `decision:` is the approval. For
+each decided item — **accept/edit** → fold the (edited) rule into the clean Context or Guidelines via
+**write-guidance-file** (passing `target-file` = Context or Guidelines per the classification,
+`coverage-decisions` = the accepted rule, `sources` = Phase 1's source list), then remove it from
+`## Open`; **reject** → remove it from `## Open` and add one line to `## Settled — won't re-propose`;
+empty `decision:` → leave untouched; a **code-vs-stale-source** conflict resolved in code's favour →
+write the corrected rule and flag the upstream SAD/ADR/spec as stale (never rewrite it). The
+Context/Guidelines stay clean; open items stay only in the ledger.
+
 ```markdown
 # Applied Guidance Update Report
 
 ## Decision
-Choose one: Applied | Not applied | Partially applied | Blocked
+Choose one: Applied | Not applied | Partially applied | Approval missing | Blocked
 
 ## Files changed
 | File | Section | Change |

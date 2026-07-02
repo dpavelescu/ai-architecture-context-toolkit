@@ -1,23 +1,33 @@
 ---
 name: assess-coverage
 description: >-
-  Decide how the AI Architecture Context should cover each relevant concern — point to an
-  existing artifact, restate it actionably, flag it for clarification when the source is
-  ambiguous, or fill-and-flag when nothing covers it. Use while drafting or refreshing the
-  Context, or checking a work item for coverage gaps. Never resolve ambiguity by guessing — flag it.
+  Decide, for each relevant concern, whether an approved source already settles it (→ a final rule
+  for the clean context) or it needs a human decision (→ a proposal in the clarifications ledger).
+  Surfaces only concerns that matter — variation already evidenced, high impact if they vary, or a
+  cross-cutting/framework standardization — never a catalog of every existing pattern. Use while
+  drafting or refreshing the Context/Guidelines, or checking a work item for coverage gaps.
 ---
 
-Run over the **checklist below** (a baseline, not a ceiling) — checking what's **missing** as much
-as what the sources mention. For each relevant concern that could be misinterpreted by an AI, choose
-one — sized against the existing artifacts (SAD, ADRs, LLD, security/privacy requirements, specs):
+**Relevance gate — surface only what matters.** Do not catalog existing patterns. Keep a concern only
+if it clears at least one test:
+- **Variation already evidenced** — the code is already inconsistent on it.
+- **High impact if it varies** — cross-cutting and costly to get inconsistent (boundaries, contracts, security, data handling, error/result conventions).
+- **General / framework-level standardization** — a cross-cutting concern where the framework choice should be locked in (validation, DI, logging, mapping, HTTP/resilience), even if currently uniform.
 
-- **Point** — an artifact covers it at an actionable level → reference it (must-read + a one-line operational pointer); don't restate.
-- **Restate actionably** — covered but too abstract or buried → add a thin operational rule and link back.
-- **Flag for clarification** — covered, but the source is ambiguous or admits more than one valid reading on something that matters → don't pick a reading; flag it for a human to state explicitly.
-- **Flag or fill** — nothing covers it. If it's **architecturally significant**, flag it for clarification — don't invent a rule. For lower-risk concerns you may add a *proposed* rule (marked proposed/TBD). Either way record the gap (the SAD/ADR/requirement may need creating; never decide it silently).
+Drop any concern that is uniform AND low-impact AND local. Add repo/domain-specific concerns that clear
+the gate even if unlisted (multi-tenancy & data isolation, performance/latency SLAs, i18n).
 
-Concerns (all equal — don't over-weight any one):
+For each kept concern, check coverage against the sources in **authority order** (SAD, ADRs, specs,
+diagrams; code lowest), and route it to exactly one outcome:
 
+- **Settled by an approved source** — covered at an actionable level → emit a **final rule** for the clean context: a one-line imperative rule + a link to the owning source (if abstract or buried, restate it as a one-line rule and link back). No decision needed.
+- **Needs a decision** — no approved source covers it, the source is ambiguous, sources conflict, or it is only code-evidenced → emit a **ledger candidate** (proposal + rationale, below). A code-derived proposal is lowest authority and never self-ratifies; nothing here enters the context until decided.
+
+**Severity** decides where a candidate is raised: **critical** — security, privacy, compliance, data
+ownership, or a needed architecture decision → ask live, offering defer-to-ledger; everything else →
+ledger only.
+
+**Concern checklist** (a baseline, not a ceiling):
 - ownership & boundaries; data ownership & access
 - integration (sync/async; allowed/forbidden); API & event contracts
 - security; data privacy / PII; audit; compliance
@@ -27,11 +37,10 @@ Concerns (all equal — don't over-weight any one):
 - logging & observability — only where architecturally constrained
 - current-vs-target (brownfield) divergences
 
-**The list is a baseline, not a ceiling.** Also surface and cover any concern specific to this repo
-or domain that could mislead an AI even if it isn't listed — e.g. performance/latency SLAs,
-scalability, cost, multi-tenancy & data isolation, internationalization/accessibility, caching,
-concurrency. Cover it as its own concern; never drop a real concern for being "off-list."
-
-**Thin ≠ narrow:** cover every relevant concern, but where an artifact already covers one
-well, shrink to a pointer. Skip a concern only when it's genuinely irrelevant — never
-because it's "not architecture."
+**Two output streams.** Final rules (for the clean Context/Guidelines): `<concern> · <imperative rule> · <source link>`. Ledger candidates (for the clarifications ledger), each:
+```
+[<concern>] Proposal: <recommended rule>.
+why: <evidence of variation / impact / framework standardization>.
+raise: <live | ledger>   (critical → live; all others → ledger)
+decision:
+```
