@@ -639,7 +639,7 @@ _(If discovery finds neither sources nor code, nothing is written and the run re
 
 ```markdown
 # Applied Guidance Update Report
-## Decision   (Applied | Not applied | Partially applied | Blocked | Approval missing)
+## Decision   (Applied | Not applied | Partially applied | Blocked)
 ## Files changed         | File | Section | Change |
 ## Approval source
 ## Summary of applied change
