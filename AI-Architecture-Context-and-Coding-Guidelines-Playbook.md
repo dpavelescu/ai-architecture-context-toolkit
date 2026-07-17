@@ -37,7 +37,7 @@ The steady state is **Check ↔ ratify-the-ledger**; you bootstrap once.
 This playbook is the **tool-neutral reference** — it describes the toolkit by what each part *does*: three **workflows** (bootstrap, check, update) and four optional **reviewers**. The concepts are identical across coding agents; only the packaging differs:
 
 - **Claude Code** — workflows are *skills* (`.claude/skills/`), reviewers are *sub-agents* (`.claude/agents/`); invoked as `/slash` commands.
-- **GitHub Copilot** — all seven are *custom agents* (`.github/agents/`) plus four shared *Agent Skills* (`.github/skills/`); invoked from the agent picker.
+- **GitHub Copilot** — all seven are *custom agents* (`.github/agents/`) plus five shared *Agent Skills* (`.github/skills/`); invoked from the agent picker.
 
 For concreteness the examples below use the Claude form (`skill`, `/ai-context-bootstrap …`). Read **"skill"** as "the workflow" and **"sub-agent"** as "the delegated reviewer" — they map directly to the Copilot build (see the README for the per-tool layout).
 
@@ -53,7 +53,7 @@ Workflows are `/slash` skills (`.claude/skills/`); reviewers are sub-agents (`.c
 
 ### GitHub Copilot
 
-The seven are custom agents (`.github/agents/`) plus four shared Agent Skills (`.github/skills/`), invoked from the agent picker; the reviewers run as parallel subagents (`/fleet` in Copilot CLI). Same parameters as above — `scope` / `produce` on bootstrap, `work` / `scope` on check, `source` / `mode` on update.
+The seven are custom agents (`.github/agents/`) plus five shared Agent Skills (`.github/skills/`), invoked from the agent picker; the reviewers run as parallel subagents (`/fleet` in Copilot CLI). Same parameters as above — `scope` / `produce` on bootstrap, `work` / `scope` on check, `source` / `mode` on update.
 
 ---
 
@@ -248,7 +248,7 @@ docs/architecture/ai-clarifications.md   (the clarifications ledger the toolkit 
 AGENTS.md  (or CLAUDE.md / .github/copilot-instructions.md)
 
 # optional but recommended
-ai-enablement/context-manifest.yaml   (the source map)
+ai-enablement/source-map.yaml   (the optional source map)
 ```
 
 ### Source map (optional)
@@ -256,7 +256,7 @@ ai-enablement/context-manifest.yaml   (the source map)
 A small, stable **structured map** so skills can *resolve* sources instead of asking you to paste them. It's a map, not another architecture doc — keep it tiny. Each source resolves **by explicit path, else search fallback**: when a path is given it's used as-is; when a path is omitted or resolves to nothing, the toolkit searches by conventional location. The map also carries the **authority order** and the path to the **clarifications ledger**. (External locators — MCP or remote sources — are possible later; nothing to configure today.) Use real discovered paths; mark unknowns `TBD`.
 
 ```yaml
-# context-manifest.yaml — the source map: a thin, structured map of where this repo's
+# source-map.yaml — a thin, structured map of where this repo's
 # AI-context lives, so the agents don't hardcode paths. Each entry resolves by explicit
 # path, else search fallback (omitted / unresolved → search conventional locations).
 # Fill in real paths; mark unknowns TBD; omit what doesn't apply. A map, not another doc.
@@ -290,11 +290,11 @@ areas:
 
 The parts: **`guidance`** (the OUTPUTS the toolkit writes, now including the `clarifications` ledger), the **`authority`** order it trusts sources in, and the INPUTS it reads (`sources` / `code` / `solution_notes`), plus optional `areas` for named scopes. Constraints and the *detailed* authority reasoning still live in the Context — the map carries only the ordered list.
 
-This is the shape **`ai-context-bootstrap` proposes and maintains** — a *recommended thin map, not an enforced schema*. Agents **produce** it (bootstrap) or **read** it tolerantly (check/update/reviewers use whatever keys exist, resolve each entry by path-else-search, and fall back to conventional locations when the map is absent or partial).
+The map is **optional and yours to author** — a *recommended thin map, not an enforced schema*, and nothing generates it for you. Every agent **reads** it tolerantly (use whatever keys exist, resolve each entry by path-else-search) and **searches conventional locations when it's absent or partial** — which is the normal path, not a degraded one. Write one when convention-searching keeps landing in the wrong place, or when you want named `areas:` scopes; skip it otherwise.
 
 ### The clarifications ledger
 
-`docs/architecture/ai-clarifications.md` is a **lean, ephemeral markdown worklist that holds only open decisions** — the one place undecided things live, keeping the Context and Guidelines clean and final. Bootstrap writes it alongside the two clean files; a human works it; `ai-guidance-update` folds accepted items back out of it.
+`docs/architecture/ai-clarifications.md` is a **lean, ephemeral markdown worklist that holds only open decisions** — the one place undecided things live, keeping the Context and Guidelines clean and final. Bootstrap writes it alongside the two clean files; a human works it; `ai-guidance-update` folds accepted items back out of it. Both go through the shared **`update-clarifications-ledger`** capability, which owns the file's structure — so recording candidates and retiring decided items behave the same either way.
 
 Each open item is one entry:
 
@@ -318,7 +318,7 @@ Keep it small. It mostly points at the other files and states the core rules (au
 
 ## Read order
 Before analysis, planning, coding, or review, read:
-1. ai-enablement/context-manifest.yaml   # the source map
+1. ai-enablement/source-map.yaml   # the source map, if this repo has one
 2. docs/architecture/ai-context.md
 3. docs/engineering/ai-coding-guidelines.md
 Then read the SAD, ADRs, specs, diagrams, code, and tests they reference.
@@ -366,7 +366,7 @@ Same mechanism, one level up — **no special multi-repo mode**, and you add the
 
 Both files are **optimized for AI consumption and easy to review** — conventional, stable headings (don't reinvent the structure), short declarative bullet rules (not prose), links to sources instead of copies. Write each rule as a **pointer to its source** — link the SAD/ADR/spec that owns the full detail; the thin rule is never the complete truth. **Prefer pointing to a canonical in-repo example** over prose whenever one exists. **Don't repeat content** — state each rule once and cross-link rather than restating. **Rule shape:** one line per rule — the imperative rule, a link to its source, and an inline *ask-first if …* where relevant (plus a canonical example to mirror when one exists). Make the **weight** visible: non-negotiables as **Never/Always**, preferences as **Prefer**. The concern lists below are **a baseline for a sensible, consistent order — not a rigid template and not a ceiling:** include only sections with real content, **omit concerns that don't apply, never pad to fill the structure,** adapt to the repo, and **add a section for any repo- or domain-specific concern that matters even if it isn't listed** (e.g. multi-tenancy, performance/SLAs, i18n) — kept concrete, not generic advice. Each file holds **only decided, ready-to-use rules** — no statuses, placeholders, `TBD`/proposed markers, or "open gaps" sections; every open decision lives in the clarifications ledger instead, so these two files stay clean and final. Each opens with a one-line provenance header (*generated & maintained by the toolkit; the Context mirrors — never overrides — the SAD/ADRs/specs, the Guidelines apply it in code; these files hold only decided rules — open decisions live in the clarifications ledger; evolve via the update skill*), then the applicable concerns:
 
-**`docs/architecture/ai-context.md`** — Purpose & scope — covered areas · Read order & authority order · Must-read sources — pointer to the source map · System overview · Technology & platform (languages, frameworks, runtimes, datastores; allowed/forbidden) · Architecture style & modularity · Boundaries & ownership · Data ownership & access · Integration & communication (sync/async; allowed/forbidden; API & event ownership) · Security, privacy, audit & compliance · Resilience & error handling · Logging & observability · Current-vs-target & Brownfield Guardrails · Prohibited shortcuts & ask-first triggers
+**`docs/architecture/ai-context.md`** — Purpose & scope — covered areas · Read order & authority order · Must-read sources — a pointer to the source map, or the approved sources themselves when there's no map · System overview · Technology & platform (languages, frameworks, runtimes, datastores; allowed/forbidden) · Architecture style & modularity · Boundaries & ownership · Data ownership & access · Integration & communication (sync/async; allowed/forbidden; API & event ownership) · Security, privacy, audit & compliance · Resilience & error handling · Logging & observability · Current-vs-target & Brownfield Guardrails · Prohibited shortcuts & ask-first triggers
 
 **`docs/engineering/ai-coding-guidelines.md`** — Scope control · Technology & libraries (approved stack; adding a dependency) · Repository structure & placement · Layering & module conventions · Naming · DTOs, mapping & validation · Error handling · Contract-change workflow (API/event/data/UI) · Testing · Logging & observability · Security & privacy coding rules · Brownfield implementation rules · Prohibited behaviors & ask-first triggers · Reference implementations & links
 
@@ -384,7 +384,7 @@ These apply to all three skills — defined once here, referenced by each.
 5. **Classify evidence.** Tag every source: approved requirement / Story Artifact / formal spec / approved ADR / SAD / Context / Guidelines / Guardrail / approved reference impl / current code / known legacy / suspected drift / candidate learning / supporting memory. **Current code is never "approved architecture" unless an approved source confirms it.**
 6. **Produce durable output.** Always emit a file or report — an updated/draft artifact, a validation/alignment/analysis report, a blocking question, or a stopped state with reason. **Chat history is never the source of truth.**
 7. **Right-size the work.** Match the amount of ceremony to the size, clarity, and risk of the work. A small repo or an aligned, low-risk change gets a compact pass — skip phases that add nothing and prefer a short report (or "no change needed"). Reserve the full multi-phase treatment for large, ambiguous, or high-risk work. Don't manufacture Guardrails, reports, or questions the situation doesn't need. *(This is the principle that keeps the whole approach lightweight: match ceremony to the work.)*
-8. **Write only the AI-facing layer.** Skills write the Context, Coding Guidelines, Guardrails, the **clarifications ledger**, the source map / root-file, and candidate solution notes (supporting memory) — governance-affecting changes always gated by human approval. They **never write SAD, ADRs, formal specs, or tracker items** (Jira / Story Artifacts); for those they only *flag* that a change is needed or *draft* proposed text for a human to review and commit.
+8. **Write only the AI-facing layer.** Skills write the Context, Coding Guidelines, Guardrails, the **clarifications ledger**, and candidate solution notes (supporting memory) — governance-affecting changes always gated by human approval. They *draft* a root instruction file for a human when the repo has none, and they never author the source map: it's optional and yours, read when present and convention-searched when absent. They **never write SAD, ADRs, formal specs, or tracker items** (Jira / Story Artifacts); for those they only *flag* that a change is needed or *draft* proposed text for a human to review and commit.
 
 ---
 
@@ -504,38 +504,38 @@ The knobs below are the whole surface. **Complexity is not a knob** — every sk
 | Knob | Values | Meaning | Used by |
 |---|---|---|---|
 | `scope` | optional; omit = whole repo. A path, paths/glob, or a source map `areas:` name | the area a run focuses on; output stays the single repo-level set; runs compound | bootstrap, check |
-| `produce` | `context` / `guidelines` / `both` *(default `both`)* | which artifact bootstrap drafts | bootstrap |
+| `produce` | `context` / `guidelines` / `both` *(default `both`)* | which artifact bootstrap writes | bootstrap |
 | `work` | `story` / `artifact` / `plan` / `pr` / `diff` / `solution-note` | what check is reviewing | check |
 | `mode` | `analyze-only` *(default)* / `apply-approved-update` | `analyze-only` proposes without writing; `apply-approved-update` writes only explicitly approved changes | update |
 | `source` | `learning` / `solution-note` / `pr-finding` / `review-issue` / `adr` / `spec-change` / `clarification-decision` / `approved-update` | the learning update evaluates (`clarification-decision` = a filled ledger) | update |
 
 **Choosing values:**
 - **scope** — start at `service`/`module` for a pilot or a large repo; `repository` for a small, cohesive one.
-- **write** — only `ai-guidance-update` writes governance, and only in `apply-approved-update` with explicit approval; its default `analyze-only` just proposes. Bootstrap writes drafts; check and the reviewers are read-only.
+- **write** — only `ai-guidance-update` writes governance, and only in `apply-approved-update` with explicit approval; its default `analyze-only` just proposes. Bootstrap writes the clean files and the ledger outright, and only proposes a root instruction file; check and the reviewers are read-only.
 - **which skill, when** — see *The loop* (top) and §12: bootstrap once, check per story, update only to promote a confirmed learning.
 
 **Interactivity is automatic, not a knob.** Every skill asks a blocking question only for a **critical** item that genuinely needs a human — one at a time, offering decide-now-or-defer; everything else becomes a ledger candidate with no live question. In a non-interactive context (no one to answer), bootstrap still **writes the clean files plus the ledger** — undecided items simply land in the ledger rather than blocking.
 
 ### 10.1 `ai-context-bootstrap` — set up the context
 
-**Purpose:** Create or refresh the minimum AI-facing guidance (clean Context, clean Guidelines, Guardrails where needed, source-map/root-file proposals if missing, and a clarifications ledger of the open decisions).
+**Purpose:** Create or refresh the minimum AI-facing guidance (clean Context, clean Guidelines, Guardrails where needed, a root-file proposal if missing, and a clarifications ledger of the open decisions).
 
 **Re-runs are safe.** Where guidance already exists it enters **refresh mode** — it validates the existing files against the repo and routes drift/new gaps into the **clarifications ledger** as candidates (preserving the `Settled` section so it never re-nags), **never overwriting human-approved content**. (Incremental per-learning evolution is `ai-guidance-update`'s job.)
 
 **Use when:** starting AI delivery in a repo; onboarding a new service/module/context/team; creating the first Context or Guidelines; checking whether existing guidance is usable. **Not** for story-specific planning (use `ai-context-check`) or guidance evolution (use `ai-guidance-update`).
 
-**Invoke:** `/ai-context-bootstrap [scope=<area>] [produce=<context|guidelines|both>]` (omit `scope` for the whole repo — `area` = a path, paths/glob, or a source map `areas:` name; `produce` defaults to `both` and runs Phase 4, Phase 5, or both — discovery and assessment always run). The skill is interactive: it asks a blocking question only for a critical item (decide-now-or-defer); everything else lands in the ledger.
+**Invoke:** `/ai-context-bootstrap [scope=<area>] [produce=<context|guidelines|both>]` (omit `scope` for the whole repo — `area` = a path, paths/glob, or a source map `areas:` name; `produce` defaults to `both` and selects which file(s) get written — discovery, assessment, and the critical questions always run). The skill is interactive: it asks a blocking question only for a critical item (decide-now-or-defer), before it writes anything; everything else lands in the ledger, and so does a critical item when there's no one there to answer.
 
 **Phases:**
 
-1. **Discover** the repo (root file, source map, existing guidance, SAD/ADRs/diagrams, specs, representative code/tests/CI, solution notes). Classify each source. Strategy: resolve via the **source map** (each entry by explicit path, else search fallback), else overrides, else convention-scan bounded by `scope`; **sample** representative code (don't read the whole tree). Only if discovery finds **neither sources nor code** does it write nothing and say what's missing.
+1. **Discover** the repo (root file, source map, existing guidance, SAD/ADRs/diagrams, specs, representative code/tests/CI, solution notes). Classify each source. Strategy: resolve via the **source map** if the repo has one (each entry by explicit path, else search fallback), otherwise convention-scan bounded by `scope` — same result either way, and no map is generated; **sample** representative code (don't read the whole tree). Only if discovery finds **neither sources nor code** does it write nothing and say what's missing.
 2. **Assess (relevance gate → route):** run the concern checklist and apply the **relevance gate** (see §1) — surface a concern only if variation is already evidenced, it's high-impact, or it's a framework-level standardization; drop concerns that are uniform *and* low-impact *and* local. Don't catalog every existing pattern. Route each surfaced concern: an approved source that settles it actionably → a **final rule** for the clean file; anything unsettled (ambiguous, uncovered, conflicting, or only code-evidenced) → a **ledger candidate** (proposal + rationale). Ask **only critical** items live — one at a time, offering decide-now-or-defer-to-the-ledger; everything else becomes a ledger candidate with no live question. Nothing undecided enters the clean files. Code may *propose* even significant rules (lowest authority → candidate only), never self-ratify.
-3. **Propose the source map** (if missing) from discovered paths, including the authority order and the ledger path; mark unknowns `TBD`.
-4. **Draft the clean AI Architecture Context** → `docs/architecture/ai-context.md` — **final rules only, no TBDs/placeholders/open-gaps sections**. Write a final rule for each concern a source settles (point / restate-actionably); everything unsettled goes to the ledger, not the file. Lay it out in the standard concern sections (§5 "Generated file structure") — guidance, not a rigid template: only sections with real content, omit the rest, don't pad. Each rule a pointer to its source; prefer a canonical in-repo example; don't repeat content. Thin ≠ narrow.
-5. **Draft the clean AI Coding Guidelines** → `docs/engineering/ai-coding-guidelines.md` — final rules only, same clean-file discipline. Lay it out in the standard coding-concern sections (§5 "Generated file structure"); same writing rules as the Context. Don't redefine architecture — link to it.
-6. **Write the clarifications ledger** → `docs/architecture/ai-clarifications.md`: every ledger candidate as an entry (`[<concern>] Proposal / why / raise / decision:`), plus the `## Settled — won't re-propose` section (preserved across refreshes so re-runs don't nag).
-7. **Validate against representative code.** Classify each pattern (aligned / current-approved / target-ready / target-not-ready / brownfield exception / known legacy / suspected drift / ask-first). Make Guardrails only for misleading current-vs-target gaps. *(Doc-only, no source access: skip this and current-vs-target Guardrails — both need code; rely on the docs and send ambiguity to the ledger rather than infer.)*
-8. **Produce output:** the single Result below — clean files + ledger written together (unless discovery found neither sources nor code, in which case nothing is written and it says what's missing).
+3. **Ask the critical few** — before anything is written, and only for an item nothing settles and nobody should guess (security, privacy, compliance, data ownership, a needed architecture decision): one at a time, most critical first, each offering decide-now-or-defer-to-the-ledger. An answer becomes a final rule; a deferral stays a candidate; with no one there to answer, it stays a candidate and the run continues rather than blocking. Everything else is never asked. The split is final after this.
+4. **Write the clarifications ledger** → `docs/architecture/ai-clarifications.md` via the **`update-clarifications-ledger`** capability: every still-undecided candidate as an entry (`[<concern>] Proposal / why / raise / decision:`), plus the `## Settled — won't re-propose` section (preserved across refreshes so re-runs don't nag).
+5. **Write the clean AI Architecture Context** → `docs/architecture/ai-context.md` — **final rules only, no TBDs/placeholders/open-gaps sections**. Write a final rule for each concern a source settles (point / restate-actionably); everything unsettled went to the ledger, not the file. Lay it out in the standard concern sections (§5 "Generated file structure") — guidance, not a rigid template: only sections with real content, omit the rest, don't pad. Each rule a pointer to its source; prefer a canonical in-repo example; don't repeat content. Thin ≠ narrow.
+6. **Write the clean AI Coding Guidelines** → `docs/engineering/ai-coding-guidelines.md` — final rules only, same clean-file discipline. Lay it out in the standard coding-concern sections (§5 "Generated file structure"); same writing rules as the Context. Don't redefine architecture — link to it.
+7. **Validate against representative code.** Classify each pattern (aligned / current-approved / target-ready / target-not-ready / brownfield exception / known legacy / suspected drift / ask-first). Make Guardrails only for misleading current-vs-target gaps. *(Doc-only, no source access: skip this and current-vs-target Guardrails — both need code; rely on the docs and send ambiguity to the ledger rather than infer.)* Then **propose the root instruction file** if the repo has none, pointing at the guidance this run wrote — a draft for a human, never written as approved guidance. The source map is never generated: present → resolved through, absent → convention search.
+8. **Report:** the single Result below — clean files + ledger written together (unless discovery found neither sources nor code, in which case nothing is written and it says what's missing).
 
 **Output format** — a single Result (clean files and the ledger are always written together):
 
@@ -736,14 +736,14 @@ The skills are **per-repo**: running them in a repo affects *only that repo's* c
    4. docs/architecture/ai-context.md                      # this repo's specifics
    ## Authority: central wins for cross-repo concerns; local governs local-only; on conflict, raise it.
    ```
-3. **Point the skills at it** — the source map (`ai-enablement/context-manifest.yaml`):
+3. **Point the skills at it** — the source map (`ai-enablement/source-map.yaml`):
    ```yaml
    guidance:                                  # canonical keys; central paths first, then this repo's
      context:    [.ai/central/docs/architecture/ai-context.md, docs/architecture/ai-context.md]
      guidelines: [.ai/central/docs/engineering/ai-coding-guidelines.md]
      clarifications: docs/architecture/ai-clarifications.md   # ledger stays local to this repo
    ```
-4. **Draft local specifics:** `/ai-context-bootstrap` — it reads central first and writes only this repo's local Context (cross-repo concerns just link back to central).
+4. **Write local specifics:** `/ai-context-bootstrap` — it reads central first and writes only this repo's local Context (cross-repo concerns just link back to central).
 5. **Use it:** `/ai-context-check work=<PR>` — enforces central + local together.
 
 ### Staying current — auto-consume by default; pin only when it gates

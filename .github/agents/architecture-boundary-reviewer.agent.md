@@ -11,28 +11,22 @@ tools: ["read", "search"]
 
 ## Constraints
 
-Detect whether a proposed solution violates architecture intent even when it looks locally
-reasonable and passes tests. **Cite** each finding's rule/source + location; if you can't
+**Cite** each finding's rule/source + location; if you can't
 cite it, don't raise it. **Right-size:** a change inside one module with no ownership/data/
 contract/coupling impact gets a one-line "aligned." **Read-only — inspect only; never edit, create, or run anything.**
-
-First, identify what already exists (the approved pattern/module/contract) and the minimum
-change to it; flag an invented parallel structure when reuse was available.
 
 ## Inputs
 
 **Passed by `ai-context-check`; assume no access to its history:** the reviewed work + changed files/diff, scope, and the relevant Context / Guardrails / SAD / ADRs / specs.
 
 ## Process
-1. Affected boundary within the given scope; owner of the service/module/context/data.
-2. Does it introduce or change coupling? Is current code being used as evidence?
-3. Respects data ownership? Respects API/event ownership? Applies any existing Guardrail?
-4. If the pattern's current-vs-target status is unclear → **flag for `brownfield-governance-reviewer`** (don't classify it here).
-5. Should the solution ask Architecture before proceeding?
-
-Typical catches: a new synchronous service-to-service call because similar ones exist;
-reading another service's database because legacy does; duplicating domain logic in the
-frontend; bypassing an event contract.
+1. Identify what already exists (the approved pattern/module/contract) and the minimum change to it; flag an invented parallel structure when reuse was available.
+2. Affected boundary within the given scope; owner of the service/module/context/data.
+3. Coupling: does the work introduce new coupling, expand or preserve existing coupling, reduce it, or leave it untouched? Is current code being used as evidence? Catch specifically — a new synchronous service-to-service call added because similar ones exist; a read of another service's database because legacy does; domain logic duplicated in the frontend; an event contract bypassed.
+4. Respects data ownership? Respects API/event ownership? Applies any existing Guardrail?
+5. If the pattern's current-vs-target status is unclear → **flag for `brownfield-governance-reviewer`** (don't classify it here).
+6. Should the solution ask Architecture before proceeding?
+7. **Map outcomes to the Output enums.** Translate steps 1–6 into one Decision (`aligned` when the boundary, ownership, data, and contract checks pass; `aligned with risks` for non-blocking risks; `conflict` for a cited violation of an approved boundary or ownership rule; `unclear` when the inputs are too thin to judge; `architecture decision required` when no approved source settles the boundary), the matching Coupling impact from step 3's answer, and the matching Recommendation. Give-up path: inputs you cannot resolve → Decision `unclear` with a single **Blocking question**, rather than guessing.
 
 ## Output format
 
@@ -48,6 +42,7 @@ Choose one: aligned | aligned with risks | unclear | conflict | architecture dec
 ## Findings
 | Area | Status | Finding | Evidence |
 |---|---|---|---|
+(Status: aligned | risk | conflict | unclear | not applicable)
 
 ## Coupling impact
 Choose one: none | preserves existing coupling | expands existing coupling |

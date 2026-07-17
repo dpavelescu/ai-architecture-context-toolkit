@@ -4,7 +4,7 @@
 
 This repo gives you two thin files, three guided workflows (bootstrap, check, update), and four optional reviewers that tell an AI agent *how to apply your approved architecture* before it plans or writes code. No new architecture document. No heavy process. It's designed to drop into an existing project.
 
-> **A note on terms:** the three workflows and four reviewers are **packaged differently per tool** — in **Claude Code** the workflows are *skills* and the reviewers are *sub-agents*; in **GitHub Copilot** all seven are *custom agents* (plus four shared Agent Skills). Same behavior, same outputs — see the repo map below. ("Skill" and "agent" mean different things in each tool, so this README names the capabilities by what they *do*.)
+> **A note on terms:** the three workflows and four reviewers are **packaged differently per tool** — in **Claude Code** the workflows are *skills* and the reviewers are *sub-agents*; in **GitHub Copilot** all seven are *custom agents* (plus five shared Agent Skills). Same behavior, same outputs — see the repo map below. ("Skill" and "agent" mean different things in each tool, so this README names the capabilities by what they *do*.)
 
 ---
 
@@ -65,7 +65,7 @@ The two files are **thin**: they don't repeat your architecture, they *point* to
 
 | Step | Workflow | When | What it does |
 |---|---|---|---|
-| **1. Bootstrap** | `ai-context-bootstrap` | Once per repo | Reads your repo and writes the two clean files + a **clarifications ledger** of open decisions (plus a source map and Guardrails if needed) |
+| **1. Bootstrap** | `ai-context-bootstrap` | Once per repo | Reads your repo and writes the two clean files + a **clarifications ledger** of open decisions (plus Guardrails if needed) |
 | **2. Check** | `ai-context-check` | Every story / plan / PR | Checks the proposed work against the files — catches "locally reasonable but architecturally wrong" before it ships |
 | **3. Update** | `ai-guidance-update` | To ratify the ledger, or when a learning should become a rule | Folds approved decisions (a filled-in ledger) or an approved learning into the clean files, with human approval |
 
@@ -86,13 +86,15 @@ AI-Architecture-Context-and-               ← the full playbook (all the detail
 
 .claude/                                   ← Claude Code build
   skills/    ai-context-bootstrap | ai-context-check | ai-guidance-update   (orchestrators = skills)
-             assess-coverage | write-brownfield-guardrail | write-guidance-file | read-context-manifest   (shared capabilities the orchestrators call)
+             assess-coverage | write-brownfield-guardrail | write-guidance-file | read-source-map
+             | update-clarifications-ledger                                  (shared capabilities the orchestrators call)
   agents/    architecture-boundary | engineering-convention | brownfield-governance | contract-compliance   (reviewers = sub-agents)
 
 .github/                                   ← GitHub Copilot build (drop in the agents + skills folders)
   agents/    ai-context-bootstrap | ai-context-check | ai-guidance-update   (orchestrators = custom agents)
              + the 4 reviewers             (reviewers = custom agents, delegated by check via agents:)
-  skills/    assess-coverage | write-brownfield-guardrail | write-guidance-file | read-context-manifest   (shared capabilities, auto-loaded)
+  skills/    assess-coverage | write-brownfield-guardrail | write-guidance-file | read-source-map
+             | update-clarifications-ledger                                  (shared capabilities, auto-loaded)
 ```
 > No global `copilot-instructions.md` is shipped — the short behavioral constraints are inlined in each agent, and the authority/read order lives in the generated Context — so dropping these folders into a project won't touch its own instructions. (Bootstrap still *proposes* a root instruction file for the target repo — conventionally `.github/copilot-instructions.md` for a Copilot project — but that's generated for your project, not shipped by the toolkit.) Most agents declare a minimal `tools:` array (the writing orchestrators read/search/edit; the reviewers read/search, read-only by instruction); `ai-context-check` omits it and acts through its delegated reviewers.
 
@@ -104,7 +106,7 @@ The files the skills *produce* in your project end up at:
 docs/architecture/ai-context.md            ← AI Architecture Context (clean, final)
 docs/engineering/ai-coding-guidelines.md   ← AI Coding Guidelines (clean, final)
 docs/architecture/ai-clarifications.md     ← clarifications ledger (open decisions to ratify)
-ai-enablement/context-manifest.yaml        ← optional source map (where your sources live)
+ai-enablement/source-map.yaml              ← the optional source map (where your sources live)
 AGENTS.md / CLAUDE.md / copilot-instructions.md  ← tells the agent to read the above
 ```
 

@@ -1,18 +1,16 @@
 ---
 name: write-brownfield-guardrail
 description: >-
-  Write a Brownfield Guardrail when current code and target direction differ in a way that
-  could mislead the AI — capturing what to use, what not to copy, and when to ask. Use when
-  creating, updating, or applying one (in bootstrap, guidance updates, or brownfield review).
-  A Guardrail records a divergence; it never originates an architecture decision.
+  Writes a Brownfield Guardrail for a case where current code and target direction differ enough to
+  mislead the AI: what to use, what not to copy, and when to ask instead. Records a divergence
+  someone else decided; never originates an architecture decision, and emits nothing where current
+  and target are aligned.
 ---
 
 ## Inputs
 
 - **trigger** — a misleading divergence between current code and target direction that could
   lead the AI astray. Absent a divergence, there is nothing to write.
-- **template fields** — the Guardrail fields the writer fills: Topic, Status, Source, Current
-  state, Target direction, Rule for new work, Rule for existing code, Do not copy, Ask when.
 
 ## Procedure
 
@@ -25,8 +23,7 @@ description: >-
    - no decision exists yet → `Ask first`
 3. **If the Guardrail requires a decision that doesn't exist yet**, set Status `Ask first`,
    fill `Ask when` with the deciding owner, and recommend formalizing the decision. Do not
-   decide it within the Guardrail — a Guardrail records a divergence; it never originates an
-   architecture decision.
+   decide it within the Guardrail.
 
 ## Output
 

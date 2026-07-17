@@ -1,12 +1,11 @@
 ---
 name: ai-context-check
 description: >-
-  Check whether a story, analysis, implementation plan, pull request, diff, or
-  solution note aligns with the approved AI Architecture Context and AI Coding
-  Guidelines. A planning-time and review-time governance check that catches locally
-  reasonable but directionally wrong solutions. Use before implementation when
-  possible, or during PR review. Not for first-time context setup (use
-  ai-context-bootstrap) or guidance evolution (use ai-guidance-update).
+  Reviews a story, plan, PR, diff, or solution note against the approved AI Architecture Context and
+  AI Coding Guidelines, and reports each divergence — including the locally reasonable solution that
+  runs against the architecture's direction. Delegates each touched dimension to a reviewer agent and
+  synthesizes one alignment report. Runs at planning time or on a PR. Read-only:
+  ai-context-bootstrap generates the guidance, ai-guidance-update changes it.
 ---
 
 # Skill: ai-context-check
@@ -26,32 +25,25 @@ Examples:
 ```
 
 Optional: `scope=<area>` — a path, paths/glob, or a source map `areas:` name; omit for the whole
-repo. The check is read-only and interactive: it asks one blocking question only when something
-genuinely needs a human, otherwise it records the question in its report.
+repo.
 
 ## Constraints
 
 1. **Discover first** — never ask the user to paste anything discoverable from the repo.
-2. **One blocking question at a time** — non-blocking questions go in the report.
-3. **No silent governance** — do not approve architecture exceptions.
-4. **Classify evidence** — never treat existing code as approved intent unless an
+2. **No silent governance** — do not approve architecture exceptions.
+3. **Classify evidence** — never treat existing code as approved intent unless an
    approved source confirms it.
-5. **Durable output, read-only** — always produce the Context Alignment Report. This
-   skill **never edits** the Context or Guidelines; only `ai-guidance-update` writes to
-   them (with approval).
-6. **Right-size the review** — delegate only the dimensions the work actually touches; a
-   small, in-scope, low-risk change gets a short report (or a one-line "Ready"). Use
-   repo-relative paths. (Per-finding citation is each reviewer's job — preserve their
-   cited evidence in the report; don't add uncited findings.)
+4. **Read-only** — this skill **never edits** the Context or Guidelines; only
+   `ai-guidance-update` writes to them (with approval).
+5. **Right-size the review** — a small, in-scope, low-risk change gets a short report (or
+   a one-line "Ready"). Use repo-relative paths. Preserve each reviewer's cited evidence
+   in the report; add no uncited findings.
 
 ## Phase 1 — Discover context
 
-Locate inputs with the **read-context-manifest** skill (source map first, search fallback,
-passing `scope`), then read and classify: the AI Architecture Context; AI Coding Guidelines;
-Brownfield Guardrails; the clarifications ledger; relevant SAD sections, ADRs, and formal specs;
-relevant code and tests; relevant solution notes (supporting memory only). The Context/Guidelines
-are authoritative; treat an `## Open` ledger item as **not yet binding** — a concern still awaiting
-decision, not an approved rule.
+Locate inputs with the **read-source-map** skill (`repo root`, `scope`), then read its `guidance`,
+`ledger`, `sources`, and `memory`. The Context/Guidelines are authoritative; treat an `## Open`
+ledger item as **not yet binding** — a concern still awaiting decision, not an approved rule.
 
 ## Phase 2 — Understand the reviewed work
 
@@ -79,28 +71,27 @@ its dimension's checks and returns cited findings — do **not** re-run their lo
 | API/event/data/UI contract changes & backward-compat, security, privacy, audit, compliance | `contract-compliance-reviewer` |
 | current-vs-target divergence, copying/extending legacy, conflicts between sources | `brownfield-governance-reviewer` |
 
-If you're not running sub-agents (lighter pilot), apply that reviewer file's criteria
-inline — the reviewer file is the single source for the dimension's checks either way.
+If you're not running sub-agents, apply that reviewer file's criteria inline.
 
-## Phase 4 — Coverage gap check (cross-cutting)
+## Phase 4 — Coverage gap check
 
-While running the checks above, apply the **assess-coverage** skill (passing Phase 1's resolved
-source list) to watch for **coverage gaps**: the reviewed work depends on a concern the Context is
-**silent on**, and no source artifact (SAD, ADR, LLD, security/privacy requirement, spec)
-covers it at an actionable level. If the work depends on a concern that is an **open ledger item**,
-surface it as awaiting decision (recommend ratifying it via `ai-guidance-update`) — don't treat the
-silence as approval.
+Apply the **assess-coverage** skill (`sources` = Phase 1's `sources`, `baseline` = Phase 1's
+`guidance`); each concern it routes as **needs a decision** is a coverage gap for this report. If
+the work depends on a concern that is an **open ledger item**, surface it as awaiting decision
+(recommend ratifying it via `ai-guidance-update`) — don't treat the silence as approval.
 
-A coverage gap means the AI had to guess because the guidance was missing — not that the
-work is wrong. For each gap, note **what guidance is missing** and **where it belongs**
+For each gap, note **what guidance is missing** and **where it belongs**
 (Context / SAD / ADR / requirement / spec), and recommend `ai-guidance-update` (citing the
 specific finding as its `source`; plus a source update when the gap belongs in an upstream
 artifact). Do not silently fill the gap.
 
 ## Phase 5 — Produce output
 
-Synthesize the reviewers' findings into one Context Alignment Report — each section below
-is populated from the matching reviewer.
+Synthesize the reviewers' findings into one **Context Alignment Report** in the **Output format**,
+mapping each reviewer's decision to the report `Decision`: governance-approval / contract change →
+`Requires guidance update analysis` or `Requires formal spec update`; an undecided architecture call
+→ `Blocked by architecture decision` with `where it belongs: ADR`; an ADR/SAD change → `Requires ADR
+or SAD update`; otherwise `Ready` / `Ready with risks` / `Needs clarification`.
 
 ## Output format
 

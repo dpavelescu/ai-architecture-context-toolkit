@@ -1,39 +1,52 @@
 ---
 name: write-guidance-file
 description: >-
-  How to draft or refresh the two thin AI-facing files — the AI Architecture Context and the
-  AI Coding Guidelines: provenance header, rule shape, weighting, the ordered section lists, and
-  what to exclude. Use while writing either file in bootstrap or guidance-update. Pairs with
-  assess-coverage (what to cover); this skill is how to write it.
+  Writes or refreshes the two thin AI-facing files — the AI Architecture Context and the AI Coding
+  Guidelines — from the final rules an assessment settled: provenance header, one-line rule shape,
+  visible weighting, and the ordered section lists. Merges into an existing file rather than
+  regenerating it. Never writes an open decision or an undecided proposal; those live in the
+  clarifications ledger.
 ---
 
-Write both files for AI consumption and easy review: conventional, stable headings (don't
+Write the **target-file** — the AI Architecture Context (`ai-context.md`) or the AI Coding Guidelines
+(`ai-coding-guidelines.md`) — for AI consumption and easy review: conventional, stable headings (don't
 reinvent the structure); short declarative bullets, not prose; links to sources instead of copies.
-Keep them **clean and final** — only decided rules, ready for downstream use. Open decisions and
-proposals live in the clarifications ledger, never in these files.
+Keep it **clean and final** — only the decided rules **coverage-decisions** carries, ready for
+downstream use. Open decisions and proposals live in the clarifications ledger, never in these files.
 
-**Rule shape** — one line per rule: the imperative rule, a link to the source that owns the full
-detail, and an inline *ask-first if …* where relevant. Prefer pointing to a canonical in-repo
-example ("mirror this") when one exists. State each rule once and cross-link — don't restate.
+**With a `baseline`** — the existing approved file — merge into it; never regenerate it. Keep its human
+edits and approved rules as they stand, and apply only what **coverage-decisions** evidences: a rule it
+corrects, a rule it adds. Dropping or rewriting an approved rule needs approval, so leave one an
+approved source no longer supports where it is and let the caller raise it. Without a `baseline`, write
+the file fresh.
+
+**Rule shape** — one line per rule: the imperative rule, a link to the entry in **sources** — the
+resolved source list (SAD, ADRs, specs, diagrams, and canonical in-repo examples, each with its
+authority and path to link) — that owns the full detail, and an inline *ask-first if …* trigger. Point
+to a canonical in-repo example ("mirror this") when one exists. State each rule once and cross-link —
+don't restate.
 
 **Weight** — make it visible: non-negotiables as **Never/Always**, preferences as **Prefer**.
 
 **Provenance header** — open each file with one line:
-- Context: *generated & maintained by the toolkit; mirrors (never overrides) the sources in the source map; evolve via `ai-guidance-update`.*
+- Context: *generated & maintained by the toolkit; mirrors (never overrides) the approved sources it links; evolve via `ai-guidance-update`.*
 - Guidelines: *generated & maintained by the toolkit; applies the Architecture Context in code (doesn't redefine it); evolve via `ai-guidance-update`.*
 
-**Section order** — the lists below are a sensible, consistent order and a baseline, not a ceiling:
-write only sections with real content, omit concerns that don't apply, never pad — and **add a
-section for any repo- or domain-specific concern that matters even if it isn't listed** (e.g.
-multi-tenancy, performance/SLAs, i18n), kept concrete and repo-specific, not generic advice.
+With no **coverage-decisions** and no `baseline`, that header is the whole file — report it back as
+header-only so the caller can say so; never pad it with generic advice or undecided proposals. With a
+`baseline` and no **coverage-decisions**, return the baseline unchanged and report it unchanged.
+
+**Section order** — write only sections with real content, omit concerns that don't apply, never pad —
+and **add a section for any repo- or domain-specific concern that matters even if it isn't listed**
+(e.g. multi-tenancy, performance/SLAs, i18n), kept concrete and repo-specific, not generic advice.
 Keep the listed sections in their given relative order; append any added section after the listed
-ones (or in the nearest topical position), never reordering the listed set. Thin ≠ narrow: cover
-every relevant concern, but shrink to a pointer where an artifact already covers one well.
+ones (or in the nearest topical position), never reordering the listed set. Cover every relevant
+concern, but shrink to a pointer where an artifact already covers one well.
 
 **ai-context.md:**
 - Purpose & scope — covered areas
 - Read order & authority order
-- Must-read sources — pointer to the source map (no prose source list)
+- Must-read sources — a pointer to the source map when the repo has one; otherwise the approved sources themselves, linked (never a prose source list)
 - System overview (minimal)
 - Technology & platform — languages/frameworks/runtimes/datastores; allowed/forbidden
 - Architecture style & modularity
@@ -62,6 +75,8 @@ every relevant concern, but shrink to a pointer where an artifact already covers
 - Prohibited behaviors & ask-first triggers
 - Reference implementations & links
 
-**Exclude** all plumbing — statuses, placeholders, `TBD`/proposed markers, and open decisions (those
-live in the clarifications ledger, never here) — and full SAD content, long ADR rationale, large copied
-diagrams, implementation plans, story-specific detail, unapproved decisions, generic engineering advice.
+**Exclude** all plumbing — proposal statuses, placeholders, `TBD`/proposed markers, and open decisions
+(those live in the clarifications ledger, never here) — and full SAD content, long ADR rationale, large
+copied diagrams, implementation plans, story-specific detail, unapproved decisions, generic engineering
+advice. Keep a Brownfield Guardrail's `Status` and `Ask first`; send the decision an `Ask first` waits
+on to the ledger.

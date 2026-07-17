@@ -1,14 +1,10 @@
 ---
 name: ai-guidance-update
 description: >-
-  Analyze and apply controlled, approved updates to the AI Architecture Context, AI
-  Coding Guidelines, and Brownfield Guardrails — so useful learnings don't die in chat,
-  PRs, or solution notes, and unapproved learnings don't silently become governance
-  rules. Use when a candidate learning could change future AI behavior — the AI makes a
-  wrong assumption the guidance should prevent, a review surfaces an uncovered issue, a
-  brownfield pattern misleads AI, a target direction becomes clear, an ADR/spec changes,
-  or a reusable learning is found. Default mode is analyze-only; never applies
-  governance-impacting updates without explicit approval.
+  Decides whether a learning becomes a rule and where, then applies the smallest approved change to
+  the AI Architecture Context, Coding Guidelines, or Brownfield Guardrails. Takes a filled-in
+  clarifications ledger, a review finding, a wrong AI assumption, or a changed ADR/spec.
+  Analyze-only by default; writes only on explicit approval, and never approves on its own.
 ---
 
 # Skill: ai-guidance-update
@@ -36,30 +32,21 @@ If no mode is given, use `analyze-only`.
 
 ## Constraints
 
-- never apply governance-impacting updates without explicit approval
 - never auto-promote solution notes to approved guidance
-- keep changes minimal; touch one thing; do not update unrelated sections
-- preserve links to approved sources
-- flag conflicts instead of resolving them silently
-- always produce a durable report; chat history is never the source of truth
-- right-size the change: prefer the smallest edit that captures the learning, and prefer
-  "no update needed" over adding guidance that won't change future AI behavior
-- promote thin, by reference: write a one-line operational rule that links to its source;
-  never copy the source's detail into the Context or Guidelines (the detail stays in the
-  note/ADR/spec; governance holds only the binding rule)
-- never write SAD / ADRs / specs — or tracker items (Jira / Story Artifacts) — yourself;
-  those are human-owned, only flag or draft them. This skill writes only the AI-facing
-  layer (Context, Guidelines, Guardrails, candidate solution notes). The Context never
-  originates a decision: for a new direction with no approved source, propose ADR-first, or
-  a provisional Brownfield Guardrail marked `Ask first` with an owner
+- prefer "no update needed" over adding guidance that won't change future AI behavior
+- never copy a source's detail into a Guardrail or solution note; link to it
+- never write into a SAD / ADR / spec — or a tracker item (Jira / Story Artifacts): flag that
+  one needs changing, or draft proposed text for a human to own. This skill writes only the
+  AI-facing layer (Context, Guidelines, Guardrails, candidate solution notes). The Context
+  never originates a decision: for a new direction with no approved source, propose ADR-first,
+  or a provisional Brownfield Guardrail via **write-brownfield-guardrail**
 
 ## Phase 1 — Discover current guidance
 
-Locate current guidance with the **read-context-manifest** skill (source map first, search
-fallback; it returns the resolved source list the conflict check uses), then read: the AI
-Architecture Context; AI Coding Guidelines; Brownfield Guardrails; the clarifications ledger;
-relevant SAD sections, ADRs, formal specs; the source learning; relevant code evidence; relevant
-solution notes (supporting memory only). When `source=clarification-decision`, read the ledger's
+Locate current guidance with the **read-source-map** skill (`repo root`, `scope`); its `sources` feed
+the conflict check. Then read: the `guidance` (Context, Coding Guidelines, Brownfield Guardrails);
+the `ledger`; the relevant `sources` (SAD sections, ADRs, formal specs, code evidence); `memory`
+(solution notes); and the source learning itself. When `source=clarification-decision`, read the ledger's
 `## Open` items and their filled `decision:` lines — each filled decision is the approval.
 
 ### When no baseline exists (bootstrap not yet run)
@@ -67,13 +54,11 @@ solution notes (supporting memory only). When `source=clarification-decision`, r
 If no AI Architecture Context or Coding Guidelines are found:
 
 - A learning whose home is an **ADR / formal spec / Jira / Story Artifact** → proceed
-  normally: **recommend (and optionally draft)** that target. (This skill never *writes*
-  those, baseline or not.)
-- A learning whose home is the **Context / Guidelines / Guardrails** → **stop and recommend
-  running `ai-context-bootstrap` first**; don't fabricate a single-rule Context. Optionally
-  record the learning as a **candidate solution note** so it isn't lost.
-
-This adds no new write powers — it only changes which recommendation is produced.
+  normally: **recommend (and optionally draft)** that target.
+- A learning whose home is the **Context / Guidelines / Guardrails** → **stop and report
+  Decision = `Blocked`, recommending `ai-context-bootstrap` first**; don't fabricate a
+  single-rule Context. Optionally record the learning as a **candidate solution note** so it
+  isn't lost.
 
 ## Phase 2 — Classify the learning
 
@@ -95,11 +80,16 @@ Recommend one target and follow these routing rules:
 | Decision rationale | ADR |
 | Contract change | Formal spec |
 | Candidate / unproven learning | Solution note only |
+| Candidate memory | Solution note only |
 | Repeated brownfield ambiguity | Brownfield Guardrail |
+| Security / privacy / audit / compliance rule | AI Architecture Context (human approval required) |
+| Reference implementation | AI Coding Guidelines (Reference implementations) |
+| Suspected drift | Conflict finding, no update |
+| Conflict between sources | Conflict finding, no update |
 
-When the target is a Brownfield Guardrail, write it with the **write-brownfield-guardrail**
-skill; when it's the Context or Guidelines, follow the **write-guidance-file** skill (a thin
-rule linked to its source).
+When the target is a Brownfield Guardrail, apply the **write-brownfield-guardrail** skill
+(`trigger` = the divergence) and route the returned Guardrail into the `Suggested minimal
+update` output; when it's the Context or Guidelines, follow the **write-guidance-file** skill.
 
 ## Phase 4 — Conflict check
 
@@ -117,7 +107,7 @@ In `analyze-only` mode, produce a Guidance Update Analysis and modify no files.
 
 ## Decision
 Choose one: No update needed | Candidate update | Human approval required |
-Conflict detected | Apply-ready, approval already explicit
+Conflict detected | Apply-ready, approval already explicit | Blocked
 
 ## Source
 - Type: / Reference: / Summary:
@@ -156,8 +146,8 @@ create or update Brownfield Guardrail
 
 ## Phase 6 — Apply-approved-update behavior
 
-Do not apply — stop and report — when: approval is missing (produce an Approval Missing
-Report); the target artifact is unclear; the update conflicts with formal specs, SAD, or ADRs;
+Do not apply — stop and report — when: approval is missing (report Decision = `Approval
+missing`); the target artifact is unclear; the update conflicts with formal specs, SAD, or ADRs;
 it would require an architecture decision, or security / privacy / audit / compliance approval;
 it would change contract truth; it is broader than the approved change; or the target is the
 Context/Guidelines but no baseline exists (recommend `ai-context-bootstrap`). Otherwise, in
@@ -173,14 +163,14 @@ Context/Guidelines but no baseline exists (recommend `ai-context-bootstrap`). Ot
 8. Flag any conflict discovered during application.
 9. Produce an Applied Guidance Update Report.
 
-**From the ledger** (`source=clarification-decision`): each filled `decision:` is the approval. For
-each decided item — **accept/edit** → fold the (edited) rule into the clean Context or Guidelines via
-**write-guidance-file** (passing `target-file` = Context or Guidelines per the classification,
-`coverage-decisions` = the accepted rule, `sources` = Phase 1's source list), then remove it from
-`## Open`; **reject** → remove it from `## Open` and add one line to `## Settled — won't re-propose`;
-empty `decision:` → leave untouched; a **code-vs-stale-source** conflict resolved in code's favour →
-write the corrected rule and flag the upstream SAD/ADR/spec as stale (never rewrite it). The
-Context/Guidelines stay clean; open items stay only in the ledger.
+**From the ledger** (`source=clarification-decision`): each filled `decision:` is the approval. Fold
+each **accepted/edited** rule into the clean Context or Guidelines via **write-guidance-file**
+(passing `target-file` = Context or Guidelines per the Phase 2 classification,
+`coverage-decisions` = the accepted rule, `sources` = Phase 1's `sources`, `baseline` = the existing
+file), then retire every decided item with the **update-clarifications-ledger** skill (`operation` =
+`resolve-decisions`, `decisions` = the decided entries, `ledger-path` from Phase 1). A
+**code-vs-stale-source** conflict resolved in code's favour → write the corrected rule and flag the
+upstream SAD/ADR/spec as stale (never rewrite it).
 
 ```markdown
 # Applied Guidance Update Report

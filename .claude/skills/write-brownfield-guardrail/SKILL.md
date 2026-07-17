@@ -1,10 +1,10 @@
 ---
 name: write-brownfield-guardrail
 description: >-
-  Write a Brownfield Guardrail when current code and target direction differ in a way that
-  could mislead the AI — capturing what to use, what not to copy, and when to ask. Use when
-  creating, updating, or applying one (in bootstrap, guidance updates, or brownfield review).
-  A Guardrail records a divergence; it never originates an architecture decision.
+  Writes a Brownfield Guardrail for a case where current code and target direction differ enough to
+  mislead the AI: what to use, what not to copy, and when to ask instead. Records a divergence
+  someone else decided; never originates an architecture decision, and emits nothing where current
+  and target are aligned.
 ---
 
 Create a Guardrail **only** when current code and target direction differ in a way that
@@ -28,6 +28,5 @@ Do not copy:       <misleading legacy pattern>
 Ask when:          <conditions needing clarification>
 ```
 
-A Guardrail is operational guidance, not an architecture decision: if it needs a decision
-that doesn't exist yet, mark `Ask first` (with an owner) and recommend formalizing it — never
-decide it silently.
+If the Guardrail needs a decision that doesn't exist yet, mark `Ask first` (with an owner) and
+recommend formalizing it — never decide it silently.

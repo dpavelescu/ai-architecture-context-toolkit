@@ -1,21 +1,19 @@
 ---
 name: ai-context-bootstrap
 description: >-
-  Create or refresh the minimum AI-facing guidance (AI Architecture Context, AI
-  Coding Guidelines, Brownfield Guardrails, source-map/root-file proposals) for safe
-  AI-assisted delivery in a repository. Use when starting AI delivery in a repo,
-  onboarding a new service/module/bounded-context/team, creating the first Context
-  or Guidelines, or checking whether existing guidance is usable. Not for
-  story-specific planning (use ai-context-check) or guidance evolution (use
-  ai-guidance-update).
+  Generates a repository's AI Architecture Context and AI Coding Guidelines from its approved
+  sources and representative code, and opens a clarifications ledger holding the decisions still
+  unsettled. Covers the whole repo or one service/area, first time or as a re-baseline of existing
+  guidance. The siblings own the rest of the loop: ai-context-check reviews work against the
+  guidance, ai-guidance-update changes it.
 ---
 
 # Skill: ai-context-bootstrap
 
-Runs in the main conversation so it can ask blocking questions interactively. It calls the
-shared skills **read-context-manifest**, **assess-coverage**, **write-guidance-file**, and
-**write-brownfield-guardrail** for the reusable capabilities — invoke each where the Process
-names it rather than re-deriving its logic here.
+Runs in the main conversation so it can ask blocking questions interactively. It calls the shared
+skills **read-source-map**, **assess-coverage**, **write-guidance-file**,
+**write-brownfield-guardrail**, and **update-clarifications-ledger** for the reusable capabilities —
+invoke each where the Process names it rather than re-deriving its logic here.
 
 ## Invocation
 
@@ -31,12 +29,13 @@ Examples:
 /ai-context-bootstrap scope=libs/payments           # focus an area
 ```
 
-`produce` (default `both`) selects which file(s) to draft — `context` runs step 3, `guidelines`
-runs step 4, `both` runs both; discovery and assessment (steps 1–2) always run, because the
-Coding Guidelines apply the Architecture Context and must read it either way. The skill asks only
-**critical** items live, one at a time (offering *decide now or defer to the ledger*); everything
-else becomes a ledger candidate. It always writes the clean files plus the clarifications ledger —
-it never blocks on open decisions.
+`produce` (default `both`) selects which file(s) to write — `context` runs step 5, `guidelines`
+runs step 6, `both` runs both; discovery, assessment, the critical questions, and the ledger
+(steps 1–4) always run, because the Coding Guidelines apply the Architecture Context and must read
+it either way. The skill asks only **critical** items live, one at a time (offering *decide now or
+defer to the ledger*); everything else becomes a ledger candidate. It always writes the clean file(s)
+plus the clarifications ledger — it never blocks on open decisions, and with no one there to answer,
+the critical items land in the ledger too.
 
 ## Scope
 
@@ -44,10 +43,10 @@ it never blocks on open decisions.
 several paths, or a name from the source map's `areas:`. Omit it for the whole repo. A path or a
 defined `area` is the real selector; a bare free-form phrase is only a weak hint.
 
-Scope bounds what the run examines and drafts, not the output path. Output always goes to the
+Scope bounds what the run examines and writes, not the output path. Output always goes to the
 single repo-level pair (`docs/architecture/ai-context.md`,
 `docs/engineering/ai-coding-guidelines.md`); the Context's *Purpose & scope* section records the
-covered areas. Re-running over an already-covered area reconciles, never overwrites — the
+covered areas. Re-running over an already-covered area reconciles, never regenerates — the
 **Discover** step detects an existing baseline and runs a refresh.
 
 For multiple repos, run the toolkit in each. For cross-repo architecture, keep a shared
@@ -56,80 +55,78 @@ system-level Context and have each repo link up to it rather than duplicating.
 ## Constraints
 
 1. **Discover first** — never ask the user to paste anything discoverable from the repo.
-2. **Ask only critical items live** — one at a time, prefer multiple-choice, offering
-   *decide now or defer to the ledger*. Everything else becomes a ledger candidate, not a
-   live question.
-3. **Never invent an answer** — code is a source for *proposals* (lowest authority), never
-   self-ratifying. Critical concerns (security, privacy, compliance, data ownership, a needed
-   architecture decision) are asked live; everything else is proposed in the ledger for a human
-   decision. Nothing undecided enters the clean files.
-4. **Classify evidence** — current code is never "approved architecture" unless an
-   approved source confirms it.
-5. **No silent governance** — propose, never silently approve, governance-significant
-   changes.
-6. **Durable output** — always emit a file or report; chat history is never the source
+2. **Never invent an answer** — existing implementation is evidence, not authority: code only
+   *proposes*, never self-ratifies, and a document carries authority only where the authority order
+   ranks it an approved source.
+3. **No silent governance** — propose; a human approves. Nothing this run works out for itself
+   becomes a rule.
+4. **Durable output** — always emit a file or report; chat history is never the source
    of truth.
-7. **Right-size the work** — match ceremony to the size and clarity of the repo. A small
+5. **Right-size the work** — match ceremony to the size and clarity of the repo. A small
    or already-aligned codebase gets a compact pass: a short Context, a short Guidelines,
    and few or no Guardrails. Reserve the full treatment for large, ambiguous, or
    high-risk repos. Don't manufacture Guardrails, sections, or questions the situation
    doesn't need.
-
-Additional constraints: the Context and Guidelines are **clean and final** — only decided rules;
-every open decision lives in the clarifications ledger, never in those files. Do not create a
-second SAD; do not copy long architecture rationale; keep the AI-facing guidance thin. Use
-repo-relative paths everywhere; never absolute paths. Write only the AI-facing layer (Context,
-Guidelines, Guardrails, clarifications ledger, source-map/root-file, candidate solution notes);
-never write SAD/ADRs/specs/tracker items — flag or draft those for a human.
+6. **Write only the AI-facing layer** — the Context, Guidelines, Guardrails, the clarifications
+   ledger, the root-file proposal, and candidate solution notes. Never author the source map; it is
+   optional and human-owned. Never write into a SAD, ADR, spec, or tracker item: flag that one needs
+   changing, or draft proposed text for a human to own. Don't create a second SAD or copy long
+   architecture rationale — keep the AI-facing guidance thin, and use repo-relative paths everywhere.
 
 ## Process
 
-1. **Discover** — resolve inputs with the **read-context-manifest** skill (source map first, search
-   fallback, bounded by `scope`); take the structured source list in authority order. Sample
-   representative code — entry points and public APIs, the in-scope modules/services, the largest or
-   most-recently-changed areas, and their tests; read excerpts, not whole trees. If discovery finds
-   neither sources nor code, write nothing and report what's missing instead.
-   - **If guidance already exists (refresh).** When discovery finds an existing `ai-context.md` /
-     `ai-coding-guidelines.md` / clarifications ledger (or approved Guardrails), this run is a refresh —
-     a health-check and re-baseline, never a regeneration: treat the existing files as the approved
-     baseline (preserve human edits, approved entries, and the ledger's `Settled` list); propose drift,
-     new gaps, and stale entries as new ledger candidates; never delete or rewrite a rule without
-     approval. Per-learning evolution belongs to `ai-guidance-update`.
-2. **Assess** — apply the **assess-coverage** skill: the relevance gate surfaces only concerns that
-   matter (variation already evidenced, high impact if they vary, or framework standardization), then
-   routes each kept concern to either a **final rule** (an approved source settles it) or a **ledger
-   candidate** (needs a decision — proposal + rationale; code-derived proposals are lowest authority).
-   - **Critical candidates** (security, privacy, compliance, data ownership, or a needed architecture
-     decision) — ask one at a time, most critical first, offering *decide now or defer to the ledger*.
-     Never guess, never silently defer.
-   - All other candidates go to the ledger with no live question.
-3. **Draft the Context (clean)** — when `produce ∈ {context, both}`, write `docs/architecture/ai-context.md`
-   per the **write-guidance-file** skill from the **final rules only** — no candidates, no statuses, no
-   TBDs; if there are no final rules yet, write only the provenance header and note it under Recommended
-   next step. Validate against representative code and add a Guardrail (the **write-brownfield-guardrail**
-   skill) only where current implementation and target direction differ enough to mislead the AI.
-4. **Draft the Guidelines (clean)** — when `produce ∈ {guidelines, both}`, write
-   `docs/engineering/ai-coding-guidelines.md` per the **write-guidance-file** skill from the final rules
-   (none → provenance header only). Don't redefine architecture; link to the Context.
-5. **Write the clarifications ledger** — `docs/architecture/ai-clarifications.md`: every open candidate
-   (proposal + rationale + empty `decision:`), most important first, under `## Open`; carry forward any
-   prior `## Settled — won't re-propose` list and don't re-raise settled items. Candidates never appear
-   in the Context or Guidelines.
-6. **Propose** — if missing, propose the source map (**read-context-manifest** skill) and the repo's
-   root instruction file.
-7. **Produce output** — emit the Result (see **Output format**): the clean Context/Guidelines, the
-   ledger, the source-map/root-instruction proposals (if missing), Guardrails (only where needed), and
-   the report.
+1. **Discover** — establish what this repo gives you to go on. Apply the **read-source-map** skill
+   (`repo root`, `scope`). If it resolved no `sources` — neither approved sources nor code — write
+   nothing and stop; report what's missing.
+   - **If guidance already exists (refresh).** When it resolves existing `guidance` (Context,
+     Guidelines, or approved Guardrails) or a `ledger`, this run is a refresh: that guidance is the
+     approved `baseline`, and steps 2 and 5–6 take it as one. Per-learning evolution stays with
+     `ai-guidance-update`.
+2. **Assess** — split every concern that matters into what the approved sources already settle and what
+   still needs a human; the split decides what the clean files may say and what they must stay silent
+   on. Apply the **assess-coverage** skill (`sources` = step 1's `sources`, `baseline` = the refresh
+   baseline if there is one), then route what it returns: **final rules** → steps 5–6; **ledger
+   candidates** → step 3 when marked `raise: live`, step 4 otherwise. Nothing is written yet.
+3. **Ask the critical few** — **you** ask, in this conversation, and **before any file is written**. Put
+   each `raise: live` candidate one at a time, most critical first, preferring multiple choice, each
+   offering *decide now or defer to the ledger*:
+   - **Answered** → that answer is the decision: it becomes a final rule, and steps 5–6 write it.
+   - **Deferred** → it stays a candidate for step 4, and you don't raise it again this run.
+   - **Nobody is there to answer** (a non-interactive run) → don't block and don't guess: every
+     `raise: live` candidate becomes a candidate for step 4, and the run continues.
+
+   Never guess a critical item, never silently defer one, and never start writing while a live question
+   is outstanding.
+4. **Record the open decisions** — apply the **update-clarifications-ledger** skill (`operation` =
+   `record-candidates`, `candidates` = every candidate still undecided after step 3, `ledger-path` =
+   step 1's `ledger`); take its count line for the Result.
+5. **Write the Context** — when `produce` is `context` or `both`, write `docs/architecture/ai-context.md`
+   with the **write-guidance-file** skill (`target-file` = the Context, `coverage-decisions` = the final
+   rules from steps 2–3, `sources` = step 1's `sources`, `baseline` = the existing Context on a
+   refresh). Validate the rules against the sampled code, then pass each current-vs-target divergence
+   you found to the **write-brownfield-guardrail** skill as its `trigger`, and place what it returns in
+   the Context.
+6. **Write the Guidelines** — when `produce` is `guidelines` or `both`, write
+   `docs/engineering/ai-coding-guidelines.md` with the **write-guidance-file** skill (`target-file` =
+   the Guidelines, `coverage-decisions` = the final rules from steps 2–3, `sources` = step 1's
+   `sources`, `baseline` = the existing Guidelines on a refresh).
+7. **Propose the root instruction file** — if step 1 resolved no `root-instruction-file`, draft one
+   pointing at the guidance this run wrote, and carry it into the Result's Proposals section. It is a
+   proposal for a human, not approved guidance.
+8. **Report** — emit the Result in the **Output format**. Write no files here. **Done** when the
+   `produce`-selected file(s) and the ledger are written and the Result is emitted.
 
 ## Output format
 
-One Result — the clean files plus the ledger always travel together. (If discovery found neither
-sources nor code, write nothing and report what's missing under **Recommended next step** instead.)
+One Result — the file(s) `produce` selected and the ledger are always written together. (If step 1
+found neither sources nor code, nothing is written: report where you looked, what's missing, and the
+Recommended next step instead of a Result.)
 
 ```markdown
 # ai-context-bootstrap Result
 
 ## Files written
+(only the files this run actually wrote)
 - docs/architecture/ai-context.md          (clean — decided rules only)
 - docs/engineering/ai-coding-guidelines.md (clean — decided rules only)
 - docs/architecture/ai-clarifications.md   (<N> open)
@@ -144,6 +141,9 @@ sources nor code, write nothing and report what's missing under **Recommended ne
 ## Brownfield Guardrails created
 | Topic | Status | Reason |
 |---|---|---|
+
+## Proposals — pending approval, not written
+- <the drafted root instruction file, or omit the section>
 
 ## Refresh summary (refresh runs only)
 - Kept / Added / Drift→ledger / Stale / Settled preserved
