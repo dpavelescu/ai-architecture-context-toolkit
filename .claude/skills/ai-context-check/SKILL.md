@@ -4,8 +4,8 @@ description: >-
   Reviews a story, plan, PR, diff, or solution note against the approved AI Architecture Rules and
   AI Coding Guidelines, and reports each divergence — including the locally reasonable solution that
   runs against the architecture's direction. Delegates each touched dimension to a reviewer agent and
-  synthesizes one alignment report. Runs at planning time or on a PR. Read-only:
-  ai-context-bootstrap generates the guidance, ai-guidance-update changes it.
+  synthesizes one alignment report. Runs at planning time or on a PR. Read-only — judges work against
+  the guidance, doesn't create or change it.
 ---
 
 # Skill: ai-context-check

@@ -3,9 +3,8 @@ name: ai-context-bootstrap
 description: >-
   Generates a repo's AI Architecture Rules and AI Coding Guidelines from its approved sources and
   representative code, and opens a clarifications ledger holding the decisions still unsettled.
-  Covers the whole repo or one area, first time or as a re-baseline of existing guidance. The
-  siblings own the rest of the loop: ai-context-check reviews work against the guidance,
-  ai-guidance-update changes it.
+  Covers the whole repo or one area, first time or as a re-baseline. Creates the guidance; doesn't
+  review or change it.
 model: inherit
 tools: ["read", "search", "edit"]
 ---
