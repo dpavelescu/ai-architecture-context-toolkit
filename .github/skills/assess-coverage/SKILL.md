@@ -5,13 +5,13 @@ description: >-
   for the clean context) or it needs a human decision (→ a proposal in the clarifications ledger).
   Surfaces only concerns that matter — variation already evidenced, high impact if they vary, or a
   cross-cutting/framework standardization — never a catalog of every existing pattern. Runs while the
-  Context/Guidelines are being written or refreshed, and while a work item is checked for coverage
+  Architecture Rules/Guidelines are being written or refreshed, and while a work item is checked for coverage
   gaps. Decides nothing itself: every candidate it emits waits on a human.
 ---
 
 ## Inputs
 
-- **sources** — the resolved source list (from `read-source-map`) in authority order: SAD, ADRs, specs, diagrams; plus code evidence (lowest authority).
+- **sources** — the resolved source list (from `read-source-map`) in authority order: SAD, ADRs, specs, diagrams; plus code evidence (lowest authority). This is a repo-level candidate pool; a source bears on the output only where a kept concern is settled by it — entries no kept concern touches are ignored.
 - **baseline** — the existing approved rules, when guidance already exists. Absent on a first pass.
 
 ## Procedure
@@ -45,7 +45,7 @@ description: >-
 
 Two streams.
 
-**Final rules** (settled from an approved source) — for the clean Context/Guidelines:
+**Final rules** (settled from an approved source) — for the clean Architecture Rules/Guidelines:
 
 ```
 <concern> · <imperative rule> · <source link>

@@ -1,4 +1,4 @@
-# AI Architecture Context & Coding Guidelines
+# AI Architecture Rules & Coding Guidelines
 
 **Make AI coding agents respect your approved architecture and decisions — especially in messy, real-world (brownfield) projects.**
 
@@ -34,7 +34,7 @@ A senior engineer would have known — which source wins, what's stale, what's m
    (unchanged)                   (this repo helps you create)
 
    ┌──────────────┐              ┌─────────────────────────┐
-   │ SAD / ADRs   │  ───links──▶ │ AI Architecture Context │ ──┐
+   │ SAD / ADRs   │  ───links──▶ │ AI Architecture Rules   │ ──┐
    │ Formal specs │              │  (what has authority,   │   │   reads these
    │ Diagrams     │              │   what not to copy,     │   │   BEFORE it
    └──────────────┘              │   when to ask)          │   ├──▶ plans or
@@ -55,7 +55,7 @@ The two files are **thin**: they don't repeat your architecture, they *point* to
 - **Existing code is evidence, not authority.** A pattern existing in the repo doesn't make it approved for new work.
 - **The AI never decides governance silently.** Architecture, security, privacy, audit, compliance, and contract changes need a human. The AI proposes; you approve.
 - **Only critical questions are asked live, one at a time.** Security, privacy, compliance, data ownership, and needed architecture decisions get a live question (decide now, or defer it); everything else becomes a proposal you decide later. No 20-question intake forms.
-- **Clean files, plus a ledger of open decisions.** Bootstrap always produces ready-to-use Context and Guidelines with only decided rules — nothing half-decided leaks in — and a separate clarifications ledger holding the open proposals for you to ratify.
+- **Clean files, plus a ledger of open decisions.** Bootstrap always produces ready-to-use Architecture Rules and Guidelines with only decided rules — nothing half-decided leaks in — and a separate clarifications ledger holding the open proposals for you to ratify.
 - **Right-size everything.** Small, low-risk work gets a compact pass; full ceremony only for large or risky changes — *leverage, not paperwork.*
 - **Humans still review.** This makes what reaches review safer; it doesn't replace review.
 
@@ -96,14 +96,14 @@ AI-Architecture-Context-and-               ← the full playbook (all the detail
   skills/    assess-coverage | write-brownfield-guardrail | write-guidance-file | read-source-map
              | update-clarifications-ledger                                  (shared capabilities, auto-loaded)
 ```
-> No global `copilot-instructions.md` is shipped — the short behavioral constraints are inlined in each agent, and the authority/read order lives in the generated Context — so dropping these folders into a project won't touch its own instructions. (Bootstrap still *proposes* a root instruction file for the target repo — conventionally `.github/copilot-instructions.md` for a Copilot project — but that's generated for your project, not shipped by the toolkit.) Most agents declare a minimal `tools:` array (the writing orchestrators read/search/edit; the reviewers read/search, read-only by instruction); `ai-context-check` omits it and acts through its delegated reviewers.
+> No global `copilot-instructions.md` is shipped — the short behavioral constraints are inlined in each agent, and the authority/read order lives in the generated Architecture Rules — so dropping these folders into a project won't touch its own instructions. (Bootstrap still *proposes* a root instruction file for the target repo — conventionally `.github/copilot-instructions.md` for a Copilot project — but that's generated for your project, not shipped by the toolkit.) Most agents declare a minimal `tools:` array (the writing orchestrators read/search/edit; the reviewers read/search, read-only by instruction); `ai-context-check` omits it and acts through its delegated reviewers.
 
 > Same responsibilities and boundaries in both; only the *packaging* differs (Claude Code: skills for orchestrators + shared capabilities, sub-agents for reviewers; Copilot: custom agents for orchestrators + reviewers, Agent Skills for shared capabilities). Pick one build — you don't need both.
 
 The files the skills *produce* in your project end up at:
 
 ```
-docs/architecture/ai-context.md            ← AI Architecture Context (clean, final)
+docs/architecture/ai-architecture-rules.md ← AI Architecture Rules (clean, final)
 docs/engineering/ai-coding-guidelines.md   ← AI Coding Guidelines (clean, final)
 docs/architecture/ai-clarifications.md     ← clarifications ledger (open decisions to ratify)
 ai-enablement/source-map.yaml              ← the optional source map (where your sources live)
@@ -133,7 +133,7 @@ Copy the build for your tool into your project's root:
 It will:
 - discover your SAD, ADRs, specs, and representative code automatically (you won't paste documents)
 - **ask you one question at a time** for the *critical* gaps only — security, privacy, compliance, data ownership, a needed architecture decision (e.g. *"Which is the authority for cross-service comms — SAD §4.3, ADR-012, or current code?"*) — offering *decide now or defer to the ledger*; it never guesses a critical decision
-- write the **clean** `docs/architecture/ai-context.md` and `docs/engineering/ai-coding-guidelines.md` (decided rules only) plus `docs/architecture/ai-clarifications.md` — a ledger of the open decisions it proposed for you to ratify
+- write the **clean** `docs/architecture/ai-architecture-rules.md` and `docs/engineering/ai-coding-guidelines.md` (decided rules only) plus `docs/architecture/ai-clarifications.md` — a ledger of the open decisions it proposed for you to ratify
 
 Start small: add `scope=<area>` (a path, paths/glob, or a source map `areas:` name) to focus one service or area if the whole repo is too big.
 

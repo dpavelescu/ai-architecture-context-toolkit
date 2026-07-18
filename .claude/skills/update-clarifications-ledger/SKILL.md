@@ -31,7 +31,7 @@ Then order `## Open` most important first (`raise: live` entries above `raise: l
 - **reject** → remove it from `## Open` and add one line to `## Settled — won't re-propose`.
 - **empty `decision:`** → leave it untouched; it is still open.
 
-A candidate never travels into the Context or Guidelines, and nothing decided stays in `## Open` — the
+A candidate never travels into the Architecture Rules or Guidelines, and nothing decided stays in `## Open` — the
 ledger **trends to empty**.
 
 **Shape:**

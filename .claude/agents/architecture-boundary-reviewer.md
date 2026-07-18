@@ -19,7 +19,7 @@ or run mutating commands.**
 ## Inputs
 
 The orchestrating skill should provide: reviewed work reference; scope; relevant AI
-Architecture Context; relevant Brownfield Guardrails; relevant SAD sections; relevant
+Architecture Rules; relevant Brownfield Guardrails; relevant SAD sections; relevant
 ADRs; relevant formal specs; relevant code evidence; known legacy or target examples.
 
 If inputs are incomplete, identify the missing context. Do not ask multiple questions —
@@ -36,7 +36,7 @@ return at most one blocking question, only if required.
 7. Check whether the proposal respects API and event ownership.
 8. Check whether a Brownfield Guardrail applies.
 9. Check whether the solution should ask Architecture before proceeding.
-10. **Map outcomes to the Output enums.** Translate steps 1–9 into one Decision (`aligned` when the boundary, ownership, data, and contract checks pass; `aligned with risks` for non-blocking risks; `conflict` for a cited violation of an approved boundary or ownership rule; `unclear` when the inputs are too thin to judge; `architecture decision required` when no approved source settles the boundary), the matching Coupling impact from step 4's answer, and the matching Recommendation. Give-up path: inputs you cannot resolve → Decision `unclear` with a single **Blocking question**, rather than guessing.
+10. **Map outcomes to the Output enums.** Translate the findings into one Decision (`aligned` when the boundary, ownership, data, and contract checks pass; `aligned with risks` for non-blocking risks; `conflict` for a cited violation of an approved boundary or ownership rule; `unclear` when the inputs are too thin to judge; `architecture decision required` when no approved source settles the boundary), the matching Coupling impact from the coupling finding, and the matching Recommendation. Give-up path: inputs you cannot resolve → Decision `unclear` with a single **Blocking question**, rather than guessing.
 
 ## Output format
 
@@ -69,5 +69,5 @@ Ask exactly one question only if required, or write: None.
 
 ## Recommendation
 Choose one: proceed | proceed with noted risk | update plan | ask Architecture |
-run brownfield-governance-reviewer | raise ADR | update AI Architecture Context
+run brownfield-governance-reviewer | raise ADR | update AI Architecture Rules
 ```

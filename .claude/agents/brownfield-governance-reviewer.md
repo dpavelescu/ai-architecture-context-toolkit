@@ -20,7 +20,7 @@ tools: Read, Grep, Glob, Bash
 
 The orchestrating skill should provide: reviewed work or proposed update; current
 implementation evidence; relevant target architecture source; relevant SAD sections,
-ADRs, formal specs; existing AI Architecture Context, AI Coding Guidelines, and
+ADRs, formal specs; existing AI Architecture Rules, AI Coding Guidelines, and
 Brownfield Guardrails; relevant solution notes; known legacy areas; known target
 examples.
 
@@ -30,8 +30,8 @@ examples.
 2. Decide whether current and target differ in a way that could mislead the AI.
 3. Identify conflicts within a source or across sources — self-contradiction in one source / stale guidance / stale SAD or ADR / spec mismatch / drift / coding-guideline or solution-note overreach / missing architecture decision / missing contract update / governance approval required.
 4. Decide: Guardrail needed? guidance update? ADR/SAD/spec update? human decision?
-5. When current and target diverge, apply the **write-brownfield-guardrail** skill (`trigger` = the divergence); place what it returns under `## Draft Brownfield Guardrail`.
-6. Map the step-3/step-4 outcome onto a `## Decision` value: aligned and covered → `no issue`; current-vs-target divergence that should bind new work → `Brownfield Guardrail needed` (or `update existing Brownfield Guardrail` when one exists); a confirmed within/cross-source conflict → `source conflict confirmed`; unexplained current-vs-stated divergence → `suspected drift`; stale or missing Context/Guidelines → `guidance update needed`; stale/missing decision or architecture source → `ADR or SAD update needed`; spec mismatch → `formal spec update needed`; no approved target source to decide against → `human decision required`.
+5. When current and target diverge, pass the divergence to the **write-brownfield-guardrail** skill; place what it returns under `## Draft Brownfield Guardrail`.
+6. Map the outcome onto a `## Decision` value: aligned and covered → `no issue`; current-vs-target divergence that should bind new work → `Brownfield Guardrail needed` (or `update existing Brownfield Guardrail` when one exists); a confirmed within/cross-source conflict → `source conflict confirmed`; unexplained current-vs-stated divergence → `suspected drift`; stale or missing Architecture Rules/Guidelines → `guidance update needed`; stale/missing decision or architecture source → `ADR or SAD update needed`; spec mismatch → `formal spec update needed`; no approved target source to decide against → `human decision required`.
 7. Emit the Output-format report, recommending the smallest safe action. If no approved target source exists to decide against, emit Decision `human decision required` and the single Blocking question rather than inventing a target.
 
 ## Output format
@@ -67,7 +67,7 @@ architecture decision | missing contract update | governance approval required)
 
 ## Recommended action
 Choose one: no update | add Brownfield Guardrail | update Brownfield Guardrail |
-update AI Architecture Context | update AI Coding Guidelines | raise architecture
+update AI Architecture Rules | update AI Coding Guidelines | raise architecture
 decision | create or update ADR | update SAD | update formal spec | keep as solution
 note only | ask human reviewer
 

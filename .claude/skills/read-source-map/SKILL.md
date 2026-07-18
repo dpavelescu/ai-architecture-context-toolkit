@@ -28,7 +28,7 @@ their tests. Read excerpts — enough to evidence a pattern, not an audit of the
 **Search by convention** — for a repo with no map, and for anything a map leaves unresolved, under the
 same `scope` rule:
 - root instruction file — `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`
-- existing guidance — `docs/architecture/ai-context.md`, `docs/engineering/ai-coding-guidelines.md`
+- existing guidance — `docs/architecture/ai-architecture-rules.md`, `docs/engineering/ai-coding-guidelines.md`
 - clarifications ledger — `docs/architecture/ai-clarifications.md`
 - architecture sources — SAD, ADRs, diagrams, decision logs
 - formal specs — OpenAPI, AsyncAPI, data, UI, security/privacy/audit/compliance
@@ -42,7 +42,7 @@ authority follows the default order: sad → adrs → specs → diagrams → cod
 resolve each entry path-else-search.
 
 ```yaml
-guidance:        { context: <path>, guidelines: <path>, clarifications: <path> }  # OUTPUTS the toolkit maintains
+guidance:        { rules: <path>, guidelines: <path>, clarifications: <path> }  # OUTPUTS the toolkit maintains
 sources:         { sad: [..], adrs: [..], specs: [..], diagrams: [..] }            # INPUTS (read-only)
 code:            { representative: [..], known_legacy: [..], known_target: [..] }
 solution_notes:  [..]
@@ -56,7 +56,7 @@ areas:           { <name>: [paths] }                                            
   `{ name, type, path, authority }`, `type` being one of sad | adr | spec | diagram, ordered high→low
   authority, followed by **code** entries (always lowest authority; evidence that proposes, never
   ratifies).
-- **guidance** — paths to an existing AI Architecture Context, AI Coding Guidelines, and any Brownfield
+- **guidance** — paths to an existing AI Architecture Rules, AI Coding Guidelines, and any Brownfield
   Guardrails; absent if the repo has none. Presence means a caller is re-baselining, not starting fresh.
 - **ledger** — path to the clarifications ledger; the conventional path if it doesn't exist yet.
 - **memory** — solution notes and prior reports; empty if none. **Supporting memory only: never

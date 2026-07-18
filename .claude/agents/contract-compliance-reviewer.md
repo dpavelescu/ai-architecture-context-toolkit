@@ -42,7 +42,7 @@ ask the single blocking question.
 7. **Privacy:** PII handling, data minimization, consent, retention, cross-border transfer.
 8. **Audit:** required audit events emitted via the approved mechanism (not written ad hoc).
 9. **Compliance:** applicable regulatory rules per the specs.
-10. **Map outcomes to the Output enums.** Translate steps 1–9 into one Decision (`aligned` when nothing changes shape/behavior and no finding; `aligned with risks` for non-blocking risks; `needs changes` for a fixable finding with a source; `governance approval required` for any change lacking an approved source; `not applicable` when no contract and no sensitive data are touched; `unclear` for a missing spec or ambiguous source you cannot resolve) and the matching Recommendation.
+10. **Map outcomes to the Output enums.** Translate the findings into one Decision (`aligned` when nothing changes shape/behavior and no finding; `aligned with risks` for non-blocking risks; `needs changes` for a fixable finding with a source; `governance approval required` for any change lacking an approved source; `not applicable` when no contract and no sensitive data are touched; `unclear` for a missing spec or ambiguous source you cannot resolve) and the matching Recommendation.
 
 ## Output format
 

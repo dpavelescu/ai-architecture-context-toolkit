@@ -40,7 +40,7 @@ description: >-
 4. **Emit the count line** in the shape the Output gives. `open:` is the number of `## Open` entries
    after the write; counters that don't apply to this run's `operation` emit `0`.
 
-A candidate never travels into the Context or Guidelines, and nothing decided stays in `## Open` —
+A candidate never travels into the Architecture Rules or Guidelines, and nothing decided stays in `## Open` —
 the ledger trends to empty.
 
 ## Output

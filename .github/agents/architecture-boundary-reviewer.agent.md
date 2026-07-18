@@ -17,7 +17,7 @@ contract/coupling impact gets a one-line "aligned." **Read-only — inspect only
 
 ## Inputs
 
-**Passed by `ai-context-check`; assume no access to its history:** the reviewed work + changed files/diff, scope, and the relevant Context / Guardrails / SAD / ADRs / specs.
+**Passed by `ai-context-check`; assume no access to its history:** the reviewed work + changed files/diff, scope, and the relevant Architecture Rules / Guardrails / SAD / ADRs / specs.
 
 ## Process
 1. Identify what already exists (the approved pattern/module/contract) and the minimum change to it; flag an invented parallel structure when reuse was available.
@@ -26,7 +26,7 @@ contract/coupling impact gets a one-line "aligned." **Read-only — inspect only
 4. Respects data ownership? Respects API/event ownership? Applies any existing Guardrail?
 5. If the pattern's current-vs-target status is unclear → **flag for `brownfield-governance-reviewer`** (don't classify it here).
 6. Should the solution ask Architecture before proceeding?
-7. **Map outcomes to the Output enums.** Translate steps 1–6 into one Decision (`aligned` when the boundary, ownership, data, and contract checks pass; `aligned with risks` for non-blocking risks; `conflict` for a cited violation of an approved boundary or ownership rule; `unclear` when the inputs are too thin to judge; `architecture decision required` when no approved source settles the boundary), the matching Coupling impact from step 3's answer, and the matching Recommendation. Give-up path: inputs you cannot resolve → Decision `unclear` with a single **Blocking question**, rather than guessing.
+7. **Map outcomes to the Output enums.** Translate the findings into one Decision (`aligned` when the boundary, ownership, data, and contract checks pass; `aligned with risks` for non-blocking risks; `conflict` for a cited violation of an approved boundary or ownership rule; `unclear` when the inputs are too thin to judge; `architecture decision required` when no approved source settles the boundary), the matching Coupling impact from the coupling finding, and the matching Recommendation. Give-up path: inputs you cannot resolve → Decision `unclear` with a single **Blocking question**, rather than guessing.
 
 ## Output format
 
@@ -59,5 +59,5 @@ Ask exactly one question only if required, or write: None.
 
 ## Recommendation
 Choose one: proceed | proceed with noted risk | update plan | ask Architecture |
-run brownfield-governance-reviewer | raise ADR | update AI Architecture Context
+run brownfield-governance-reviewer | raise ADR | update AI Architecture Rules
 ```

@@ -1,15 +1,16 @@
 ---
 name: write-guidance-file
 description: >-
-  Writes or refreshes the two thin AI-facing files — the AI Architecture Context and the AI Coding
+  Writes or refreshes the two thin AI-facing files — the AI Architecture Rules and the AI Coding
   Guidelines — from the final rules an assessment settled: provenance header, one-line rule shape,
   visible weighting, and the ordered section lists. Merges into an existing file rather than
   regenerating it. Never writes an open decision or an undecided proposal; those live in the
   clarifications ledger.
 ---
 
-Write the **target-file** — the AI Architecture Context (`ai-context.md`) or the AI Coding Guidelines
-(`ai-coding-guidelines.md`) — for AI consumption and easy review: conventional, stable headings (don't
+Write the **target-file** — the AI Architecture Rules (`docs/architecture/ai-architecture-rules.md`) or the AI
+Coding Guidelines (`docs/engineering/ai-coding-guidelines.md`), or the path discovery resolved on a
+refresh — for AI consumption and easy review: conventional, stable headings (don't
 reinvent the structure); short declarative bullets, not prose; links to sources instead of copies.
 Keep it **clean and final** — only the decided rules **coverage-decisions** carries, ready for
 downstream use. Open decisions and proposals live in the clarifications ledger, never in these files.
@@ -29,8 +30,8 @@ don't restate.
 **Weight** — make it visible: non-negotiables as **Never/Always**, preferences as **Prefer**.
 
 **Provenance header** — open each file with one line:
-- Context: *generated & maintained by the toolkit; mirrors (never overrides) the approved sources it links; evolve via `ai-guidance-update`.*
-- Guidelines: *generated & maintained by the toolkit; applies the Architecture Context in code (doesn't redefine it); evolve via `ai-guidance-update`.*
+- Architecture Rules: *generated & maintained by the toolkit; mirrors (never overrides) the approved sources it links; evolve via `ai-guidance-update`.*
+- Guidelines: *generated & maintained by the toolkit; applies the Architecture Rules in code (doesn't redefine it); evolve via `ai-guidance-update`.*
 
 With no **coverage-decisions** and no `baseline`, that header is the whole file — report it back as
 header-only so the caller can say so; never pad it with generic advice or undecided proposals. With a
@@ -43,7 +44,7 @@ Keep the listed sections in their given relative order; append any added section
 ones (or in the nearest topical position), never reordering the listed set. Cover every relevant
 concern, but shrink to a pointer where an artifact already covers one well.
 
-**ai-context.md:**
+**ai-architecture-rules.md:**
 - Purpose & scope — covered areas
 - Read order & authority order
 - Must-read sources — a pointer to the source map when the repo has one; otherwise the approved sources themselves, linked (never a prose source list)
@@ -59,7 +60,7 @@ concern, but shrink to a pointer where an artifact already covers one well.
 - Current-vs-target & Brownfield Guardrails
 - Prohibited shortcuts & ask-first triggers
 
-**ai-coding-guidelines.md** (don't redefine architecture — link to the Context):
+**ai-coding-guidelines.md** (don't redefine architecture — link to the Architecture Rules):
 - Scope control — minimal change; reuse before adding
 - Technology & libraries — approved stack; how to add a dependency
 - Repository structure & placement
