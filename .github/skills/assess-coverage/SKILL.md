@@ -11,7 +11,7 @@ description: >-
 
 ## Inputs
 
-- **sources** — the resolved source list (from `read-source-map`) in authority order: SAD, ADRs, specs, diagrams; plus code evidence (lowest authority). This is a repo-level candidate pool; a source bears on the output only where a kept concern is settled by it — entries no kept concern touches are ignored.
+- **sources** — the sources `read-source-map` already selected as relevant to these concerns, in authority order: SAD, ADRs, specs, diagrams; plus code evidence (lowest authority). Discovery dropped what carries no relevant claim; here, per concern, decide whether a source settles it (→ final rule) or leaves it open (→ candidate).
 - **baseline** — the existing approved rules, when guidance already exists. Absent on a first pass.
 
 ## Procedure

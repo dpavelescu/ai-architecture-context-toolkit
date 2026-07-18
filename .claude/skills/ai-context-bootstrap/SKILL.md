@@ -74,11 +74,10 @@ system-level Architecture Rules and have each repo link up to it rather than dup
 
 ## Process
 
-1. **Discover** — load the repo's AI-context inputs with the **read-source-map** skill, bounded by
-   `scope`: the approved architecture sources, formal specs, and representative code, plus any existing
-   `guidance` and the `ledger`. These are what the later steps draw on; **Assess** decides which of them
-   bear on each concern. If it resolved no `sources` — neither approved sources nor code — write
-   nothing and stop; report what's missing.
+1. **Discover** — with the **read-source-map** skill, bounded by `scope`, load the sources relevant to
+   the guidance's concerns (architecture sources, specs, code), plus any existing `guidance` and the
+   `ledger`. These are what the later steps draw on. If it resolved no `sources` — neither approved
+   sources nor code — write nothing and stop; report what's missing.
    - **If guidance already exists (refresh).** When it resolves existing `guidance` (Architecture Rules,
      Guidelines, or approved Guardrails) or a `ledger`, this run is a refresh: that guidance is the
      approved `baseline`. Per-learning evolution stays with `ai-guidance-update`.
@@ -104,11 +103,10 @@ system-level Architecture Rules and have each repo link up to it rather than dup
    **write-brownfield-guardrail** skill. Then, for each file `produce` selects — the Architecture Rules, the
    Guidelines, or both — write it from the **final rules** with the **write-guidance-file** skill,
    merging into the existing file on a refresh.
-6. **Report** — if the repo's agent instruction file (conventionally `CLAUDE.md` or `AGENTS.md`) is
-   missing, or exists but doesn't already send the agent to the source map, Architecture Rules, Coding
-   Guidelines, and clarifications ledger — in that order — before it analyses, plans, codes, or reviews,
-   draft that read order and carry it into the Result's Proposals section as a proposal for a human.
-   Emit the Result in the **Output format**.
+6. **Report** — propose the read order for the repo's agent instruction file (conventionally `CLAUDE.md`
+   or `AGENTS.md`): read the source map, Architecture Rules, Coding Guidelines, and clarifications ledger
+   — in that order — before analysing, planning, coding, or reviewing. Carry it into the Result's
+   Proposals section as a recommendation for a human. Emit the Result in the **Output format**.
 
 ## Output format
 
@@ -136,8 +134,8 @@ Recommended next step instead of a Result.)
 | Topic | Status | Reason |
 |---|---|---|
 
-## Proposals — pending approval, not written
-- <the drafted root instruction file, or omit the section>
+## Proposals — recommendations for a human, nothing written
+- <the recommended agent-instruction read order (source map → Architecture Rules → Coding Guidelines → ledger)>
 
 ## Refresh summary (refresh runs only)
 - Kept / Added / Drift→ledger / Stale / Settled preserved

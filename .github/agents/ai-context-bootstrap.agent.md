@@ -21,7 +21,7 @@ tools: ["read", "search", "edit"]
 - `produce=<context|guidelines|both>` — which file(s) to write (default `both`); discovery, assessment, and the critical questions run either way.
 
 ## Process
-1. **Discover** — load the repo's AI-context inputs with the **read-source-map** skill, bounded by `scope`: the approved architecture sources, formal specs, and representative code, plus any existing `guidance` and the `ledger`. These are what the later steps draw on; **Assess** decides which of them bear on each concern.
+1. **Discover** — with the **read-source-map** skill, bounded by `scope`, load the sources relevant to the guidance's concerns (architecture sources, specs, code), plus any existing `guidance` and the `ledger`. These are what the later steps draw on.
    - It resolved no `sources` — neither approved sources nor code — write nothing and stop; report what's missing.
    - It resolved existing `guidance` or a `ledger` → this run is a **refresh**: that guidance is the approved `baseline`.
 2. **Assess** — split every concern that matters into what the approved sources already settle and what still needs a human; the split decides what the clean files may say and what they must stay silent on. Apply the **assess-coverage** skill; on a refresh it also assesses the existing `baseline`. It returns **final rules** and **ledger candidates**, each candidate marked `raise: live` or `raise: ledger`.
@@ -33,7 +33,7 @@ tools: ["read", "search", "edit"]
    Never guess a critical item, never silently defer one, and never start writing while a live question is outstanding.
 4. **Record the open decisions** — record the still-undecided candidates in the ledger with the **update-clarifications-ledger** skill; take its count line for the report.
 5. **Write the selected guidance** — for each current-vs-target divergence that would mislead the AI, produce a Brownfield Guardrail with the **write-brownfield-guardrail** skill. Then, for each file `produce` selects — the Architecture Rules, the Guidelines, or both — write it from the **final rules** with the **write-guidance-file** skill, merging into the existing file on a refresh.
-6. **Report** — if the repo's agent instruction file (conventionally `.github/copilot-instructions.md`) is missing, or exists but doesn't already send the agent to the source map, Architecture Rules, Coding Guidelines, and clarifications ledger — in that order — before it analyses, plans, codes, or reviews, draft that read order and carry it into the Result's Proposals section as a proposal for a human. Emit the Result in the **Output format**.
+6. **Report** — propose the read order for the repo's agent instruction file (conventionally `.github/copilot-instructions.md`): read the source map, Architecture Rules, Coding Guidelines, and clarifications ledger — in that order — before analysing, planning, coding, or reviewing. Carry it into the Result's Proposals section as a recommendation for a human. Emit the Result in the **Output format**.
 
 ## Output format
 One Result — the file(s) `produce` selected and the ledger are always written together. (If discovery found neither sources nor code, nothing is written: report where you looked, what's missing, and the Recommended next step instead of a Result.)
@@ -57,8 +57,8 @@ One Result — the file(s) `produce` selected and the ledger are always written 
 | Topic | Status | Reason |
 |---|---|---|
 
-## Proposals — pending approval, not written
-- <the drafted root instruction file, or omit the section>
+## Proposals — recommendations for a human, nothing written
+- <the recommended agent-instruction read order (source map → Architecture Rules → Coding Guidelines → ledger)>
 
 ## Refresh summary (refresh runs only)
 - Kept / Added / Drift→ledger / Stale / Settled preserved
