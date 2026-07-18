@@ -38,6 +38,12 @@ same `scope` rule:
 Search for each name; a source kept outside its conventional location still resolves. Without a map,
 authority follows the default order: sad → adrs → specs → diagrams → code (code lowest).
 
+**Classify by type, not by folder.** A candidate enters `sources` only if it classifies as one of
+`sad | adr | spec | diagram | code` by its name, role, and format. An artifact that fits none — a test
+plan, runbook, onboarding guide — is not a source: drop it, or keep it as non-authoritative `memory` if
+it's supporting material. The source map makes this exact (the human lists what counts); convention is
+best-effort, so a mis-classified doc still carries no settling authority.
+
 **Shape** — when a repo does have a map, read it tolerantly: use whatever keys exist, ignore the rest,
 resolve each entry path-else-search.
 
