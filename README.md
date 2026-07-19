@@ -81,7 +81,7 @@ Two idiomatic builds — same behavior, packaged for each tool. Use the one for 
 
 ```
 README.md                                  ← you are here (the why + onboarding)
-AI-Architecture-Context-and-               ← the full playbook (all the detail)
+AI-Architecture-Rules-and-                 ← the full playbook (all the detail)
   Coding-Guidelines-Playbook.md
 
 .claude/                                   ← Claude Code build
@@ -148,7 +148,7 @@ Check that the few things that matter came through correctly — *"new cross-ser
 
 ### Step 4 — Add a root instruction file
 
-Add `AGENTS.md` (or `CLAUDE.md`, or `.github/copilot-instructions.md`) that tells the agent to read the context files first. A template is in the [full playbook](AI-Architecture-Context-and-Coding-Guidelines-Playbook.md#5-the-minimum-set).
+Add `AGENTS.md` (or `CLAUDE.md`, or `.github/copilot-instructions.md`) that tells the agent to read the context files first. A template is in the [full playbook](AI-Architecture-Rules-and-Coding-Guidelines-Playbook.md#5-the-minimum-set).
 
 ### Step 5 — Use it on real work
 
@@ -184,6 +184,6 @@ This earns its keep when an AI must apply **approved architecture and decisions 
 
 ## Learn more
 
-The full reference — principles, authority order, "what goes where," Brownfield Guardrails, and the complete skill/agent specs — is in **[the playbook](AI-Architecture-Context-and-Coding-Guidelines-Playbook.md)**.
+The full reference — principles, authority order, "what goes where," Brownfield Guardrails, and the complete skill/agent specs — is in **[the playbook](AI-Architecture-Rules-and-Coding-Guidelines-Playbook.md)**.
 
 > **In one line:** your SAD and ADRs stay the source of truth; these thin files make that truth *usable by AI* — so the agent applies your architecture instead of copying whatever it finds.

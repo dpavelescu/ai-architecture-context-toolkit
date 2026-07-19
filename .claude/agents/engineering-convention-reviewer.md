@@ -6,7 +6,7 @@ description: >-
   logging/observability, scope control. Delegated by ai-context-check; not for
   architecture/ownership/security/contract decisions.
 model: inherit
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob
 ---
 
 ## Constraints

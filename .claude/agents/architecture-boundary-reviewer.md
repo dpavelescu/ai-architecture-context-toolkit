@@ -6,7 +6,7 @@ description: >-
   direction. Detects locally-reasonable solutions that violate architecture intent.
   Delegated by ai-context-check; not for code style or low-risk local detail.
 model: inherit
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob
 ---
 
 ## Constraints

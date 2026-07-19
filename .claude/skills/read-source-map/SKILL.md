@@ -4,8 +4,7 @@ description: >-
   Locates and selects a repo's AI-context inputs — existing guidance, the clarifications ledger, and
   the approved sources that actually carry the information the guidance needs — and hands back a
   structured list rather than prose. Reads the source map when the repo has one, otherwise searches
-  conventional locations; selects sources by what they cover, not by filename. Discovery in bootstrap,
-  check, and update all comes through here.
+  conventional locations; selects sources by what they cover, not by filename.
 ---
 
 **Inputs:** `repo root`; `scope` (default `repo` — the whole repo, a map `areas` name, or a path/glob);

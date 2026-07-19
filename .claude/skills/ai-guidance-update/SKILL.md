@@ -43,7 +43,7 @@ If no mode is given, use `analyze-only`.
 
 ## Process
 
-### Phase 1 — Discover current guidance
+### Phase 1 — Discover
 
 **Goal** — The run knows whether a baseline exists to update at all, and what it says today.
 
@@ -69,23 +69,17 @@ If no AI Architecture Rules or Coding Guidelines are found:
 **Complete when** current `guidance`, the `ledger`, and the `sources` the conflict check will need
 are each resolved or confirmed absent.
 
-### Phase 2 — Classify the learning
+### Phase 2 — Classify and route
 
-**Goal** — The learning sits at the right altitude.
+**Goal** — The learning sits at the right altitude and points at the one artifact that should carry
+it.
 
-**Procedure** — One of: story-specific decision / implementation detail / reusable coding
-convention / architecture rule / brownfield ambiguity / contract change / security rule / privacy
-rule / audit rule / compliance rule / reference implementation / candidate memory /
-suspected drift / conflict between sources.
-
-**Complete when** the learning carries exactly one classification from that list — not two
-candidates, not a hedge.
-
-### Phase 3 — Decide the target artifact
-
-**Goal** — The learning points at the one artifact that should carry it.
-
-**Procedure** — Recommend one target and follow these routing rules:
+**Procedure**
+- Classify it as one of: story-specific decision / implementation detail / reusable coding
+  convention / architecture rule / brownfield ambiguity / contract change / security rule / privacy
+  rule / audit rule / compliance rule / reference implementation / candidate memory /
+  suspected drift / conflict between sources.
+- Recommend one target and follow these routing rules:
 
 | Learning | Target |
 |---|---|
@@ -107,10 +101,10 @@ When the target is a Brownfield Guardrail, pass the divergence to the **write-br
 skill and route what it returns into the `Suggested minimal update` output; when it's the Architecture Rules or
 Guidelines, follow the **write-guidance-file** skill.
 
-**Complete when** exactly one recommended target follows from the classification — not two
-candidates, not a hedge.
+**Complete when** the learning carries exactly one classification and exactly one recommended target
+— not two candidates, not a hedge.
 
-### Phase 4 — Conflict check
+### Phase 3 — Conflict check
 
 **Goal** — Whether the proposed update can coexist with what is already approved is known before
 anything is written.
@@ -124,7 +118,7 @@ anything is written.
 **Complete when** the proposed update has been checked against every source in that list, with any
 conflict recorded as a finding rather than applied.
 
-### Phase 5 — Analyze-only output
+### Phase 4 — Analyze
 
 **Goal** — The recommendation stands as a proposal a human can approve or refuse.
 
@@ -175,7 +169,7 @@ create ADR | update SAD | update formal spec | apply approved update |
 create or update Brownfield Guardrail
 ```
 
-### Phase 6 — Apply-approved-update behavior
+### Phase 5 — Apply
 
 **Goal** — The approved change lands in the guidance, and nothing beyond it does.
 

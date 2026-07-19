@@ -41,7 +41,7 @@ repo.
 
 ## Process
 
-### Phase 1 — Discover context
+### Phase 1 — Discover
 
 **Goal** — This review holds the guidance it judges against, with what is binding separated from what
 is still open.
@@ -54,7 +54,7 @@ is still open.
 
 **Complete when** each category — `guidance`, `ledger`, `sources` — is resolved or confirmed absent.
 
-### Phase 2 — Understand the reviewed work
+### Phase 2 — Understand the work
 
 **Goal** — What the work is trying to do, and what it puts at risk, is understood.
 
@@ -98,7 +98,7 @@ If you're not running sub-agents, apply that reviewer file's criteria inline.
 **Complete when** every dimension the work touches has either returned findings or been recorded
 `unclear` — none left pending or dropped.
 
-### Phase 4 — Coverage gap check
+### Phase 4 — Coverage-gap check
 
 **Goal** — Concerns this work depends on that no approved source settles are surfaced rather than
 answered here.
@@ -116,7 +116,7 @@ answered here.
 **Complete when** every concern the work depends on is either covered by approved guidance or
 recorded as a gap with where it belongs — none silently filled.
 
-### Phase 5 — Produce output
+### Phase 5 — Synthesize
 
 **Goal** — The reader gets one verdict on the work, backed by the reviewers' cited findings.
 

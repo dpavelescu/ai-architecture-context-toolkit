@@ -6,7 +6,7 @@ description: >-
   needed. Owns the Brownfield Guardrail call. Delegated by ai-context-check; not for normal
   aligned work or simple style.
 model: inherit
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob
 ---
 
 ## Constraints

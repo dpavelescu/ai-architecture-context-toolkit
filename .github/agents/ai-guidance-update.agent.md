@@ -34,7 +34,7 @@ model: inherit
 
 **Complete when** current `guidance`, the `ledger`, and the `sources` the conflict check will need are each resolved or confirmed absent.
 
-### Phase 2 — Classify by altitude + conflict/drift
+### Phase 2 — Classify and route
 
 **Goal** — The learning sits at the right altitude and points at the one artifact that should carry it.
 
@@ -47,7 +47,7 @@ model: inherit
 
 **Complete when** the learning carries exactly one classification and exactly one recommended target — not two candidates, not a hedge.
 
-### Phase 3 — Conflict-check
+### Phase 3 — Conflict check
 
 **Goal** — Whether the proposed update can coexist with what is already approved is known before anything is written.
 
@@ -57,7 +57,7 @@ model: inherit
 
 **Complete when** the proposed update has been checked against every source in that list, with any conflict recorded as a finding rather than applied.
 
-### Phase 4 — Analyze (default)
+### Phase 4 — Analyze
 
 **Goal** — The recommendation stands as a proposal a human can approve or refuse.
 
@@ -65,7 +65,7 @@ model: inherit
 
 **Complete when** the Guidance Update Analysis is emitted with a Decision from the analyze-only enum and no file has been modified.
 
-### Phase 5 — Apply (approval-gated)
+### Phase 5 — Apply
 
 **Goal** — The approved change lands in the guidance, and nothing beyond it does.
 

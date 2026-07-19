@@ -3,8 +3,7 @@ name: update-clarifications-ledger
 description: >-
   Owns the clarifications ledger, the one file open decisions live in. Records new candidates
   without re-proposing anything already settled, retires decided ones (accepted out of Open,
-  rejected to Settled), and preserves human edits. Every read and write of the ledger goes through
-  here — bootstrap records into it, ai-guidance-update retires from it.
+  rejected to Settled), and preserves human edits. Every read and write of the ledger goes through here.
 ---
 
 ## Inputs

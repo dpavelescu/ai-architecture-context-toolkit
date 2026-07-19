@@ -6,7 +6,7 @@ description: >-
   changes made without an approved source. Delegated by ai-context-check for
   regulated/contract-heavy work; not for architecture decisions or pure code style.
 model: inherit
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob
 ---
 
 ## Constraints
