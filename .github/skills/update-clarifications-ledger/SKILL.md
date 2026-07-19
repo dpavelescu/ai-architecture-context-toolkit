@@ -40,8 +40,7 @@ description: >-
 4. **Emit the count line** in the shape the Output gives. `open:` is the number of `## Open` entries
    after the write; counters that don't apply to this run's `operation` emit `0`.
 
-A candidate never travels into the Architecture Rules or Guidelines, and nothing decided stays in `## Open` —
-the ledger trends to empty.
+A candidate never travels into the Architecture Rules or Guidelines, and nothing decided stays in `## Open`.
 
 ## Output
 
@@ -65,7 +64,7 @@ decision:
 - [<concern>] <rejected proposal> — rejected: <reason, if given>
 ```
 
-Plus one count line for the calling agent's report:
+Plus one count line:
 
 ```
 open: <N> · added: <N> · dropped-as-settled: <N> · accepted-out: <N> · rejected-to-settled: <N>

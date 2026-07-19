@@ -18,12 +18,9 @@ or run mutating commands.**
 
 ## Inputs
 
-The orchestrating skill should provide: reviewed work reference; scope; relevant AI
-Architecture Rules; relevant Brownfield Guardrails; relevant SAD sections; relevant
-ADRs; relevant formal specs; relevant code evidence; known legacy or target examples.
-
-If inputs are incomplete, identify the missing context. Do not ask multiple questions —
-return at most one blocking question, only if required.
+**Passed by `ai-context-check`; assume no access to its history:** the reviewed work and
+changed files/diff, scope, and the relevant AI Architecture Rules, Brownfield Guardrails,
+SAD sections, ADRs, formal specs, and code evidence.
 
 ## Review process
 

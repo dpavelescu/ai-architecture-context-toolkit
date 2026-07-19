@@ -18,12 +18,12 @@ if it clears at least one test:
 Drop any concern that is uniform AND low-impact AND local. Add repo/domain-specific concerns that clear
 the gate even if unlisted (multi-tenancy & data isolation, performance/latency SLAs, i18n).
 
-For each kept concern, check coverage against the sources in **authority order** (SAD, ADRs, specs,
-diagrams; code lowest), and route it to exactly one outcome. The sources are the ones `read-source-map`
-already selected as relevant to these concerns; here, per concern, decide whether one settles it.
+For each kept concern, check coverage against the **sources** — the ones `read-source-map` selected as
+relevant to these concerns — in **authority order** (SAD, ADRs, specs, diagrams; code lowest), and
+route it to exactly one outcome.
 
 - **Settled by an approved source** — covered at an actionable level → emit a **final rule** for the clean context: a one-line imperative rule + a link to the owning source (if abstract or buried, restate it as a one-line rule and link back). No decision needed.
-- **Needs a decision** — no approved source covers it, the source is ambiguous, sources conflict, or it is only code-evidenced → emit a **ledger candidate** in the shape the Output gives (proposal + rationale). A code-derived proposal is lowest authority and never self-ratifies; nothing here enters the context until decided.
+- **Needs a decision** — no approved source covers it, the source is ambiguous, sources conflict, or it is only code-evidenced → emit a **ledger candidate** in the ledger-candidate shape given (proposal + rationale). A code-derived proposal is lowest authority and never self-ratifies; nothing here enters the context until decided.
 
 **With a `baseline`** — the existing approved rules, when guidance already exists — assess it too. An
 existing rule is a concern in its own right where a source now contradicts it, no source supports it any

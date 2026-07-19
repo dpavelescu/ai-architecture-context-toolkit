@@ -11,7 +11,7 @@ tools: ["read", "search"]
 
 ## Constraints
 
-**Cite** each finding's rule/source + location. **Right-size:**
+**Cite** each finding's rule/source + location; if you can't cite it, don't raise it. **Right-size:**
 a trivial, in-convention change gets a one-line "aligned." **Read-only — inspect only; never edit, create, or run anything.**
 
 ## Inputs
@@ -23,8 +23,8 @@ a trivial, in-convention change gets a one-line "aligned." **Read-only — inspe
 2. Touched layers/modules; correct location; naming.
 3. DTO/mapping/validation/error-handling rules; tests match the expected level; logging/observability.
 4. Implementation scope is controlled.
-5. If the change crosses an architecture boundary → **flag for `architecture-boundary-reviewer`** (don't assess boundaries here). If it copies a current-but-not-target pattern → **flag for `brownfield-governance-reviewer`**.
-6. If the inputs are self-contradictory or too thin to judge against, emit Decision `unclear`; if the governing convention is missing or undefined, emit Decision `blocked by missing guidance` with Recommendation `clarify missing convention`, and ask the single Blocking question. Otherwise classify findings and emit the matching Decision and Recommendation.
+5. If the change crosses an architecture boundary → **flag for `architecture-boundary-reviewer`** (don't assess boundaries here). If it copies a current-but-not-target pattern → **flag for `brownfield-governance-reviewer`** (don't classify legacy-vs-target here).
+6. **Map outcomes to the Output enums.** If the inputs are self-contradictory or too thin to judge against, emit Decision `unclear`; if the governing convention is missing or undefined, emit Decision `blocked by missing guidance` with Recommendation `clarify missing convention`, and ask the single Blocking question. Otherwise classify findings and emit the matching Decision and Recommendation.
 
 ## Output format
 

@@ -43,11 +43,11 @@ default order: sad → adrs → specs → diagrams → code (code lowest).
 **Select the relevant subset — the sources that carry information the Architecture Rules and Coding
 Guidelines need.** Look only for information about the captured concerns; a source carrying none is not
 relevant. Take the type structure as given — a map's keys (`sad`/`adrs`/`specs`/`diagrams`/`code`, with
-supporting `solution_notes` kept separate), or the convention categories above when there's no map;
+supporting `solution_notes` kept separate), or the convention categories when there's no map;
 don't re-type or invent a structure. Keep the entries that speak to a concern — judged by each entry's
 `covers`/`description`, the doc's stated purpose, or (no map) its content; name and location are weak
 hints only — and drop those that speak to none (a test plan, runbook, onboarding guide). **When
-genuinely unsure, keep it** — `assess-coverage` still decides whether it settles anything.
+genuinely unsure, keep it.**
 
 **Sample code evidence; never read whole trees.** Code resolves as *representative* evidence: entry
 points and public APIs, the in-scope modules/services, the largest or most-recently-changed areas, and
@@ -71,18 +71,17 @@ areas:     { <name>: [paths] }                                             # opt
 
 `covers`/`description` are optional per entry; absent, relevance is judged from the doc itself.
 
-**Returns named buckets**, not prose. Return every bucket; a caller takes only the ones it needs:
+**Returns named buckets**, not prose. Return every bucket:
 
 - **sources** — the sources selected as relevant to the guidance's concerns (by what they cover, not by
   name): one entry per source as `{ name, type, path, authority, covers }`, `type` being one of
   sad | adr | spec | diagram, ordered high→low authority, followed by **code** entries (always lowest
   authority; evidence that proposes, never ratifies). `covers` names the concerns the source speaks to.
 - **guidance** — paths to an existing AI Architecture Rules, AI Coding Guidelines, and any Brownfield
-  Guardrails; absent if the repo has none. Presence means a caller is re-baselining, not starting fresh.
+  Guardrails; absent if the repo has none.
 - **ledger** — path to the clarifications ledger; the conventional path if it doesn't exist yet.
 - **memory** — solution notes and prior reports; empty if none. **Supporting memory only: never
   authoritative, never a settling source.** It is not part of `sources`.
 - **root-instruction-file** — its path, or absent.
 
-When nothing relevant resolves, return empty `sources` and no `guidance`, naming where you looked; the
-caller decides what to do.
+When nothing relevant resolves, return empty `sources` and no `guidance`, naming where you looked.

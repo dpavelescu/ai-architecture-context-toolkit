@@ -10,8 +10,8 @@ description: >-
 
 Write the **target-file** — the AI Architecture Rules (`docs/architecture/ai-architecture-rules.md`) or the AI
 Coding Guidelines (`docs/engineering/ai-coding-guidelines.md`), or the path discovery resolved on a
-refresh — for AI consumption and easy review: conventional, stable headings (don't
-reinvent the structure); short declarative bullets, not prose; links to sources instead of copies.
+refresh — with conventional, stable headings (don't reinvent the structure); short
+declarative bullets, not prose; links to sources instead of copies.
 Keep it **clean and final** — only the decided rules **coverage-decisions** carries, ready for
 downstream use. Open decisions and proposals live in the clarifications ledger, never in these files.
 
@@ -31,7 +31,7 @@ don't restate.
 
 **Provenance header** — open each file with one line:
 - Architecture Rules: *generated & maintained by the toolkit; mirrors (never overrides) the approved sources it links; evolve via `ai-guidance-update`.*
-- Guidelines: *generated & maintained by the toolkit; applies the Architecture Rules in code (doesn't redefine it); evolve via `ai-guidance-update`.*
+- Guidelines: *generated & maintained by the toolkit; applies the Architecture Rules in code (doesn't redefine them); evolve via `ai-guidance-update`.*
 
 With no **coverage-decisions** and no `baseline`, that header is the whole file — report it back as
 header-only so the caller can say so; never pad it with generic advice or undecided proposals. With a

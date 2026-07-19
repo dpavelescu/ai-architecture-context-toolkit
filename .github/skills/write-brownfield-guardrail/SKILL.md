@@ -16,7 +16,7 @@ description: >-
 
 1. **Gate.** If current code and target direction are aligned, stop and emit nothing.
    Otherwise continue.
-2. **Select exactly one Status** from the four reachable options:
+2. **Select exactly one Status:**
    - current is approved → `Use current`
    - target is adopted (new work follows it even if code differs) → `Use target`
    - target exists but is out of scope (don't move there unless scoped) → `Target not ready`
@@ -27,7 +27,7 @@ description: >-
 
 ## Output
 
-Return the filled Guardrail template — the single artifact this skill produces:
+Return the filled Guardrail template:
 
 ```markdown
 ## Brownfield Guardrail: <Topic>

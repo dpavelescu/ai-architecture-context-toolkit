@@ -17,25 +17,71 @@ tools: ["read", "search", "edit"]
 
 ## Inputs
 - `scope=<area>` — which part of the repo to bootstrap: a path (`services/orders`), a glob (`apps/*`), several paths, or a name from the source map's `areas:`. Omit for the whole repo. Output always goes to the same repo-level pair, whatever the scope.
-- `produce=<context|guidelines|both>` — which file(s) to write (default `both`); discovery, assessment, and the critical questions run either way.
+- `produce=<context|guidelines|both>` — which file(s) to write (default `both`); discovery, assessment, the critical questions, and the ledger run either way.
 
 ## Process
-1. **Discover** — with the **read-source-map** skill, bounded by `scope`, load the sources relevant to the guidance's concerns (architecture sources, specs, code), plus any existing `guidance` and the `ledger`. These are what the later steps draw on.
-   - It resolved no `sources` — neither approved sources nor code — write nothing and stop; report what's missing.
-   - It resolved existing `guidance` or a `ledger` → this run is a **refresh**: that guidance is the approved `baseline`.
-2. **Assess** — split every concern that matters into what the approved sources already settle and what still needs a human; the split decides what the clean files may say and what they must stay silent on. Apply the **assess-coverage** skill; on a refresh it also assesses the existing `baseline`. It returns **final rules** and **ledger candidates**, each candidate marked `raise: live` or `raise: ledger`.
-3. **Ask the critical few** — **you** ask, in this conversation, and **before any file is written**. Put each `raise: live` candidate one at a time, most critical first, each offering *decide now or defer to the ledger*:
-   - **Answered** → that answer is the decision: it becomes a final rule.
-   - **Deferred** → it stays a candidate, and you don't raise it again this run.
-   - **Nobody is there to answer** (a non-interactive run) → don't block and don't guess: every `raise: live` candidate stays a candidate, and the run continues.
 
-   Never guess a critical item, never silently defer one, and never start writing while a live question is outstanding.
-4. **Record the open decisions** — record the still-undecided candidates in the ledger with the **update-clarifications-ledger** skill; take its count line for the report.
-5. **Write the selected guidance** — for each current-vs-target divergence that would mislead the AI, produce a Brownfield Guardrail with the **write-brownfield-guardrail** skill. Then, for each file `produce` selects — the Architecture Rules, the Guidelines, or both — write it from the **final rules** with the **write-guidance-file** skill, merging into the existing file on a refresh.
-6. **Report** — propose the read order for the repo's agent instruction file (conventionally `.github/copilot-instructions.md`): read the source map, Architecture Rules, Coding Guidelines, and clarifications ledger — in that order — before analysing, planning, coding, or reviewing. Carry it into the Result's Proposals section as a recommendation for a human. Emit the Result in the **Output format**.
+Each phase runs until its **Complete when** holds; don't enter the next phase before it does.
+
+### Phase 1 — Discover
+
+**Goal** — The approved sources, representative code, existing guidance, and ledger relevant to `scope` are resolved.
+
+**Procedure** — With the **read-source-map** skill, bounded by `scope`, load the sources relevant to the guidance's concerns (architecture sources, specs, code), plus any existing `guidance` and the `ledger`. Search and read as often as it takes.
+
+- It resolved no `sources` (neither approved sources nor code) → write nothing and stop; report what's missing.
+- It resolved existing `guidance` or a `ledger` → this run is a **refresh**: that guidance is the approved `baseline`.
+
+**Complete when** each category — approved sources, representative code, existing guidance, ledger — is resolved or confirmed absent.
+
+### Phase 2 — Assess
+
+**Goal** — This run knows which concerns it may state as rules and which it must leave to a human.
+
+**Procedure** — Split every concern that matters into what the approved sources already settle and what still needs a human; the split decides what the clean files may say and what they must stay silent on. Apply the **assess-coverage** skill; on a refresh it also assesses the existing `baseline`.
+
+**Complete when** every concern that cleared the relevance gate is classified — a **final rule**, or a **ledger candidate** marked `raise: live` or `raise: ledger`.
+
+### Phase 3 — Ask the critical few
+
+**Goal** — The decisions too important to defer have been put to a human before anything is written.
+
+**Procedure** — **You** ask, in this conversation, and **before any file is written**. Put each `raise: live` candidate one at a time, most critical first, each offering *decide now or defer to the ledger*:
+
+- **Answered** → that answer is the decision: it becomes a final rule.
+- **Deferred** → it stays a candidate, and you don't raise it again this run.
+- **Nobody is there to answer** (a non-interactive run) → don't block and don't guess: every `raise: live` candidate stays a candidate, and the run continues.
+
+Never guess a critical item, never silently defer one, and never start writing while a live question is outstanding.
+
+**Complete when** every `raise: live` candidate has been answered, deferred, or carried for want of anyone to answer — and no question is outstanding.
+
+### Phase 4 — Record the open decisions
+
+**Goal** — The ledger carries every open decision this run surfaced.
+
+**Procedure** — Record the still-undecided candidates in the ledger with the **update-clarifications-ledger** skill; take its count line for the report.
+
+**Complete when** the ledger holds every still-undecided candidate, with the prior `Settled` list preserved.
+
+### Phase 5 — Write the selected guidance
+
+**Goal** — The repo has AI-facing guidance that states only decided rules, and a Guardrail wherever current code would mislead.
+
+**Procedure** — Validate the final rules against the sampled code, and for each current-vs-target divergence produce a Brownfield Guardrail with the **write-brownfield-guardrail** skill. Then, for each file `produce` selects — the Architecture Rules, the Guidelines, or both — write it from the **final rules** with the **write-guidance-file** skill, merging into the existing file on a refresh.
+
+**Complete when** every file `produce` selects is written, carrying only final rules and merged into its baseline on a refresh.
+
+### Phase 6 — Report
+
+**Goal** — A human is left knowing what this run wrote, what stays open, and in what order an agent should read it.
+
+**Procedure** — Propose the read order for the repo's agent instruction file (conventionally `.github/copilot-instructions.md`): read the source map, Architecture Rules, Coding Guidelines, and clarifications ledger — in that order — before analysing, planning, coding, or reviewing. Carry it into the Result's Proposals section as a recommendation for a human.
+
+**Complete when** the Result is emitted in the **Output format**, accounting for every file written and every open clarification.
 
 ## Output format
-One Result — the file(s) `produce` selected and the ledger are always written together. (If discovery found neither sources nor code, nothing is written: report where you looked, what's missing, and the Recommended next step instead of a Result.)
+One Result. (If discovery found neither sources nor code, nothing is written: report where you looked, what's missing, and the Recommended next step instead of a Result.)
 ```markdown
 # ai-context-bootstrap Result
 

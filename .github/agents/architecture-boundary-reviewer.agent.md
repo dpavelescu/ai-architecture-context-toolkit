@@ -24,7 +24,7 @@ contract/coupling impact gets a one-line "aligned." **Read-only — inspect only
 2. Affected boundary within the given scope; owner of the service/module/context/data.
 3. Coupling: does the work introduce new coupling, expand or preserve existing coupling, reduce it, or leave it untouched? Is current code being used as evidence? Catch specifically — a new synchronous service-to-service call added because similar ones exist; a read of another service's database because legacy does; domain logic duplicated in the frontend; an event contract bypassed.
 4. Respects data ownership? Respects API/event ownership? Applies any existing Guardrail?
-5. If the pattern's current-vs-target status is unclear → **flag for `brownfield-governance-reviewer`** (don't classify it here).
+5. If the pattern's current-vs-target status is unclear → **flag for `brownfield-governance-reviewer`** (don't classify current-vs-target here).
 6. Should the solution ask Architecture before proceeding?
 7. **Map outcomes to the Output enums.** Translate the findings into one Decision (`aligned` when the boundary, ownership, data, and contract checks pass; `aligned with risks` for non-blocking risks; `conflict` for a cited violation of an approved boundary or ownership rule; `unclear` when the inputs are too thin to judge; `architecture decision required` when no approved source settles the boundary), the matching Coupling impact from the coupling finding, and the matching Recommendation. Give-up path: inputs you cannot resolve → Decision `unclear` with a single **Blocking question**, rather than guessing.
 

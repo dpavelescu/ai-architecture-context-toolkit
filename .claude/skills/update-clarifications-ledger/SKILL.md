@@ -7,13 +7,12 @@ description: >-
   here — bootstrap records into it, ai-guidance-update retires from it.
 ---
 
-The clarifications ledger (`ledger-path` — from `read-source-map`, conventionally
-`docs/architecture/ai-clarifications.md`) has one lifecycle: bootstrap records candidates in it, a
-human works it, `ai-guidance-update` folds decided items back out.
+Write the clarifications ledger at `ledger-path` — resolved by `read-source-map`, conventionally
+`docs/architecture/ai-clarifications.md`.
 
 **Read the existing ledger first and treat it as the baseline.** Preserve human edits, entry wording,
 filled `decision:` lines, and the whole `## Settled — won't re-propose` list. Never regenerate it from
-scratch. If it doesn't exist, create it from the shape below and start from an empty baseline.
+scratch. If it doesn't exist, create it from the Shape given and start from an empty baseline.
 
 **Recording candidates** (`operation` = `record-candidates`) — for each candidate from
 `assess-coverage`, already shaped `[<concern>] Proposal / why / raise / decision:`:
@@ -31,8 +30,7 @@ Then order `## Open` most important first (`raise: live` entries above `raise: l
 - **reject** → remove it from `## Open` and add one line to `## Settled — won't re-propose`.
 - **empty `decision:`** → leave it untouched; it is still open.
 
-A candidate never travels into the Architecture Rules or Guidelines, and nothing decided stays in `## Open` — the
-ledger **trends to empty**.
+A candidate never travels into the Architecture Rules or Guidelines, and nothing decided stays in `## Open`.
 
 **Shape:**
 
@@ -54,8 +52,8 @@ decision:
 - [<concern>] <rejected proposal> — rejected: <reason, if given>
 ```
 
-Report one count line back to the calling skill for its Result — `open:` is the number of `## Open`
-entries after the write; counters that don't apply to this run's `operation` emit `0`:
+Report one count line — `open:` is the number of `## Open` entries after the write; counters that
+don't apply to this run's `operation` emit `0`:
 
 ```
 open: <N> · added: <N> · dropped-as-settled: <N> · accepted-out: <N> · rejected-to-settled: <N>

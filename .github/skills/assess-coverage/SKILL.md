@@ -11,12 +11,12 @@ description: >-
 
 ## Inputs
 
-- **sources** — the sources `read-source-map` already selected as relevant to these concerns, in authority order: SAD, ADRs, specs, diagrams; plus code evidence (lowest authority). Discovery dropped what carries no relevant claim; here, per concern, decide whether a source settles it (→ final rule) or leaves it open (→ candidate).
+- **sources** — the sources `read-source-map` already selected as relevant to these concerns, in authority order: SAD, ADRs, specs, diagrams; plus code evidence (lowest authority). Per concern, decide whether a source settles it (→ final rule) or leaves it open (→ candidate).
 - **baseline** — the existing approved rules, when guidance already exists. Absent on a first pass.
 
 ## Procedure
 
-1. **Relevance gate — surface only what matters.** Do not catalog existing patterns. Walk the concern checklist below. Keep a concern only if it clears at least one test:
+1. **Relevance gate — surface only what matters.** Do not catalog existing patterns. Walk the concern checklist. Keep a concern only if it clears at least one test:
    - **Variation already evidenced** — the code is already inconsistent on it.
    - **High impact if it varies** — cross-cutting and costly to get inconsistent (boundaries, contracts, security, data handling, error/result conventions).
    - **General / framework-level standardization** — a cross-cutting concern where the framework choice should be locked in (validation, DI, logging, mapping, HTTP/resilience), even if currently uniform.

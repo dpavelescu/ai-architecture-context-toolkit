@@ -18,13 +18,9 @@ tools: Read, Grep, Glob, Bash
 
 ## Inputs
 
-The orchestrating skill should provide: reviewed work reference; scope; relevant formal
-specs (OpenAPI, AsyncAPI, data, UI, security, privacy, audit, compliance); the
-contract-change workflow; changed or proposed files; consumers of the affected contract;
-known compliance constraints.
-
-If a spec or approval source is unclear, do not invent it — emit Decision `unclear` and
-ask the single blocking question.
+**Passed by `ai-context-check`; assume no access to its history:** the reviewed work and
+changed files/diff, scope, the relevant formal specs (OpenAPI, AsyncAPI, data, UI,
+security, privacy, audit, compliance), and the contract-change workflow.
 
 ## Review process
 
@@ -42,7 +38,7 @@ ask the single blocking question.
 7. **Privacy:** PII handling, data minimization, consent, retention, cross-border transfer.
 8. **Audit:** required audit events emitted via the approved mechanism (not written ad hoc).
 9. **Compliance:** applicable regulatory rules per the specs.
-10. **Map outcomes to the Output enums.** Translate the findings into one Decision (`aligned` when nothing changes shape/behavior and no finding; `aligned with risks` for non-blocking risks; `needs changes` for a fixable finding with a source; `governance approval required` for any change lacking an approved source; `not applicable` when no contract and no sensitive data are touched; `unclear` for a missing spec or ambiguous source you cannot resolve) and the matching Recommendation.
+10. **Map outcomes to the Output enums.** Translate the findings into one Decision (`aligned` when nothing changes shape/behavior and no finding; `aligned with risks` for non-blocking risks; `needs changes` for a fixable finding with a source; `governance approval required` for any change lacking an approved source; `not applicable` when no contract and no sensitive data are touched) and the matching Recommendation. Give-up path: a missing spec or ambiguous source you cannot resolve → Decision `unclear` with a single **Blocking question** (or escalate via the Recommendation), rather than guessing.
 
 ## Output format
 

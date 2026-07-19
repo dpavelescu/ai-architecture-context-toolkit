@@ -41,15 +41,21 @@ If no mode is given, use `analyze-only`.
   Architecture Rules never originate a decision: for a new direction with no approved source, propose ADR-first,
   or a provisional Brownfield Guardrail via **write-brownfield-guardrail**
 
-## Phase 1 — Discover current guidance
+## Process
 
-Load current guidance and the sources the run works from with the **read-source-map** skill, bounded
-by `scope`: the `guidance` (Architecture Rules, Coding Guidelines, Brownfield Guardrails); the `ledger`; the
-relevant `sources` (SAD sections, ADRs, formal specs, code evidence); `memory` (solution notes); and
+Each phase runs until its **Complete when** holds; don't enter the next phase before it does.
+
+### Phase 1 — Discover current guidance
+
+**Goal** — The run knows whether a baseline exists to update at all, and what it says today.
+
+**Procedure** — Load current guidance and the sources the run works from with the
+**read-source-map** skill, bounded by `scope`: the `guidance` (Architecture Rules, Coding
+Guidelines, Brownfield Guardrails); the `ledger`; the relevant `sources` (SAD sections, ADRs, formal specs, code evidence); `memory` (solution notes); and
 the source learning itself. When `source=clarification-decision`, read the ledger's
-`## Open` items and their filled `decision:` lines — each filled decision is the approval.
+`## Open` items and their filled `decision:` lines.
 
-### When no baseline exists (bootstrap not yet run)
+#### When no baseline exists (bootstrap not yet run)
 
 If no AI Architecture Rules or Coding Guidelines are found:
 
@@ -60,16 +66,26 @@ If no AI Architecture Rules or Coding Guidelines are found:
   single-rule Architecture Rules file. Optionally record the learning as a **candidate solution note**
   so it isn't lost.
 
-## Phase 2 — Classify the learning
+**Complete when** current `guidance`, the `ledger`, and the `sources` the conflict check will need
+are each resolved or confirmed absent.
 
-One of: story-specific decision / implementation detail / reusable coding convention /
-architecture rule / brownfield ambiguity / contract change / security rule / privacy
+### Phase 2 — Classify the learning
+
+**Goal** — The learning sits at the right altitude.
+
+**Procedure** — One of: story-specific decision / implementation detail / reusable coding
+convention / architecture rule / brownfield ambiguity / contract change / security rule / privacy
 rule / audit rule / compliance rule / reference implementation / candidate memory /
 suspected drift / conflict between sources.
 
-## Phase 3 — Decide the target artifact
+**Complete when** the learning carries exactly one classification from that list — not two
+candidates, not a hedge.
 
-Recommend one target and follow these routing rules:
+### Phase 3 — Decide the target artifact
+
+**Goal** — The learning points at the one artifact that should carry it.
+
+**Procedure** — Recommend one target and follow these routing rules:
 
 | Learning | Target |
 |---|---|
@@ -91,16 +107,30 @@ When the target is a Brownfield Guardrail, pass the divergence to the **write-br
 skill and route what it returns into the `Suggested minimal update` output; when it's the Architecture Rules or
 Guidelines, follow the **write-guidance-file** skill.
 
-## Phase 4 — Conflict check
+**Complete when** exactly one recommended target follows from the classification — not two
+candidates, not a hedge.
 
-Check the proposed update against: requirements; Story Artifact; formal specs; ADRs;
-SAD; AI Architecture Rules; AI Coding Guidelines; Brownfield Guardrails; approved
+### Phase 4 — Conflict check
+
+**Goal** — Whether the proposed update can coexist with what is already approved is known before
+anything is written.
+
+**Procedure** — Check the proposed update against: requirements; Story Artifact; formal specs;
+ADRs; SAD; AI Architecture Rules; AI Coding Guidelines; Brownfield Guardrails; approved
 reference implementation; current code; solution notes. If a conflict exists, do not
 apply — produce a conflict finding.
 
-## Phase 5 — Analyze-only output
+**Complete when** the proposed update has been checked against every source in that list, with any
+conflict recorded as a finding rather than applied.
 
-In `analyze-only` mode, produce a Guidance Update Analysis and modify no files.
+### Phase 5 — Analyze-only output
+
+**Goal** — The recommendation stands as a proposal a human can approve or refuse.
+
+**Procedure** — In `analyze-only` mode, produce a Guidance Update Analysis and modify no files.
+
+**Complete when** the Guidance Update Analysis is emitted with a Decision from the analyze-only enum
+and no file has been modified.
 
 ```markdown
 # Guidance Update Analysis
@@ -144,10 +174,12 @@ create ADR | update SAD | update formal spec | apply approved update |
 create or update Brownfield Guardrail
 ```
 
-## Phase 6 — Apply-approved-update behavior
+### Phase 6 — Apply-approved-update behavior
 
-Do not apply — stop and report — when: approval is missing (report Decision = `Approval
-missing`); the target artifact is unclear; the update conflicts with formal specs, SAD, or ADRs;
+**Goal** — The approved change lands in the guidance, and nothing beyond it does.
+
+**Procedure** — Do not apply — stop and report — when: approval is missing (report Decision =
+`Approval missing`); the target artifact is unclear; the update conflicts with formal specs, SAD, or ADRs;
 it would require an architecture decision, or security / privacy / audit / compliance approval;
 it would change contract truth; it is broader than the approved change; or the target is the
 Architecture Rules/Guidelines but no baseline exists (recommend `ai-context-bootstrap`). Otherwise, in
@@ -169,6 +201,9 @@ classification) with **write-guidance-file**, merging into the existing file; th
 decided item with the **update-clarifications-ledger** skill (`resolve-decisions`). A
 **code-vs-stale-source** conflict resolved in code's favour → write the corrected rule and flag the
 upstream SAD/ADR/spec as stale (never rewrite it).
+
+**Complete when** the approved change is applied at its smallest scope, every decided ledger item is
+retired, and the Applied Guidance Update Report is emitted — or the run stopped and reported why.
 
 ```markdown
 # Applied Guidance Update Report

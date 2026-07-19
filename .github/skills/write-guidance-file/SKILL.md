@@ -25,7 +25,7 @@ description: >-
 6. **Make weight visible:** mark non-negotiables as **Never/Always** and preferences as **Prefer**.
 7. **Open each file with its provenance header (one line):**
    - Architecture Rules: *generated & maintained by the toolkit; mirrors (never overrides) the approved sources it links; evolve via `ai-guidance-update`.*
-   - Guidelines: *generated & maintained by the toolkit; applies the Architecture Rules in code (doesn't redefine it); evolve via `ai-guidance-update`.*
+   - Guidelines: *generated & maintained by the toolkit; applies the Architecture Rules in code (doesn't redefine them); evolve via `ai-guidance-update`.*
 8. **With no `coverage-decisions` and no `baseline`, that header is the whole file** — report it back as header-only so the caller can say so; never pad it with generic advice or undecided proposals. With a `baseline` and no `coverage-decisions`, return the baseline unchanged and report it unchanged.
 9. **Follow the Output section order as a baseline, not a ceiling.** Write only sections with real content; omit concerns that don't apply; never pad. Keep the listed sections in their given relative order; append any added section after the listed ones (or in the nearest topical position), never reordering the listed set.
 10. **Add a section for any repo- or domain-specific concern that matters even if it isn't listed** (e.g. multi-tenancy, performance/SLAs, i18n), kept concrete and repo-specific, not generic advice.
