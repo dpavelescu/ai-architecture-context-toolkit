@@ -83,7 +83,6 @@ tools: ["read", "search", "edit"]
 
 **Procedure**
 - Propose the read order for the repo's agent instruction file (conventionally `.github/copilot-instructions.md`): read the source map, Architecture Rules, Coding Guidelines, and clarifications ledger — in that order — before analysing, planning, coding, or reviewing.
-- Carry it into the Result's Proposals section as a recommendation for a human.
 
 **Complete when** the Result is emitted in the **Output format**, accounting for every file written and every open clarification.
 
