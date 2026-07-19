@@ -99,9 +99,13 @@ a **ledger candidate** marked `raise: live` or `raise: ledger`.
 
 **Procedure**
 - **You** ask, in this conversation, and **before any file is written**.
-- Put each `raise: live` candidate one at a time, most critical first, preferring multiple choice,
-  each offering *decide now or defer to the ledger*:
-  - **Answered** → that answer is the decision: it becomes a final rule.
+- Put each `raise: live` candidate one at a time, most critical first, with its **proposal**, any
+  competing reading the sources support, and the **evidence** behind them — saying where a proposal
+  is code-derived, since that is lowest authority and settles nothing on its own.
+- Offer those as suggestions, never as a closed set: the user may take one, edit it, answer in their
+  own terms, or defer it to the ledger.
+  - **Answered** (taken, edited, or answered in their own terms) → that answer is the decision: it
+    becomes a final rule.
   - **Deferred** → it stays a candidate, and you don't raise it again this run.
   - **Nobody is there to answer** (a non-interactive run) → don't block and don't guess: every
     `raise: live` candidate stays a candidate, and the run continues.
