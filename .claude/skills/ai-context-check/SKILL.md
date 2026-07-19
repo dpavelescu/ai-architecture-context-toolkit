@@ -41,17 +41,16 @@ repo.
 
 ## Process
 
-Each phase runs until its **Complete when** holds; don't enter the next phase before it does.
-
 ### Phase 1 — Discover context
 
 **Goal** — This review holds the guidance it judges against, with what is binding separated from what
 is still open.
 
-**Procedure** — Load the context this review works from with the **read-source-map** skill, bounded
-by `scope`: its `guidance`, `ledger`, `sources`, and `memory`. The Architecture Rules/Guidelines are
-authoritative; treat an `## Open` ledger item as **not yet binding** — a concern still awaiting
-decision, not an approved rule.
+**Procedure**
+- Load the context this review works from with the **read-source-map** skill, bounded by `scope`:
+  its `guidance`, `ledger`, `sources`, and `memory`.
+- The Architecture Rules/Guidelines are authoritative; treat an `## Open` ledger item as **not yet
+  binding** — a concern still awaiting decision, not an approved rule.
 
 **Complete when** each category — `guidance`, `ledger`, `sources` — is resolved or confirmed absent.
 
@@ -59,15 +58,15 @@ decision, not an approved rule.
 
 **Goal** — What the work is trying to do, and what it puts at risk, is understood.
 
-**Procedure** — Identify: the work item; business intent; affected service / module / bounded context;
-affected data ownership; affected API / event / UI contracts; affected security /
-privacy / audit / compliance behavior; changed or proposed files; the implementation
-pattern being used or proposed; current-vs-target implications; relevant Brownfield
-Guardrails. Ask one blocking question (otherwise record it in the report) when intent is unclear
-and risk is material, or when: the solution requires an architecture
-decision; ownership, data ownership, or contract authority is unclear; security, privacy,
-audit, or compliance impact is unclear; current code and target direction conflict; or the
-reviewed work violates an ask-first trigger.
+**Procedure**
+- Identify: the work item; business intent; affected service / module / bounded context; affected
+  data ownership; affected API / event / UI contracts; affected security / privacy / audit /
+  compliance behavior; changed or proposed files; the implementation pattern being used or
+  proposed; current-vs-target implications; relevant Brownfield Guardrails.
+- Ask one blocking question (otherwise record it in the report) when intent is unclear and risk is
+  material, or when: the solution requires an architecture decision; ownership, data ownership, or
+  contract authority is unclear; security, privacy, audit, or compliance impact is unclear; current
+  code and target direction conflict; or the reviewed work violates an ask-first trigger.
 
 **Complete when** the affected service / module / bounded context, data ownership, contracts, and
 security / privacy surface are each identified or explicitly established as not touched — that split
@@ -77,12 +76,15 @@ is what decides which dimensions get delegated.
 
 **Goal** — Each dimension the work touches is judged by the reviewer that owns it, not by this run.
 
-**Procedure** — For each dimension the work actually touches (right-size — skip the rest):
-**assemble that reviewer's input packet** — the relevant Architecture Rules, Guidelines, Guardrails,
-SAD/ADRs/specs, and code evidence — then delegate to its reviewer sub-agent; run them in parallel. Each reviewer owns
-its dimension's checks and returns cited findings — do **not** re-run their logic here. If a delegated
-reviewer fails or returns nothing, record that dimension as `unclear` in the report and continue —
-don't silently drop it.
+**Procedure**
+- For each dimension the work actually touches (right-size — skip the rest): **assemble that
+  reviewer's input packet** — the relevant Architecture Rules, Guidelines, Guardrails,
+  SAD/ADRs/specs, and code evidence.
+- Delegate to its reviewer sub-agent; run them in parallel.
+- Each reviewer owns its dimension's checks and returns cited findings — do **not** re-run their
+  logic here.
+- If a delegated reviewer fails or returns nothing, record that dimension as `unclear` in the report
+  and continue — don't silently drop it.
 
 | Dimension the work touches | Reviewer |
 |---|---|
@@ -101,15 +103,15 @@ If you're not running sub-agents, apply that reviewer file's criteria inline.
 **Goal** — Concerns this work depends on that no approved source settles are surfaced rather than
 answered here.
 
-**Procedure** — Apply the **assess-coverage** skill against the existing `guidance` as baseline;
-each concern it routes as **needs a decision** is a coverage gap for this report. If the work
-depends on a concern that is an **open ledger item**, surface it as awaiting decision
-(recommend ratifying it via `ai-guidance-update`) — don't treat the silence as approval.
-
-For each gap, note **what guidance is missing** and **where it belongs**
-(Architecture Rules / SAD / ADR / requirement / spec), and recommend `ai-guidance-update` (citing the
-specific finding as its `source`; plus a source update when the gap belongs in an upstream
-artifact). Do not silently fill the gap.
+**Procedure**
+- Apply the **assess-coverage** skill against the existing `guidance` as baseline; each concern it
+  routes as **needs a decision** is a coverage gap for this report.
+- If the work depends on a concern that is an **open ledger item**, surface it as awaiting decision
+  (recommend ratifying it via `ai-guidance-update`) — don't treat the silence as approval.
+- For each gap, note **what guidance is missing** and **where it belongs** (Architecture Rules / SAD
+  / ADR / requirement / spec), and recommend `ai-guidance-update` (citing the specific finding as
+  its `source`; plus a source update when the gap belongs in an upstream artifact).
+- Do not silently fill the gap.
 
 **Complete when** every concern the work depends on is either covered by approved guidance or
 recorded as a gap with where it belongs — none silently filled.

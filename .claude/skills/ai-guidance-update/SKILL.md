@@ -43,17 +43,17 @@ If no mode is given, use `analyze-only`.
 
 ## Process
 
-Each phase runs until its **Complete when** holds; don't enter the next phase before it does.
-
 ### Phase 1 — Discover current guidance
 
 **Goal** — The run knows whether a baseline exists to update at all, and what it says today.
 
-**Procedure** — Load current guidance and the sources the run works from with the
-**read-source-map** skill, bounded by `scope`: the `guidance` (Architecture Rules, Coding
-Guidelines, Brownfield Guardrails); the `ledger`; the relevant `sources` (SAD sections, ADRs, formal specs, code evidence); `memory` (solution notes); and
-the source learning itself. When `source=clarification-decision`, read the ledger's
-`## Open` items and their filled `decision:` lines.
+**Procedure**
+- Load current guidance and the sources the run works from with the **read-source-map** skill,
+  bounded by `scope`: the `guidance` (Architecture Rules, Coding Guidelines, Brownfield Guardrails);
+  the `ledger`; the relevant `sources` (SAD sections, ADRs, formal specs, code evidence); `memory`
+  (solution notes); and the source learning itself.
+- When `source=clarification-decision`, read the ledger's `## Open` items and their filled
+  `decision:` lines.
 
 #### When no baseline exists (bootstrap not yet run)
 
@@ -115,10 +115,11 @@ candidates, not a hedge.
 **Goal** — Whether the proposed update can coexist with what is already approved is known before
 anything is written.
 
-**Procedure** — Check the proposed update against: requirements; Story Artifact; formal specs;
-ADRs; SAD; AI Architecture Rules; AI Coding Guidelines; Brownfield Guardrails; approved
-reference implementation; current code; solution notes. If a conflict exists, do not
-apply — produce a conflict finding.
+**Procedure**
+- Check the proposed update against: requirements; Story Artifact; formal specs; ADRs; SAD; AI
+  Architecture Rules; AI Coding Guidelines; Brownfield Guardrails; approved reference
+  implementation; current code; solution notes.
+- If a conflict exists, do not apply — produce a conflict finding.
 
 **Complete when** the proposed update has been checked against every source in that list, with any
 conflict recorded as a finding rather than applied.
@@ -178,12 +179,13 @@ create or update Brownfield Guardrail
 
 **Goal** — The approved change lands in the guidance, and nothing beyond it does.
 
-**Procedure** — Do not apply — stop and report — when: approval is missing (report Decision =
-`Approval missing`); the target artifact is unclear; the update conflicts with formal specs, SAD, or ADRs;
-it would require an architecture decision, or security / privacy / audit / compliance approval;
-it would change contract truth; it is broader than the approved change; or the target is the
-Architecture Rules/Guidelines but no baseline exists (recommend `ai-context-bootstrap`). Otherwise, in
-`apply-approved-update` mode:
+**Procedure**
+- Do not apply — stop and report — when: approval is missing (report Decision = `Approval
+  missing`); the target artifact is unclear; the update conflicts with formal specs, SAD, or ADRs;
+  it would require an architecture decision, or security / privacy / audit / compliance approval; it
+  would change contract truth; it is broader than the approved change; or the target is the
+  Architecture Rules/Guidelines but no baseline exists (recommend `ai-context-bootstrap`).
+- Otherwise, in `apply-approved-update` mode:
 
 1. Verify explicit approval exists.
 2. Verify the approved target artifact.
@@ -195,12 +197,13 @@ Architecture Rules/Guidelines but no baseline exists (recommend `ai-context-boot
 8. Flag any conflict discovered during application.
 9. Produce an Applied Guidance Update Report.
 
-**From the ledger** (`source=clarification-decision`): each filled `decision:` is the approval. Fold
-each **accepted/edited** rule from the accepted text into the clean Architecture Rules or Guidelines (per the
-classification) with **write-guidance-file**, merging into the existing file; then retire every
-decided item with the **update-clarifications-ledger** skill (`resolve-decisions`). A
-**code-vs-stale-source** conflict resolved in code's favour → write the corrected rule and flag the
-upstream SAD/ADR/spec as stale (never rewrite it).
+- **From the ledger** (`source=clarification-decision`): each filled `decision:` is the approval.
+  Fold each **accepted/edited** rule from the accepted text into the clean Architecture Rules or
+  Guidelines (per the classification) with **write-guidance-file**, merging into the existing file;
+  then retire every decided item with the **update-clarifications-ledger** skill
+  (`resolve-decisions`).
+  - A **code-vs-stale-source** conflict resolved in code's favour → write the corrected rule and
+    flag the upstream SAD/ADR/spec as stale (never rewrite it).
 
 **Complete when** the approved change is applied at its smallest scope, every decided ledger item is
 retired, and the Applied Guidance Update Report is emitted — or the run stopped and reported why.

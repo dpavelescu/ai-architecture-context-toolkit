@@ -21,13 +21,13 @@ agents: ['architecture-boundary-reviewer', 'engineering-convention-reviewer', 'c
 
 ## Process
 
-Each phase runs until its **Complete when** holds; don't enter the next phase before it does.
-
 ### Phase 1 — Discover
 
 **Goal** — This review holds the guidance it judges against, with what is binding separated from what is still open.
 
-**Procedure** — Load the context this review works from: apply the **read-source-map** skill, bounded by `scope`; take its `guidance`, `ledger`, and `sources`. The Architecture Rules/Guidelines are authoritative; treat an `## Open` ledger item as **not yet binding** — a concern still awaiting decision, not an approved rule.
+**Procedure**
+- Load the context this review works from: apply the **read-source-map** skill, bounded by `scope`; take its `guidance`, `ledger`, and `sources`.
+- The Architecture Rules/Guidelines are authoritative; treat an `## Open` ledger item as **not yet binding** — a concern still awaiting decision, not an approved rule.
 
 **Complete when** each category — `guidance`, `ledger`, `sources` — is resolved or confirmed absent.
 
@@ -35,7 +35,9 @@ Each phase runs until its **Complete when** holds; don't enter the next phase be
 
 **Goal** — What the work is trying to do, and what it puts at risk, is understood.
 
-**Procedure** — Intent; affected service/module/context; data, contracts, security touched; the pattern proposed; current-vs-target implications. Ask one blocking question (otherwise record it in the report) when intent is unclear and risk is material, or when: the solution requires an architecture decision; ownership, data ownership, or contract authority is unclear; security, privacy, audit, or compliance impact is unclear; current code and target direction conflict; or the reviewed work violates an ask-first trigger.
+**Procedure**
+- Intent; affected service/module/context; data, contracts, security touched; the pattern proposed; current-vs-target implications.
+- Ask one blocking question (otherwise record it in the report) when intent is unclear and risk is material, or when: the solution requires an architecture decision; ownership, data ownership, or contract authority is unclear; security, privacy, audit, or compliance impact is unclear; current code and target direction conflict; or the reviewed work violates an ask-first trigger.
 
 **Complete when** the affected service/module/context, data ownership, contracts, and security/privacy surface are each identified or explicitly established as not touched — that split is what decides which dimensions get delegated.
 
@@ -43,12 +45,15 @@ Each phase runs until its **Complete when** holds; don't enter the next phase be
 
 **Goal** — Each dimension the work touches is judged by the reviewer that owns it, not by this run.
 
-**Procedure** — For each dimension the work actually touches (right-size; a dimension with no matching evidence is skipped), assemble that reviewer's input packet (relevant Architecture Rules, Guidelines, Guardrails, SAD/ADRs/specs, code evidence), then delegate to its reviewer; run them in **parallel**. Each reviewer owns its dimension — don't re-run its logic here. If a delegated reviewer fails or returns nothing, record that dimension as `unclear` in the report and continue — don't silently drop it.
-
-- boundaries, ownership, coupling, integration, API/event ownership → `architecture-boundary-reviewer`
-- structure, layering, naming, DTO/mapping/validation/error-handling, tests, logging, scope → `engineering-convention-reviewer`
-- contract changes + backward-compat, security, privacy, audit, compliance → `contract-compliance-reviewer`
-- current-vs-target, copying legacy, source conflicts → `brownfield-governance-reviewer`
+**Procedure**
+- For each dimension the work actually touches (right-size; a dimension with no matching evidence is skipped), assemble that reviewer's input packet (relevant Architecture Rules, Guidelines, Guardrails, SAD/ADRs/specs, code evidence).
+- Delegate to its reviewer; run them in **parallel**:
+  - boundaries, ownership, coupling, integration, API/event ownership → `architecture-boundary-reviewer`
+  - structure, layering, naming, DTO/mapping/validation/error-handling, tests, logging, scope → `engineering-convention-reviewer`
+  - contract changes + backward-compat, security, privacy, audit, compliance → `contract-compliance-reviewer`
+  - current-vs-target, copying legacy, source conflicts → `brownfield-governance-reviewer`
+- Each reviewer owns its dimension — don't re-run its logic here.
+- If a delegated reviewer fails or returns nothing, record that dimension as `unclear` in the report and continue — don't silently drop it.
 
 **Complete when** every dimension the work touches has either returned findings or been recorded `unclear` — none left pending or dropped.
 
@@ -56,7 +61,11 @@ Each phase runs until its **Complete when** holds; don't enter the next phase be
 
 **Goal** — Concerns this work depends on that no approved source settles are surfaced rather than answered here.
 
-**Procedure** — Apply the **assess-coverage** skill against the existing `guidance` as baseline; each concern it routes as **needs a decision** is a coverage gap — note where it belongs (Architecture Rules / SAD / ADR / requirement / spec) and recommend `ai-guidance-update` (citing this finding as its `source`). Don't silently fill it. If the work depends on a concern that is an **open ledger item**, surface it as awaiting decision and recommend ratifying it via `ai-guidance-update` — don't treat the silence as approval.
+**Procedure**
+- Apply the **assess-coverage** skill against the existing `guidance` as baseline; each concern it routes as **needs a decision** is a coverage gap.
+- Note where it belongs (Architecture Rules / SAD / ADR / requirement / spec) and recommend `ai-guidance-update` (citing this finding as its `source`).
+- Don't silently fill it.
+- If the work depends on a concern that is an **open ledger item**, surface it as awaiting decision and recommend ratifying it via `ai-guidance-update` — don't treat the silence as approval.
 
 **Complete when** every concern the work depends on is either covered by approved guidance or recorded as a gap with where it belongs — none silently filled.
 
