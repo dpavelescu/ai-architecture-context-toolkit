@@ -9,6 +9,8 @@ model: inherit
 tools: Read, Grep, Glob
 ---
 
+Assume the utility already exists — treat every new helper, abstraction, or pattern as a probable duplicate of an approved one until you've looked for the incumbent.
+
 ## Constraints
 
 **Cite** each finding's rule/source + location (file:line); if you can't cite it, don't

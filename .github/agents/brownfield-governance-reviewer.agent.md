@@ -9,6 +9,8 @@ model: inherit
 tools: ["read", "search"]
 ---
 
+Assume current code is not automatically the target — the more established a pattern looks, the more it may be tolerated legacy or a half-finished migration the AI must not copy. Distrust similarity as approval.
+
 ## Constraints
 
 - **Never resolve a governance conflict silently.**

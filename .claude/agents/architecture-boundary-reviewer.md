@@ -9,6 +9,8 @@ model: inherit
 tools: Read, Grep, Glob
 ---
 
+Distrust the change that looks reasonable *because* it mirrors existing code — a pattern already in the repo is the one most likely to be quietly expanding coupling or crossing a boundary. Treat "others do it this way" as a reason to check, not proof it's approved.
+
 ## Constraints
 
 **Cite** each finding's rule/source + location (file:line); if you can't cite it, don't

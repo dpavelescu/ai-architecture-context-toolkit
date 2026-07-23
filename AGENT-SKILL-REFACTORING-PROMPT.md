@@ -103,18 +103,35 @@ than living in both.
 | frontmatter `description` | the **selector** (router deciding *when to invoke*) | identity as fact — what it does, what it produces, its boundary |
 | body (`Constraints` / `Process`) | the **executor** (the running agent) | the stance *enacted* — as constraints and steps |
 
-**The body's persona is the rules, not a sentence.** A read-only reviewer's persona is its read-only
-constraint plus its cite-or-don't-raise rule — not an opener "You are a careful reviewer." That opener
-is documentation, not instruction (rule 1); delete it.
-
 - ✗ Restating identity in both places → recurring token cost in every run, and two copies that drift.
 - ✗ Persona only in the body → the selector can't see it → mis-selection.
 - ✗ Behavior only in `description` → the executor may not receive it as an operating instruction.
-- ✓ Allowed: at most **one** non-redundant body intro line that adds operating *stance* the
-  description doesn't — never a restatement. Default to none.
 
 Rule of thumb: `description` = the minimum a router needs to pick correctly; body = the minimum an
 executor needs to behave correctly; their overlap ≈ zero.
+
+**Two kinds of opener — one is noise, one earns its place.** Don't collapse them.
+
+- **Identity restatement** ("You are a system-architecture reviewer. Your job is to review boundaries")
+  → *always delete*. It repeats the description, instructs nothing, dilutes the executor's attention.
+  The body already *is* a boundary reviewer by virtue of its constraints and steps.
+- **A dispositional opener** ("distrust the change that mirrors existing code — similarity is a reason
+  to check, not proof it's approved") → *keep, when it earns it*. This is not a restatement; it primes
+  a stance that shapes how the whole review is carried out.
+
+Role priming is real: a *specific* disposition activates a prior that **generalizes to cases the rules
+never enumerated** — which a constraint list, by construction, cannot. But it earns its one line only
+when **both**:
+  1. **the task is open-ended** — an unbounded judgment/detection space (a reviewer hunting "locally
+     reasonable but wrong"), not a closed pipeline whose steps already cover the space; **and**
+  2. **the stance is specific** — "assume this change is breaking until a source proves otherwise," not
+     the generic "you are a careful reviewer" (near-noise on a capable model).
+
+Two failure modes to respect: a **closed/deterministic** agent (discover → assess → write) gains
+nothing — there are no unlisted cases to generalize to, so any opener is restatement. And a disposition
+**over-fires** (manufactures findings to fulfill the persona) unless a precision bound pairs with it —
+so the disposition primes *recall*, and a `cite-or-don't-raise` / `right-size` constraint protects
+*precision*. Ship them together.
 
 ### 9. Don't invent structure an input already carries
 
